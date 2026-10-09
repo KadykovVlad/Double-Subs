@@ -1,0 +1,112 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Fake YouTube watch page</title>
+<!--
+  Mimics what Double Sub relies on: #movie_player.getPlayerResponse() with caption tracks,
+  a CC button, and a player that requests /api/timedtext with a `pot` token by itself soon after the
+  video loads (CC on or off, like the real one). The user's own CC press makes one more request.
+  The fixture server answers without `pot` with an empty body, like YouTube.
+  navigateTo(id) switches the video without reloading the page, like YouTube does.
+  ?foreign=1: another extension requests subtitles on load, without the token (the fake answers it).
+  ?flaky=N: the first N subtitle requests of the extension get 503, like YouTube does at times.
+  ?silent=1: the player does not request subtitles by itself, only when the user presses CC.
+  ?dead=1: the player never requests subtitles: the token cannot be had.
+  ?early=1: on load the player requests subtitles without the token, with its client parameters.
+-->
+<div id="movie_player" style="position: relative; width: 640px; height: 360px; background: #000">
+  <video width="640" height="360" src="clip.webm"></video>
+  <div
+    class="ytp-caption-window-container"
+    style="position: absolute; bottom: 10px; left: 0; right: 0; color: #fff"
+  >
+    YouTube's own captions
+  </div>
+  <button
+    class="ytp-subtitles-button"
+    aria-pressed="false"
+    style="position: absolute; top: 8px; right: 8px"
+  >
+    CC
+  </button>
+</div>
+<script>
+  const TRACKS = {
+    BOTH: [
+      { lang: 'en', kind: null, name: 'English' },
+      { lang: 'ru', kind: null, name: 'Русский' },
+    ],
+    ASR: [{ lang: 'en', kind: 'asr', name: 'English (auto-generated)' }],
+    NONE: [],
+  };
+  const params = () => new URLSearchParams(location.search);
+  const videoId = () => params().get('v');
+  const tracks = () => TRACKS[videoId()] ?? [];
+  // A run id so that the fake server counts the 503s of this page only.
+  const flaky = params().get('flaky')
+    ? `&flaky=${params().get('flaky')}&run=${Math.random().toString(36).slice(2)}`
+    : '';
+
+  const player = document.getElementById('movie_player');
+  player.getPlayerResponse = () => ({
+    videoDetails: { videoId: videoId() },
+    captions: tracks().length
+      ? {
+          playerCaptionsTracklistRenderer: {
+            captionTracks: tracks().map((t) => ({
+              baseUrl: `${location.origin}/api/timedtext?v=${videoId()}&lang=${t.lang}${t.kind ? '&kind=asr' : ''}&signature=sig${flaky}`,
+              languageCode: t.lang,
+              ...(t.kind ? { kind: t.kind } : {}),
+              name: { simpleText: t.name },
+              isTranslatable: true,
+            })),
+          },
+        }
+      : undefined,
+  });
+
+  // The player's own request, with the token, as the real player makes it a moment after load.
+  // ?transport=fetch: the player uses fetch instead of XMLHttpRequest.
+  function playerRequest() {
+    const first = tracks()[0];
+    if (!first || params().get('dead')) return;
+    const url = `/api/timedtext?v=${videoId()}&lang=${first.lang}${first.kind ? '&kind=asr' : ''}&fmt=json3&pot=SECRET&c=WEB&cver=2.0`;
+    if (params().get('transport') === 'fetch') {
+      void fetch(url).then((response) => response.text());
+    } else {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url);
+      xhr.send();
+    }
+  }
+  // ?late=N: the player's request comes N ms after load, later than the extension waits for it.
+  const delay = () => Number(params().get('late') ?? 100);
+  if (!params().get('silent')) setTimeout(playerRequest, delay());
+  if (params().get('early')) {
+    const first = tracks()[0];
+    if (first)
+      void fetch(`/api/timedtext?v=${videoId()}&lang=${first.lang}&fmt=json3&c=WEB&cver=2.0`).then(
+        (response) => response.text(),
+      );
+  }
+  if (params().get('foreign'))
+    void fetch(`/api/timedtext?v=${videoId()}&lang=ar&fmt=json3`).then((response) =>
+      response.text(),
+    );
+
+  window.navigateTo = (id) => {
+    const next = params();
+    next.set('v', id);
+    history.pushState({}, '', `?${next}`);
+    document.querySelector('.ytp-subtitles-button').setAttribute('aria-pressed', 'false');
+    document.dispatchEvent(new Event('yt-navigate-finish'));
+    if (!params().get('silent')) setTimeout(playerRequest, delay());
+  };
+
+  document.querySelector('.ytp-subtitles-button').addEventListener('click', (event) => {
+    const button = event.currentTarget;
+    const on = button.getAttribute('aria-pressed') !== 'true';
+    button.setAttribute('aria-pressed', String(on));
+    window.ccRequests = (window.ccRequests ?? 0) + (on ? 1 : 0);
+    if (on) playerRequest();
+  });
+</script>

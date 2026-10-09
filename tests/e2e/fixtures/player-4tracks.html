@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Player 1 fixture (cross-origin iframe, 4 tracks)</title>
+<!-- Mimics the allplay player: non-standard `language` attribute instead of srclang, kind=captions everywhere. -->
+<div id="stage" style="position: relative; width: 640px; height: 360px; background: #000">
+  <video id="player" crossorigin="" playsinline width="640" height="360" src="clip.webm">
+    <track kind="captions" label="(Russian) forced" src="ru-forced.vtt" language="rus" />
+    <track kind="captions" label="(Russian) full" src="ru-full.vtt" language="rus" />
+    <track kind="captions" label="(English) full" src="en-full.vtt" language="eng" />
+    <track kind="captions" label="(English) SDH" src="en-sdh.vtt" language="eng" />
+  </video>
+  <!-- The player's own fullscreen button: like most players it puts its container, not the <video>, in fullscreen. -->
+  <button id="fullscreen" style="position: absolute; right: 8px; top: 8px">⛶</button>
+</div>
+<!-- Hidden ad video, like allplay's rmp-ad-vast-video-player: must not count as a player. -->
+<video class="ad" style="display: none"></video>
+<script>
+  // Players often prefetch subtitles: the agent must see this request in the Performance API.
+  fetch('en-full.vtt');
+  document.getElementById('fullscreen').addEventListener('click', () => {
+    document.getElementById('stage').requestFullscreen();
+  });
+</script>

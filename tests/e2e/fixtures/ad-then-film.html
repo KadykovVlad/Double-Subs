@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>An ad first, the film (with late subtitles) afterwards</title>
+<video id="v" crossorigin="anonymous" src="clip.webm" width="480" height="270" muted></video>
+<script>
+  // Phase 1: a short clip without any subtitles (the "ad"). Phase 2, a few seconds later: the same
+  // <video> gets the film's source and its subtitle tracks appear, as many players do.
+  const video = document.getElementById('v');
+  window.startFilm = () => {
+    video.setAttribute('data-phase', 'film');
+    for (const [label, lang, src] of [
+      ['English', 'en', 'en-full.vtt'],
+      ['Русский', 'ru', 'ru-full.vtt'],
+    ]) {
+      const track = document.createElement('track');
+      Object.assign(track, { kind: 'subtitles', label, srclang: lang, src });
+      video.append(track);
+    }
+    video.src = 'clip.webm?film';
+    video.load();
+  };
+</script>

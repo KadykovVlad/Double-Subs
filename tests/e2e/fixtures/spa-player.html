@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Single-page player: the video is replaced like when another episode opens</title>
+<div id="stage"></div>
+<script>
+  let episode = 0;
+  function mount() {
+    episode++;
+    document.getElementById('stage').innerHTML =
+      '<video crossorigin="anonymous" src="clip.webm" width="480" height="270" data-episode="' +
+      episode +
+      '">' +
+      '<track kind="subtitles" label="English" srclang="en" src="en-full.vtt"></video>';
+  }
+  // Another episode in the very same <video>: new source, new subtitle track.
+  window.nextEpisodeInPlace = function () {
+    const video = document.querySelector('video');
+    video.querySelector('track').remove();
+    const track = document.createElement('track');
+    track.kind = 'subtitles';
+    track.label = 'English';
+    track.srclang = 'en';
+    track.src = 'en-slow.vtt';
+    video.append(track);
+    video.src = 'clip.webm?episode=2';
+    video.load();
+  };
+  window.swap = mount;
+  mount();
+</script>

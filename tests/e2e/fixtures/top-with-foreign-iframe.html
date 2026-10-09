@@ -1,0 +1,6 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Host page with a player from an origin the extension has no access to</title>
+<iframe src="{{FOREIGN_ORIGIN}}/player-4tracks.html" width="680" height="400"></iframe>
+<!-- A tracking pixel iframe: too small to be a player, must not be offered for access. -->
+<iframe src="{{FOREIGN_ORIGIN}}/player-single-forced.html" width="1" height="1"></iframe>

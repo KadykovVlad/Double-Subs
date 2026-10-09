@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Video inside an open shadow root</title>
+<div id="host"></div>
+<script>
+  const root = document.getElementById('host').attachShadow({ mode: 'open' });
+  root.innerHTML =
+    '<video crossorigin="anonymous" src="clip.webm" width="480" height="270">' +
+    '<track kind="subtitles" label="English" srclang="en" src="en-full.vtt"></video>';
+</script>

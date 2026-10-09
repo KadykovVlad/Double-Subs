@@ -1,0 +1,15 @@
+{
+  "wireMagic": "pb3",
+  "pens": [{}],
+  "wsWinStyles": [{}],
+  "wpWinPositions": [{}],
+  "events": [
+    { "tStartMs": 1000, "dDurationMs": 2000, "segs": [{ "utf8": "Hello, Dexter." }] },
+    { "tStartMs": 4000, "dDurationMs": 2500, "segs": [{ "utf8": "Tonight is\nthe night." }] },
+    {
+      "tStartMs": 7000,
+      "dDurationMs": 2000,
+      "segs": [{ "utf8": "I'm not who " }, { "utf8": "you think I am." }]
+    }
+  ]
+}

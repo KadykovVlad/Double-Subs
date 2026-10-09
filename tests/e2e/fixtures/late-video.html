@@ -1,0 +1,11 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Video added after load</title>
+<script>
+  setTimeout(() => {
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.innerHTML = '<track kind="subtitles" label="English" srclang="en" src="en-full.vtt">';
+    document.body.append(video);
+  }, 800);
+</script>

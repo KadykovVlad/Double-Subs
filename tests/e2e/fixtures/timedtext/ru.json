@@ -1,0 +1,12 @@
+{
+  "wireMagic": "pb3",
+  "events": [
+    { "tStartMs": 1100, "dDurationMs": 2000, "segs": [{ "utf8": "Привет, Декстер." }] },
+    { "tStartMs": 4100, "dDurationMs": 2300, "segs": [{ "utf8": "Сегодня та самая ночь." }] },
+    {
+      "tStartMs": 7000,
+      "dDurationMs": 2200,
+      "segs": [{ "utf8": "Я не тот, кем ты меня считаешь." }]
+    }
+  ]
+}

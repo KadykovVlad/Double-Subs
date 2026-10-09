@@ -1,0 +1,8 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>A player that fetches its subtitles itself</title>
+<!-- No <track> elements: the player downloads the files and would draw the lines on its own. -->
+<video crossorigin="anonymous" src="clip.webm" width="480" height="270"></video>
+<script>
+  for (const file of ['en-full.vtt', 'ru-full.vtt']) fetch(file).then((r) => r.text());
+</script>
