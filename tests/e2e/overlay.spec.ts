@@ -169,7 +169,8 @@ test('case B (English only): the second line is translated; the native "showing"
 });
 
 test("YouTube: lines over the player, YouTube's own captions hidden, next video picked up", async () => {
-  const page = await open('/fake-youtube.html?v=BOTH');
+  // CC is on (the user's YouTube setting): YouTube's own captions would show without us.
+  const page = await open('/fake-youtube.html?v=BOTH&autocc=1');
   const video = page.locator('#movie_player video');
   await seek(video, 1.5);
   await select(page);
@@ -210,6 +211,14 @@ test('the round cross on the bar turns the subtitles off; the side panel shows i
   await en.hover(); // the bar is under the pointer, as for a real click
   await close.click();
   await expect(en).toBeHidden();
+  // Off and paused, nothing changes: no layout every frame (on a heavy page that froze the tab).
+  const layouts = () =>
+    page
+      .locator('double-sub-overlay')
+      .evaluate((host) => Number((host as HTMLElement).dataset.layouts));
+  const before = await layouts();
+  await page.waitForTimeout(500);
+  expect((await layouts()) - before).toBeLessThan(5);
   await expect.poll(siteTrack).toBe('showing'); // the site's own subtitles are back
   await expect(popup.getByTestId('toggle-overlay')).not.toBeChecked();
 

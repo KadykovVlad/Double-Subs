@@ -4,7 +4,7 @@ import {
   EN_RU,
   getTranslatorApi,
   probeTranslator,
-  RU_EN,
+  translatorOptions,
 } from '../../src/lib/translator';
 import { openTranslationCache } from '../../src/translation/cache';
 import { handleTranslationRequest } from '../../src/translation/handler';
@@ -44,7 +44,7 @@ browser.runtime.onMessage.addListener((message: OffscreenRequest, _sender, sendR
       void benchmark(
         'offscreen',
         message.texts,
-        message.direction === 'en-ru' ? EN_RU : RU_EN,
+        translatorOptions(message.direction) ?? EN_RU,
       ).then(sendResponse);
       break;
   }

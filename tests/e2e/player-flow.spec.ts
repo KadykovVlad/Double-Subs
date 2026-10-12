@@ -73,10 +73,10 @@ test('player 1: finds the only player inside a cross-origin iframe and reads its
     ['en', 'sdh'],
   ]);
   // Case A: English full (track 2) and Russian full (track 1); forced and SDH are left out.
-  expect(report!.decision).toEqual({ case: 'A', en: 2, ru: 1, translateFrom: null });
+  expect(report!.decision).toEqual({ case: 'A', learn: 2, native: 1, translateFrom: null });
   await expect(popup.getByTestId('decision')).toHaveAttribute('data-case', 'A');
-  await expect(popup.getByTestId('track').nth(2)).toContainText('английская строка');
-  await expect(popup.getByTestId('track').nth(1)).toContainText('русская строка');
+  await expect(popup.getByTestId('track').nth(2)).toContainText('изучаемый язык');
+  await expect(popup.getByTestId('track').nth(1)).toContainText('мой язык');
 
   // The subtitle file the player fetched before we were injected is visible to us.
   await openPanelTab(popup, 'settings');
@@ -89,7 +89,12 @@ test('player 2: a single forced track without kind and srclang', async () => {
 
   await expect(popup.getByTestId('status')).toHaveText('Подходящих субтитров нет');
   // Only a forced track: case C, nothing to show or translate.
-  expect(reports[0]!.decision).toEqual({ case: 'C', en: null, ru: null, translateFrom: null });
+  expect(reports[0]!.decision).toEqual({
+    case: 'C',
+    learn: null,
+    native: null,
+    translateFrom: null,
+  });
   await expect(popup.getByTestId('decision')).toHaveAttribute('data-case', 'C');
   expect(reports[0]!.tracks).toEqual([
     expect.objectContaining({
@@ -168,8 +173,13 @@ test('finds a video inside an open shadow root', async () => {
   await expect(popup.getByTestId('status')).toHaveText('Субтитры найдены');
   expect(reports[0]!.tracks[0]).toMatchObject({ label: 'English', status: 'loaded', cueCount: 3 });
   // A lone English track: case B, the Russian line has to be translated.
-  expect(reports[0]!.decision).toEqual({ case: 'B', en: 0, ru: null, translateFrom: 'en' });
-  await expect(popup.getByTestId('decision')).toContainText('русские переведём');
+  expect(reports[0]!.decision).toEqual({
+    case: 'B',
+    learn: 0,
+    native: null,
+    translateFrom: 'learn',
+  });
+  await expect(popup.getByTestId('decision')).toContainText('перевод на русский сделаем сами');
 });
 
 test('a page without video offers to search again or reload', async () => {

@@ -170,7 +170,7 @@ export function App() {
       const granted = await request;
       if (!granted)
         return { kind: 'denied', origin, diagnostics: state.diagnostics, pageUrl: state.pageUrl };
-      return detect(tabId);
+      return detect(tabId, { afterGrant: true });
     });
   };
 

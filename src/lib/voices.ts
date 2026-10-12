@@ -1,5 +1,6 @@
 import type { WordLang } from './words';
-import { t, type MessageKey } from './i18n';
+import { t, uiLanguage, type MessageKey } from './i18n';
+import { sameLanguage } from './languages';
 
 /** The voice setting that means "a different voice for every word". */
 export const RANDOM_VOICE = '*random*';
@@ -32,9 +33,18 @@ const ACCENTS: Record<string, MessageKey> = {
   'ru-ru': 'accent_ru',
 };
 
+/** Where the accent is from: the texts know the English ones; for any other voice, its country in the user's language. */
 const accentOf = (lang: string) => {
   const key = ACCENTS[lang.toLowerCase().replace('_', '-')];
-  return key ? t(key) : lang;
+  if (key) return t(key);
+  const region = /[-_]([A-Za-z]{2})\b/.exec(lang)?.[1]?.toUpperCase();
+  try {
+    return (
+      (region && new Intl.DisplayNames([uiLanguage(), 'en'], { type: 'region' }).of(region)) || lang
+    );
+  } catch {
+    return lang;
+  }
 };
 
 /**
@@ -47,7 +57,8 @@ export function voiceOptions(voices: VoiceInfo[], lang: WordLang): VoiceOption[]
   for (const voice of voices) {
     if (
       !voice.voiceName ||
-      !voice.lang?.toLowerCase().startsWith(lang) ||
+      !voice.lang ||
+      !sameLanguage(voice.lang, lang) ||
       seen.has(voice.voiceName)
     )
       continue;

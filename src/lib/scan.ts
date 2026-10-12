@@ -76,6 +76,16 @@ export interface ScanSummary {
   subtitleResources: string[];
 }
 
+/**
+ * The page has an iframe we could not reach, so access to it is asked for. Right after the user
+ * gave access, a player that is there is used: another iframe still out of reach (an advertisement,
+ * a nested frame of the player's site) must not bring the same question back and leave the
+ * button looking dead.
+ */
+export function needsAccess(summary: ScanSummary, afterGrant: boolean): boolean {
+  return summary.unreached.length > 0 && !(afterGrant && summary.players.length > 0);
+}
+
 export function summarizeScans(results: FrameScanResult[]): ScanSummary {
   const reached = new Set(results.map((r) => r.scan.origin));
 

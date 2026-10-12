@@ -4,33 +4,26 @@ import type { Notice } from '../overlay/notice';
 import type { Overlay } from '../overlay/overlay';
 import { offscreenTranslationService } from '../translation/client';
 import { runTranslation } from '../translation/session';
-import { t } from '../lib/i18n';
+import { nameOf, t } from '../lib/i18n';
+import { otherRole, type LanguagePair } from '../lib/languages';
+import { directionOf } from '../lib/translator';
 
 /** What the chip on the video says about the translation of the missing line. */
 export function translationNotice(
   status: TranslationStatus,
-  target: 'ru' | 'en',
+  target: string,
 ): { text: string; tone: 'ok' | 'info' | 'warn'; sticky: boolean } {
   switch (status.state) {
     case 'translating': {
       const percent = Math.round((status.done / Math.max(1, status.total)) * 100);
+      return { text: t('tr_progress', nameOf(target), percent), tone: 'info', sticky: true };
+    }
+    case 'done':
       return {
-        text: t(target === 'ru' ? 'tr_progress_ru' : 'tr_progress_en', percent),
-        tone: 'info',
-        sticky: true,
+        text: t(status.fromCache ? 'tr_done_cache' : 'tr_done', nameOf(target)),
+        tone: 'ok',
+        sticky: false,
       };
-    }
-    case 'done': {
-      const key =
-        target === 'ru'
-          ? status.fromCache
-            ? 'tr_done_ru_cache'
-            : 'tr_done_ru'
-          : status.fromCache
-            ? 'tr_done_en_cache'
-            : 'tr_done_en';
-      return { text: t(key), tone: 'ok', sticky: false };
-    }
     case 'needs-model':
       return { text: t('tr_needs_model'), tone: 'warn', sticky: true };
     case 'unavailable':
@@ -44,6 +37,8 @@ export interface TranslationTarget {
   video: HTMLVideoElement;
   overlay: Overlay;
   notice: Notice;
+  /** The languages chosen now. */
+  pair: () => LanguagePair;
   /** Called after every step, so the panel can show progress. */
   onProgress: () => void;
 }
@@ -66,20 +61,22 @@ export class TranslationJob {
     const source = translateFrom ? inspection.lines[translateFrom] : null;
     if (!translateFrom || !source?.length) return;
 
-    const targetLang = translateFrom === 'en' ? 'ru' : 'en';
+    const targetRole = otherRole(translateFrom);
+    const pair = this.target.pair();
+    const targetLang = pair[targetRole];
     const controller = new AbortController();
     this.abort = controller;
 
     void runTranslation({
       source,
-      direction: translateFrom === 'en' ? 'en-ru' : 'ru-en',
+      direction: directionOf(pair[translateFrom], targetLang),
       getTime: () => this.target.video.currentTime,
       service: offscreenTranslationService,
       signal: controller.signal,
       onUpdate: ({ cues, status }) => {
         if (controller.signal.aborted) return;
         this.status = status;
-        this.target.overlay.setLines({ ...inspection.lines, [targetLang]: cues satisfies Cue[] });
+        this.target.overlay.setLines({ ...inspection.lines, [targetRole]: cues satisfies Cue[] });
         const silent = quiet && (status.state === 'translating' || status.state === 'done');
         if (!silent) {
           const { text, tone, sticky } = translationNotice(status, targetLang);

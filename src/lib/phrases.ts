@@ -106,70 +106,73 @@ function bestMatch(cue: Cue, others: Cue[]): number {
  * for the whole stretch, so that both lines always hold the whole phrase. A cue that has a single
  * partner keeps its own timing. A knot that would grow too big is left as it was.
  */
-export function groupAligned(en: Cue[], ru: Cue[]): { en: Cue[]; ru: Cue[] } {
-  if (en.length === 0 || ru.length === 0) return { en, ru };
+export function groupAligned(learn: Cue[], native: Cue[]): { learn: Cue[]; native: Cue[] } {
+  if (learn.length === 0 || native.length === 0) return { learn, native };
 
-  // Items 0..en.length-1 are English cues, the rest Russian ones.
-  const roots = Array.from({ length: en.length + ru.length }, (_, i) => i);
+  // Items 0..learn.length-1 are cues of the learning line, the rest those of the native one.
+  const roots = Array.from({ length: learn.length + native.length }, (_, i) => i);
   const union = (a: number, b: number) => (roots[parent(roots, a)] = parent(roots, b));
-  en.forEach((cue, i) => {
-    const j = bestMatch(cue, ru);
-    if (j >= 0) union(i, en.length + j);
+  learn.forEach((cue, i) => {
+    const j = bestMatch(cue, native);
+    if (j >= 0) union(i, learn.length + j);
   });
-  ru.forEach((cue, j) => {
-    const i = bestMatch(cue, en);
-    if (i >= 0) union(en.length + j, i);
+  native.forEach((cue, j) => {
+    const i = bestMatch(cue, learn);
+    if (i >= 0) union(learn.length + j, i);
   });
 
-  const groups = new Map<number, { en: number[]; ru: number[] }>();
+  const groups = new Map<number, { learn: number[]; native: number[] }>();
   for (let k = 0; k < roots.length; k++) {
     const root = parent(roots, k);
-    const group = groups.get(root) ?? { en: [], ru: [] };
-    (k < en.length ? group.en : group.ru).push(k < en.length ? k : k - en.length);
+    const group = groups.get(root) ?? { learn: [], native: [] };
+    (k < learn.length ? group.learn : group.native).push(k < learn.length ? k : k - learn.length);
     groups.set(root, group);
   }
 
-  const mergedEn = new Map<number, Cue>();
-  const mergedRu = new Map<number, Cue>();
-  const consumedEn = new Set<number>();
-  const consumedRu = new Set<number>();
+  const mergedLearn = new Map<number, Cue>();
+  const mergedNative = new Map<number, Cue>();
+  const consumedLearn = new Set<number>();
+  const consumedNative = new Set<number>();
   const consecutive = (list: number[]) =>
     list.every((value, idx) => idx === 0 || value === list[idx - 1]! + 1);
 
   for (const group of groups.values()) {
     if (
-      group.en.length < 1 ||
-      group.ru.length < 1 ||
-      (group.en.length === 1 && group.ru.length === 1)
+      group.learn.length < 1 ||
+      group.native.length < 1 ||
+      (group.learn.length === 1 && group.native.length === 1)
     )
       continue;
-    const enCues = group.en.map((i) => en[i]!);
-    const ruCues = group.ru.map((j) => ru[j]!);
-    const all = [...enCues, ...ruCues];
+    const learnCues = group.learn.map((i) => learn[i]!);
+    const nativeCues = group.native.map((j) => native[j]!);
+    const all = [...learnCues, ...nativeCues];
     const start = Math.min(...all.map((c) => c.start));
     const end = Math.max(...all.map((c) => c.end));
     if (
-      group.en.length > MAX_GROUP_CUES ||
-      group.ru.length > MAX_GROUP_CUES ||
+      group.learn.length > MAX_GROUP_CUES ||
+      group.native.length > MAX_GROUP_CUES ||
       end - start > MAX_GROUP_SECONDS
     )
       continue;
-    if (!consecutive(group.en) || !consecutive(group.ru)) continue;
-    mergedEn.set(group.en[0]!, { start, end, text: joinText(enCues) });
-    mergedRu.set(group.ru[0]!, { start, end, text: joinText(ruCues) });
-    group.en.slice(1).forEach((i) => consumedEn.add(i));
-    group.ru.slice(1).forEach((j) => consumedRu.add(j));
+    if (!consecutive(group.learn) || !consecutive(group.native)) continue;
+    mergedLearn.set(group.learn[0]!, { start, end, text: joinText(learnCues) });
+    mergedNative.set(group.native[0]!, { start, end, text: joinText(nativeCues) });
+    group.learn.slice(1).forEach((i) => consumedLearn.add(i));
+    group.native.slice(1).forEach((j) => consumedNative.add(j));
   }
 
   const build = (cues: Cue[], merged: Map<number, Cue>, consumed: Set<number>) =>
     cues.flatMap((cue, i) => (consumed.has(i) ? [] : [merged.get(i) ?? cue]));
-  return { en: build(en, mergedEn, consumedEn), ru: build(ru, mergedRu, consumedRu) };
+  return {
+    learn: build(learn, mergedLearn, consumedLearn),
+    native: build(native, mergedNative, consumedNative),
+  };
 }
 
 /** Whole phrases on both lines (see the top of the file). */
 export function phrasize(lines: SubtitleLines): SubtitleLines {
-  const en = lines.en ? mergeSplitSentences(lines.en) : null;
-  const ru = lines.ru ? mergeSplitSentences(lines.ru) : null;
-  if (!en || !ru) return { en, ru };
-  return groupAligned(en, ru);
+  const learn = lines.learn ? mergeSplitSentences(lines.learn) : null;
+  const native = lines.native ? mergeSplitSentences(lines.native) : null;
+  if (!learn || !native) return { learn, native };
+  return groupAligned(learn, native);
 }

@@ -76,28 +76,28 @@ describe('groupAligned', () => {
       cue(10, 14, 'Но почему-то он предпочитает морозить задницу здесь, а не сидеть дома.'),
     ];
     const result = groupAligned(en, ru);
-    expect(result.en).toEqual([
+    expect(result.learn).toEqual([
       cue(
         10,
         14,
         'But for some reason, he wants to be here, freezing his ass off, instead of at home.',
       ),
     ]);
-    expect(result.ru).toEqual(ru);
+    expect(result.native).toEqual(ru);
   });
 
   it('does the same when the Russian track is the one that is cut', () => {
     const en = [cue(0, 6, 'I do not know what you are talking about.')];
     const ru = [cue(0, 3, 'Я не знаю,'), cue(3, 6, 'о чём ты говоришь.')];
     const result = groupAligned(en, ru);
-    expect(result.ru).toEqual([cue(0, 6, 'Я не знаю, о чём ты говоришь.')]);
-    expect(result.en).toEqual(en);
+    expect(result.native).toEqual([cue(0, 6, 'Я не знаю, о чём ты говоришь.')]);
+    expect(result.learn).toEqual(en);
   });
 
   it('leaves cues with a single partner exactly as they were, with their own timing', () => {
     const en = [cue(0, 2, 'Hello.'), cue(3, 5, 'Bye.')];
     const ru = [cue(0.2, 2.1, 'Привет.'), cue(3.1, 5.2, 'Пока.')];
-    expect(groupAligned(en, ru)).toEqual({ en, ru });
+    expect(groupAligned(en, ru)).toEqual({ learn: en, native: ru });
   });
 
   it('does not glue a whole scene together when the cuts never meet', () => {
@@ -105,50 +105,54 @@ describe('groupAligned', () => {
     const en = Array.from({ length: 30 }, (_, i) => cue(i * 2, i * 2 + 2, `en ${i}`));
     const ru = Array.from({ length: 20 }, (_, i) => cue(i * 3, i * 3 + 3, `ru ${i}`));
     const result = groupAligned(en, ru);
-    for (const c of [...result.en, ...result.ru]) expect(c.end - c.start).toBeLessThanOrEqual(16);
+    for (const c of [...result.learn, ...result.native])
+      expect(c.end - c.start).toBeLessThanOrEqual(16);
   });
 
   it('handles an empty track', () => {
     const en = [cue(0, 1, 'a')];
-    expect(groupAligned(en, [])).toEqual({ en, ru: [] });
+    expect(groupAligned(en, [])).toEqual({ learn: en, native: [] });
   });
 });
 
 describe('what is on screen', () => {
   it('both lines hold the whole phrase at every moment of it', () => {
     const lines = phrasize({
-      en: [
+      learn: [
         cue(10, 12, 'But for some reason, he wants to be here,'),
         cue(12, 14, 'freezing his ass off, instead of at home.'),
       ],
-      ru: [cue(10, 14, 'Но почему-то он предпочитает морозить задницу здесь, а не сидеть дома.')],
+      native: [
+        cue(10, 14, 'Но почему-то он предпочитает морозить задницу здесь, а не сидеть дома.'),
+      ],
     });
     const at = createLineResolver(lines);
     for (const t of [10.1, 11.9, 12.1, 13.9]) {
       expect(at(t)).toEqual({
-        en: 'But for some reason, he wants to be here, freezing his ass off, instead of at home.',
-        ru: 'Но почему-то он предпочитает морозить задницу здесь, а не сидеть дома.',
+        learn:
+          'But for some reason, he wants to be here, freezing his ass off, instead of at home.',
+        native: 'Но почему-то он предпочитает морозить задницу здесь, а не сидеть дома.',
       });
     }
-    expect(at(14.5)).toEqual({ en: null, ru: null });
+    expect(at(14.5)).toEqual({ learn: null, native: null });
   });
 
   it('a cut that punctuation does not reveal is still matched to the other track', () => {
     const lines = phrasize({
-      en: [cue(0, 2, 'Come here,'), cue(2, 4, 'Right now.')],
-      ru: [cue(0, 4, 'Иди сюда, прямо сейчас.')],
+      learn: [cue(0, 2, 'Come here,'), cue(2, 4, 'Right now.')],
+      native: [cue(0, 4, 'Иди сюда, прямо сейчас.')],
     });
-    expect(lines.en).toEqual([cue(0, 4, 'Come here, Right now.')]);
-    expect(lines.ru).toEqual([cue(0, 4, 'Иди сюда, прямо сейчас.')]);
+    expect(lines.learn).toEqual([cue(0, 4, 'Come here, Right now.')]);
+    expect(lines.native).toEqual([cue(0, 4, 'Иди сюда, прямо сейчас.')]);
   });
 
   it('only the English track: the sentence is whole, ready to be translated as one', () => {
     const lines = phrasize({
-      en: [cue(0, 2, 'He wants to be here,'), cue(2, 4, 'freezing his ass off.')],
-      ru: null,
+      learn: [cue(0, 2, 'He wants to be here,'), cue(2, 4, 'freezing his ass off.')],
+      native: null,
     });
-    expect(lines.en).toEqual([cue(0, 4, 'He wants to be here, freezing his ass off.')]);
-    expect(lines.ru).toBeNull();
+    expect(lines.learn).toEqual([cue(0, 4, 'He wants to be here, freezing his ass off.')]);
+    expect(lines.native).toBeNull();
   });
 });
 
@@ -185,14 +189,14 @@ describe('random cuts', () => {
         sentences.map((s) => s.replace('sentence', 'фраза')),
         seed * 7919,
       );
-      const result = phrasize({ en, ru });
-      expect(words(result.en!.map((c) => c.text).join(' '))).toEqual(
+      const result = phrasize({ learn: en, native: ru });
+      expect(words(result.learn!.map((c) => c.text).join(' '))).toEqual(
         words(en.map((c) => c.text).join(' ')),
       );
-      expect(words(result.ru!.map((c) => c.text).join(' '))).toEqual(
+      expect(words(result.native!.map((c) => c.text).join(' '))).toEqual(
         words(ru.map((c) => c.text).join(' ')),
       );
-      for (const c of [...result.en!, ...result.ru!]) expect(c.end).toBeGreaterThan(c.start);
+      for (const c of [...result.learn!, ...result.native!]) expect(c.end).toBeGreaterThan(c.start);
     }
   });
 
@@ -200,10 +204,10 @@ describe('random cuts', () => {
     for (let seed = 1; seed <= 100; seed++) {
       const en = cutTrack(sentences, seed);
       const ru = cutTrack(sentences, seed + 1000);
-      const result = phrasize({ en, ru });
+      const result = phrasize({ learn: en, native: ru });
       for (const original of en) {
         const mid = (original.start + original.end) / 2;
-        const shown = createLineResolver(result)(mid).en ?? '';
+        const shown = createLineResolver(result)(mid).learn ?? '';
         expect(shown.replace(/\s+/g, ' ')).toContain(original.text);
       }
     }
@@ -235,7 +239,7 @@ describe('translation of cut sentences', () => {
           cue(s * 6 + 3, s * 6 + 6, w.slice(at).join(' ')),
         ];
       });
-      const { en } = phrasize({ en: cues, ru: null });
+      const { learn: en } = phrasize({ learn: cues, native: null });
       let last: Cue[] = [];
       await runTranslation({
         source: en!,

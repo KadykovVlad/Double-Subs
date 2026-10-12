@@ -40,6 +40,30 @@ describe('voiceOptions', () => {
   });
 });
 
+describe('voices of any language', () => {
+  const system: VoiceInfo[] = [
+    { voiceName: 'Yuna', lang: 'ko-KR' },
+    { voiceName: 'Google 한국의', lang: 'ko-KR', remote: true },
+    { voiceName: 'Nora', lang: 'nb-NO' },
+    { voiceName: 'Carmit', lang: 'iw-IL' },
+    { voiceName: 'Ting-Ting', lang: 'zh_CN' },
+    { voiceName: 'Samantha', lang: 'en-US' },
+  ];
+
+  it('finds a voice by its language whatever the region or the old code', () => {
+    expect(voiceOptions(system, 'ko').map((v) => v.name)).toEqual(['Yuna', 'Google 한국의']);
+    expect(voiceOptions(system, 'no').map((v) => v.name)).toEqual(['Nora']); // the system says nb
+    expect(voiceOptions(system, 'he').map((v) => v.name)).toEqual(['Carmit']); // the system says iw
+    expect(voiceOptions(system, 'zh').map((v) => v.name)).toEqual(['Ting-Ting']);
+    expect(voiceOptions(system, 'de')).toEqual([]);
+  });
+
+  it('names the accent of any voice by its country', () => {
+    const [yuna] = voiceOptions(system, 'ko');
+    expect(yuna!.accent).toMatch(/Korea|Корея/);
+  });
+});
+
 describe('chooseVoice', () => {
   it('uses the saved voice as it is, even an online one', () => {
     expect(chooseVoice('Google US English', voices, 'en')).toBe('Google US English');

@@ -36,6 +36,13 @@ async function state(page: Page) {
       paused: video?.paused,
       ad: document.querySelector('#movie_player')?.classList.contains('ad-showing'),
       overlay: document.querySelectorAll('double-sub-overlay').length,
+      cc: document.querySelector('.ytp-subtitles-button')?.getAttribute('aria-pressed') ?? null,
+      // YouTube's own captions: on the screen only if present and not hidden by us.
+      native: (() => {
+        const own = document.querySelector('.ytp-caption-window-container');
+        if (!own) return 'none';
+        return getComputedStyle(own).display === 'none' ? 'hidden' : 'visible';
+      })(),
       chip:
         document.querySelector('double-sub-notice')?.shadowRoot?.querySelector('.text')
           ?.textContent ?? null,

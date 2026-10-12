@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, glassAlpha, normalizeSettings } from '../src/lib/settings';
+import {
+  DEFAULT_SETTINGS,
+  glassAlpha,
+  normalizeSettings,
+  voiceFor,
+  voicePatch,
+} from '../src/lib/settings';
 
 describe('glassAlpha', () => {
   it('never reaches a solid plate', () => {
@@ -106,5 +112,27 @@ describe('normalizeSettings', () => {
 
   it('rounds away floating point noise', () => {
     expect(normalizeSettings({ fontSize: 0.1 + 0.2 + 20.7 }).fontSize).toBe(21);
+  });
+});
+
+describe('the voice of any language', () => {
+  it('English and Russian keep their own fields, the others are kept by language code', () => {
+    const base = normalizeSettings({});
+    expect(voiceFor(base, 'ko')).toBe('');
+    const next = normalizeSettings({ ...base, ...voicePatch(base, 'ko', 'Yuna') });
+    expect(voiceFor(next, 'ko')).toBe('Yuna');
+    expect(voicePatch(base, 'en', 'Daniel')).toEqual({ voiceEn: 'Daniel' });
+    expect(voicePatch(base, 'ru', 'Milena')).toEqual({ voiceRu: 'Milena' });
+    // A second language does not wipe the first.
+    const both = normalizeSettings({ ...next, ...voicePatch(next, 'de', 'Anna') });
+    expect(both.voicesOther).toEqual({ ko: 'Yuna', de: 'Anna' });
+  });
+
+  it('refuses unknown languages and non-text names from storage', () => {
+    expect(
+      normalizeSettings({ voicesOther: { ko: 'Yuna', xx: 'A', de: 7, fr: 'x'.repeat(500) } })
+        .voicesOther,
+    ).toEqual({ ko: 'Yuna' });
+    expect(normalizeSettings({ voicesOther: 'oops' }).voicesOther).toEqual({});
   });
 });

@@ -15,11 +15,19 @@ import { originPattern } from '../../src/lib/scan';
 import type { TranslationStatus } from '../../src/lib/translation-messages';
 import type { VideoReport } from '../../src/lib/types';
 import { youtubeBlocked } from '../../src/lib/youtube';
-import { downloadModel, EN_RU, RU_EN } from '../../src/lib/translator';
+import { directionOf, downloadModel, EN_RU, translatorOptions } from '../../src/lib/translator';
+import {
+  otherRole,
+  shortName,
+  SUBTITLE_LANGUAGES,
+  type LanguagePair,
+} from '../../src/lib/languages';
+import { pairOf, type Settings } from '../../src/lib/settings';
+import type { Role } from '../../src/lib/analysis';
 import { requestAccess, retryTranslation, type PopupState } from '../../src/panel/controller';
 import { useDismissedOffers, useKnownSites, useMirrorsMode, useSettings } from './hooks';
-import { Button, Card, Icons, Progress, SectionTitle, Spinner, SwitchRow } from './ui';
-import { t, type MessageKey } from '../../src/lib/i18n';
+import { Button, Card, Icons, Progress, SectionTitle, SelectRow, Spinner, SwitchRow } from './ui';
+import { nameOf, t, titleOf, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 
 const STATUS_KEY: Record<string, MessageKey> = {
   loaded: 'track_loaded',
@@ -43,21 +51,23 @@ const TYPE_KEY: Record<TrackType, MessageKey> = {
 /** "EN", "RU" stay as they are; the other languages are named in the user's language. */
 const langText = (lang: Lang) => (LANG_KEY[lang] ? t(LANG_KEY[lang]!) : lang.toUpperCase());
 
-function decisionText(report: VideoReport): string {
+function decisionText(report: VideoReport, pair: LanguagePair): string {
   const { decision } = report;
   switch (decision.case) {
     case 'A':
       return t('decision_a');
-    case 'B':
-      return t(decision.translateFrom === 'en' ? 'decision_b_en' : 'decision_b_ru');
+    case 'B': {
+      const from = decision.translateFrom!;
+      return t('decision_b', shortName(pair[from]), nameOf(pair[otherRole(from)]));
+    }
     case 'C':
       return t(youtubeBlocked(report) ? 'youtube_blocked_text' : 'decision_c');
   }
 }
 
 function roleOf(decision: Decision, index: number): string {
-  if (decision.en === index) return t('role_en');
-  if (decision.ru === index) return t('role_ru');
+  if (decision.learn === index) return t('role_learn');
+  if (decision.native === index) return t('role_native');
   return '';
 }
 
@@ -81,6 +91,8 @@ export interface NowProps {
 export function NowTab(props: NowProps) {
   return (
     <>
+      <ShowSwitch />
+      <LanguagesCard />
       <RememberOffer state={props.state} />
       <StatusCard {...props} />
       {props.state.kind === 'selected' && <WatchingCard />}
@@ -107,6 +119,8 @@ function Hero(props: {
 }
 
 function StatusCard({ state, tabId, onGrant, onPick, onCancelPick, onRetry, onReload }: NowProps) {
+  const [settings] = useSettings();
+  const pair = pairOf(settings);
   switch (state.kind) {
     case 'working':
       return (
@@ -165,21 +179,23 @@ function StatusCard({ state, tabId, onGrant, onPick, onCancelPick, onRetry, onRe
               </p>
               {!none && (
                 <div class="chips">
-                  <span class="chip ok">EN</span>
+                  <span class="chip ok">{shortName(pair.learn)}</span>
                   <span class={`chip ${report.decision.case === 'A' ? 'ok' : 'accent'}`}>
-                    RU
-                    {report.decision.case === 'B' && report.decision.translateFrom === 'en'
+                    {shortName(pair.native)}
+                    {report.decision.case === 'B' && report.decision.translateFrom === 'learn'
                       ? t('chip_translated')
                       : ''}
                   </span>
-                  {report.decision.case === 'B' && report.decision.translateFrom === 'ru' && (
-                    <span class="chip accent">{t('chip_en_translated')}</span>
+                  {report.decision.case === 'B' && report.decision.translateFrom === 'native' && (
+                    <span class="chip accent">
+                      {t('chip_lang_translated', shortName(pair.learn))}
+                    </span>
                   )}
                 </div>
               )}
             </Hero>
             <p class="muted" data-testid="decision" data-case={report.decision.case}>
-              {decisionText(report)}
+              {decisionText(report, pair)}
             </p>
             {report.decision.case === 'C' && state.others > 0 && (
               <p class="muted" data-testid="others-hint">
@@ -189,6 +205,7 @@ function StatusCard({ state, tabId, onGrant, onPick, onCancelPick, onRetry, onRe
             {report.decision.case === 'B' && (
               <TranslationBlock
                 report={report}
+                pair={pair}
                 translation={state.translation}
                 onModelReady={() =>
                   tabId !== null ? retryTranslation(tabId, state.frameId) : false
@@ -449,19 +466,67 @@ export function MirrorsSwitch() {
   );
 }
 
-/** What to do while watching: the four switches the user reaches for most. */
+/**
+ * Our subtitles on or off, always at the top. The same setting as the cross on the bar and our
+ * switch in YouTube's control bar, so all of them follow each other.
+ */
+function ShowSwitch() {
+  const [settings, change] = useSettings();
+  return (
+    <Card>
+      <SwitchRow
+        label={t('watch_show')}
+        checked={settings.enabled}
+        testid="toggle-overlay"
+        onChange={(enabled) => change({ enabled })}
+      />
+    </Card>
+  );
+}
+
+/**
+ * The language the user learns and their own one, always at the top. Choosing for one line the
+ * language of the other swaps them, so the two are never the same.
+ */
+function choosePair(role: Role, code: string, settings: Settings): Partial<Settings> {
+  const { learn, native } = pairOf(settings);
+  if (role === 'learn') return { learnLang: code, nativeLang: code === native ? learn : native };
+  return { nativeLang: code, learnLang: code === learn ? native : learn };
+}
+
+function LanguagesCard() {
+  const [settings, change] = useSettings();
+  // The languages by their names in the language of the interface, in its alphabetical order.
+  const options = SUBTITLE_LANGUAGES.map((code): [string, string] => [code, titleOf(code)]).sort(
+    (a, b) => a[1].localeCompare(b[1], uiLanguage()),
+  );
+  return (
+    <Card>
+      <SelectRow
+        label={t('set_learning')}
+        testid="learn-lang"
+        value={settings.learnLang}
+        options={options}
+        onChange={(code) => change(choosePair('learn', code, settings))}
+      />
+      <SelectRow
+        label={t('set_native')}
+        testid="native-lang"
+        value={settings.nativeLang}
+        options={options}
+        onChange={(code) => change(choosePair('native', code, settings))}
+      />
+    </Card>
+  );
+}
+
+/** What to do while watching: the switches the user reaches for most. */
 function WatchingCard() {
   const [settings, change] = useSettings();
   return (
     <>
       <SectionTitle>{t('watching_title')}</SectionTitle>
       <Card>
-        <SwitchRow
-          label={t('watch_show')}
-          checked={settings.enabled}
-          testid="toggle-overlay"
-          onChange={(enabled) => change({ enabled })}
-        />
         <SwitchRow
           label={t('watch_hover')}
           checked={settings.hoverTranslate}
@@ -490,21 +555,27 @@ function WatchingCard() {
 /** Machine translation of the missing line (case B): progress, the model download, retry. */
 function TranslationBlock({
   report,
+  pair,
   translation,
   onModelReady,
 }: {
   report: VideoReport;
+  pair: LanguagePair;
   translation: TranslationStatus | null;
   onModelReady: () => Promise<void> | false;
 }) {
   const [download, setDownload] = useState<{ loaded: number } | { error: string } | null>(null);
-  const from = report.decision.translateFrom;
-  const line = t(from === 'en' ? 'line_ru' : 'line_en');
+  const from = report.decision.translateFrom ?? 'learn';
+  const target = pair[otherRole(from)];
+  // The line being translated, named by its language ("Русский: готовлю перевод…").
+  const line = titleOf(target);
 
   const startDownload = () => {
     // Chrome allows a model download only inside a click: downloadModel starts synchronously here.
     setDownload({ loaded: 0 });
-    downloadModel(from === 'en' ? EN_RU : RU_EN, (loaded) => setDownload({ loaded }))
+    downloadModel(translatorOptions(directionOf(pair[from], target)) ?? EN_RU, (loaded) =>
+      setDownload({ loaded }),
+    )
       .then(async () => {
         setDownload(null);
         await onModelReady();

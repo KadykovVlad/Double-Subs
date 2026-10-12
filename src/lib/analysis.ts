@@ -1,6 +1,8 @@
+import { baseLang, DEFAULT_PAIR, type LanguagePair } from './languages';
 import type { Cue } from './types';
 
-export type Lang = 'en' | 'ru' | 'other' | 'unknown';
+/** A base language code ('en', 'de'…) found for a track, or 'other' / 'unknown' when it could not be told. */
+export type Lang = string;
 
 /**
  * - full: regular subtitles for all the dialogue
@@ -10,19 +12,24 @@ export type Lang = 'en' | 'ru' | 'other' | 'unknown';
  */
 export type TrackType = 'full' | 'forced' | 'sdh' | 'empty';
 
+/** The two lines: the language the user learns and their own one. */
+export type Role = 'learn' | 'native';
+
 export interface Decision {
-  /** A: EN and RU both exist. B: one of them exists, the other is translated. C: neither. */
+  /** A: both languages exist. B: one of them exists, the other is translated. C: neither. */
   case: 'A' | 'B' | 'C';
   /** Indices into the analysed tracks. */
-  en: number | null;
-  ru: number | null;
-  /** Case B: the language whose track is translated into the other one. */
-  translateFrom: 'en' | 'ru' | null;
+  learn: number | null;
+  native: number | null;
+  /** Case B: the line whose track is translated into the other one. */
+  translateFrom: Role | null;
 }
 
 export interface TrackInput {
   label: string;
   cues: Cue[];
+  /** The language the site gives for the track (srclang); only believed where the text cannot tell. */
+  declared?: string;
 }
 
 interface TrackAnalysis {
@@ -35,6 +42,8 @@ interface TrackAnalysis {
 interface AnalysisOptions {
   /** Video length in seconds, or null if unknown (live stream, metadata not loaded). */
   durationSec: number | null;
+  /** The languages of the two lines; English and Russian when not given. */
+  pair?: LanguagePair;
 }
 
 // ---------------------------------------------------------------- cleaning
@@ -145,7 +154,10 @@ const ENGLISH_WORDS = new Set([
 
 const count = (text: string, pattern: RegExp) => text.match(pattern)?.length ?? 0;
 
-/** Only English and Russian are told apart; any other language is `other`. */
+/**
+ * Only English and Russian are told apart by the text; any other language is `other` here, and the
+ * track's own language (trackLanguage) names it.
+ */
 export function detectLanguage(cues: Cue[]): Lang {
   const text = cues
     .slice(0, 300)
@@ -161,6 +173,22 @@ export function detectLanguage(cues: Cue[]): Lang {
   const words = text.toLowerCase().match(/[a-z']+/g) ?? [];
   const english = words.filter((word) => ENGLISH_WORDS.has(word)).length;
   return english / words.length >= ENGLISH_WORD_SHARE ? 'en' : 'other';
+}
+
+/** Languages written in Cyrillic, which the text check takes for Russian. */
+const CYRILLIC_OTHERS = new Set(['uk', 'be', 'bg', 'sr', 'mk', 'kk', 'ky', 'tg', 'mn']);
+
+/**
+ * The language of a track: the text decides for English and Russian (labels and attributes lie);
+ * where the text only says "not those", or is Cyrillic but the track says Ukrainian, Bulgarian…,
+ * the language the site gives is believed.
+ */
+export function trackLanguage(detected: Lang, declared: string | undefined): Lang {
+  const said = declared ? baseLang(declared) : '';
+  if (!said || said === 'en' || said === 'ru') return detected;
+  if (detected === 'other') return said;
+  if (detected === 'ru' && CYRILLIC_OTHERS.has(said)) return said;
+  return detected;
 }
 
 // ---------------------------------------------------------------- track type
@@ -224,7 +252,7 @@ export function analyzeTracks(
     if (cues.length === 0) return { lang: 'unknown', type: 'empty', cues: [] };
 
     // Sound descriptions ("[tense music]") carry no dialogue and would dilute the language signal.
-    const lang = detectLanguage(normalizeCues(track.cues, SDH));
+    const lang = trackLanguage(detectLanguage(normalizeCues(track.cues, SDH)), track.declared);
     if (looksForced(track.label, cues.length, longest, options.durationSec)) {
       return { lang, type: 'forced', cues };
     }
@@ -234,7 +262,7 @@ export function analyzeTracks(
     return { lang, type: 'full', cues };
   });
 
-  return { tracks: analysed, decision: decide(analysed) };
+  return { tracks: analysed, decision: decide(analysed, options.pair) };
 }
 
 /**
@@ -253,12 +281,12 @@ function bestTrack(tracks: TrackAnalysis[], lang: Lang): number | null {
   return null;
 }
 
-export function decide(tracks: TrackAnalysis[]): Decision {
-  const en = bestTrack(tracks, 'en');
-  const ru = bestTrack(tracks, 'ru');
+export function decide(tracks: TrackAnalysis[], pair: LanguagePair = DEFAULT_PAIR): Decision {
+  const learn = bestTrack(tracks, pair.learn);
+  const native = bestTrack(tracks, pair.native);
 
-  if (en !== null && ru !== null) return { case: 'A', en, ru, translateFrom: null };
-  if (en !== null) return { case: 'B', en, ru: null, translateFrom: 'en' };
-  if (ru !== null) return { case: 'B', en: null, ru, translateFrom: 'ru' };
-  return { case: 'C', en: null, ru: null, translateFrom: null };
+  if (learn !== null && native !== null) return { case: 'A', learn, native, translateFrom: null };
+  if (learn !== null) return { case: 'B', learn, native: null, translateFrom: 'learn' };
+  if (native !== null) return { case: 'B', learn: null, native, translateFrom: 'native' };
+  return { case: 'C', learn: null, native: null, translateFrom: null };
 }

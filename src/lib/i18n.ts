@@ -1,4 +1,5 @@
 import en from '../../locales/en.json';
+import { languageName } from './languages';
 
 /** Every text of the interface has a key in locales/en.json; a missing key is a compile error. */
 export type MessageKey = keyof typeof en;
@@ -42,4 +43,13 @@ export function escapeHtml(text: string): string {
 /** "rtl" for Arabic, Hebrew, Persian; "ltr" otherwise. */
 export function textDirection(): 'ltr' | 'rtl' {
   return RTL.has(language) ? 'rtl' : 'ltr';
+}
+
+/** The name of a language in the language of the interface, as the texts put it in ("русский"). */
+export const nameOf = (code: string) => languageName(code, language);
+
+/** The same at the start of a label ("Русский"). */
+export function titleOf(code: string): string {
+  const name = nameOf(code);
+  return name.charAt(0).toLocaleUpperCase(language) + name.slice(1);
 }

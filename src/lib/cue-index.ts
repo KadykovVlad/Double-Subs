@@ -25,27 +25,27 @@ export function activeCueIndex(cues: Cue[], time: number): number {
 }
 
 export interface LineTexts {
-  en: string | null;
-  ru: string | null;
+  learn: string | null;
+  native: string | null;
 }
 
 /**
- * Texts of both lines at a moment. While an English cue is on screen, the Russian line shows the
- * cue paired with it, so both lines change together even when the tracks' timings differ. Between
- * English cues the Russian line follows its own timing.
+ * Texts of both lines at a moment. While a cue of the learning line is on screen, the native line
+ * shows the cue paired with it, so both lines change together even when the tracks' timings differ.
+ * Between those cues the native line follows its own timing.
  */
 export function createLineResolver(lines: SubtitleLines): (time: number) => LineTexts {
-  const en = lines.en ?? [];
-  const ru = lines.ru ?? [];
-  const pairs = en.length > 0 && ru.length > 0 ? alignByTime(en, ru) : null;
-  const ruAt = (time: number) => {
-    const i = activeCueIndex(ru, time);
-    return i >= 0 ? ru[i]!.text : null;
+  const learn = lines.learn ?? [];
+  const native = lines.native ?? [];
+  const pairs = learn.length > 0 && native.length > 0 ? alignByTime(learn, native) : null;
+  const nativeAt = (time: number) => {
+    const i = activeCueIndex(native, time);
+    return i >= 0 ? native[i]!.text : null;
   };
 
   return (time) => {
-    const i = activeCueIndex(en, time);
-    if (i < 0) return { en: null, ru: ruAt(time) };
-    return { en: en[i]!.text, ru: pairs?.[i]?.secondary?.text ?? ruAt(time) };
+    const i = activeCueIndex(learn, time);
+    if (i < 0) return { learn: null, native: nativeAt(time) };
+    return { learn: learn[i]!.text, native: pairs?.[i]?.secondary?.text ?? nativeAt(time) };
   };
 }

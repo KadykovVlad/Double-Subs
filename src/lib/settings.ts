@@ -1,7 +1,12 @@
+import { DEFAULT_PAIR, normalizePair, SUBTITLE_LANGUAGES, type LanguagePair } from './languages';
+
 export interface Settings {
   /** Show the dual subtitles. */
   enabled: boolean;
-  /** Font size of the learning line (EN), in px. */
+  /** The language the user learns (the upper line) and their own one (the lower line); codes of SUBTITLE_LANGUAGES. */
+  learnLang: string;
+  nativeLang: string;
+  /** Font size of the learning line, in px. */
   fontSize: number;
   /** Distance of the lines from the bottom of the video, in % of its height. */
   bottomOffset: number;
@@ -13,16 +18,18 @@ export interface Settings {
   speakWords: boolean;
   /** Shift of the subtitle bar from the centre, in % of the video width (the bar can be dragged). */
   offsetX: number;
-  /** Font size of the native-language line (RU), in px. */
+  /** Font size of the native-language line, in px. */
   translationSize: number;
   /** Width of the bar, in % of the video width. */
   barWidth: number;
   /** How opaque the glass is (0.2 = almost clear, 1 = solid). */
   barOpacity: number;
-  /** Names of the system voices for English and Russian words; '' = the system's choice. */
+  /** Names of the system voices for English and Russian words; '' = the system's choice (other languages always). */
   voiceEn: string;
   voiceRu: string;
-  /** Text colours of the learning line (EN) and the native-language line (RU), '#rrggbb'. */
+  /** The same for every other language, by its code ('ko': 'Yuna'); a missing code is the system's choice. */
+  voicesOther: Record<string, string>;
+  /** Text colours of the learning line and the native-language line (the names are from when they were EN and RU), '#rrggbb'. */
   colorEn: string;
   colorRu: string;
   /** Typeface of the lines, key of FONT_FAMILIES. */
@@ -78,6 +85,8 @@ export const GLASS_TINTS = ['#484850', '#1c1c22', '#3a4a66', '#4a3a66', '#3d5a47
 
 export const DEFAULT_SETTINGS: Settings = {
   enabled: true,
+  learnLang: DEFAULT_PAIR.learn,
+  nativeLang: DEFAULT_PAIR.native,
   fontSize: 22,
   bottomOffset: 10,
   hoverTranslate: true,
@@ -89,6 +98,7 @@ export const DEFAULT_SETTINGS: Settings = {
   barOpacity: 0.5,
   voiceEn: '',
   voiceRu: '',
+  voicesOther: {},
   colorEn: '#ffffff',
   colorRu: '#e3e3e8',
   fontFamily: 'system',
@@ -125,13 +135,47 @@ const clamp = (value: unknown, range: { min: number; max: number }, fallback: nu
     ? Math.round(Math.min(range.max, Math.max(range.min, value)) * 100) / 100
     : fallback;
 
+const MAX_VOICE_NAME = 200;
+
+/** Only known language codes with plain voice names are kept. */
+function normalizeVoices(raw: unknown): Record<string, string> {
+  const result: Record<string, string> = {};
+  if (typeof raw !== 'object' || raw === null) return result;
+  for (const [code, name] of Object.entries(raw)) {
+    if (
+      (SUBTITLE_LANGUAGES as readonly string[]).includes(code) &&
+      typeof name === 'string' &&
+      name.length <= MAX_VOICE_NAME
+    )
+      result[code] = name;
+  }
+  return result;
+}
+
+/** The voice saved for a language; '' is the system's choice. */
+export function voiceFor(settings: Settings, lang: string): string {
+  if (lang === 'en') return settings.voiceEn;
+  if (lang === 'ru') return settings.voiceRu;
+  return settings.voicesOther[lang] ?? '';
+}
+
+/** The change of settings that saves `name` as the voice of a language. */
+export function voicePatch(settings: Settings, lang: string, name: string): Partial<Settings> {
+  if (lang === 'en') return { voiceEn: name };
+  if (lang === 'ru') return { voiceRu: name };
+  return { voicesOther: { ...settings.voicesOther, [lang]: name } };
+}
+
 /** Settings from storage may be missing, partial or from an older version. */
 export function normalizeSettings(raw: unknown): Settings {
   const value = (typeof raw === 'object' && raw !== null ? raw : {}) as Partial<
     Record<keyof Settings, unknown>
   >;
+  const pair = normalizePair(value.learnLang, value.nativeLang);
   return {
     enabled: typeof value.enabled === 'boolean' ? value.enabled : DEFAULT_SETTINGS.enabled,
+    learnLang: pair.learn,
+    nativeLang: pair.native,
     fontSize: clamp(value.fontSize, FONT_SIZE, DEFAULT_SETTINGS.fontSize),
     bottomOffset: clamp(value.bottomOffset, BOTTOM_OFFSET, DEFAULT_SETTINGS.bottomOffset),
     hoverTranslate:
@@ -152,6 +196,7 @@ export function normalizeSettings(raw: unknown): Settings {
     barOpacity: clamp(value.barOpacity, BAR_OPACITY, DEFAULT_SETTINGS.barOpacity),
     voiceEn: typeof value.voiceEn === 'string' ? value.voiceEn : DEFAULT_SETTINGS.voiceEn,
     voiceRu: typeof value.voiceRu === 'string' ? value.voiceRu : DEFAULT_SETTINGS.voiceRu,
+    voicesOther: normalizeVoices(value.voicesOther),
     colorEn: color(value.colorEn, DEFAULT_SETTINGS.colorEn),
     colorRu: color(value.colorRu, DEFAULT_SETTINGS.colorRu),
     fontFamily: oneOf(value.fontFamily, FONT_FAMILIES, DEFAULT_SETTINGS.fontFamily),
@@ -166,6 +211,12 @@ export function normalizeSettings(raw: unknown): Settings {
       typeof value.keepHistory === 'boolean' ? value.keepHistory : DEFAULT_SETTINGS.keepHistory,
   };
 }
+
+/** The pair of subtitle languages the settings name. */
+export const pairOf = (settings: Settings): LanguagePair => ({
+  learn: settings.learnLang,
+  native: settings.nativeLang,
+});
 
 const KEY = 'settings';
 

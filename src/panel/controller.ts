@@ -1,5 +1,11 @@
 import type { AgentRequest, FrameScan, FrameTranslatorProbe, IframeInfo } from '../lib/messages';
-import { originPattern, summarizeScans, type FrameScanResult, type ScanSummary } from '../lib/scan';
+import {
+  needsAccess,
+  originPattern,
+  summarizeScans,
+  type FrameScanResult,
+  type ScanSummary,
+} from '../lib/scan';
 import type { TranslationStatus } from '../lib/translation-messages';
 import type { VideoReport } from '../lib/types';
 import { t } from '../lib/i18n';
@@ -132,18 +138,20 @@ async function startPickInFrames(tabId: number, summary: ScanSummary): Promise<v
  * a visible cross-origin iframe we cannot reach → ask for access to its origin.
  * `passive` only reports the current selection (used when the agent says a pick finished).
  */
-export async function detect(
-  tabId: number,
-  options: { forcePick?: boolean; passive?: boolean; noPick?: boolean } = {},
-): Promise<PopupState> {
+export async function detect(tabId: number, options: DetectOptions = {}): Promise<PopupState> {
   const [state, pageUrl] = await Promise.all([detectState(tabId, options), pageUrlOf(tabId)]);
   return { ...state, pageUrl };
 }
 
-async function detectState(
-  tabId: number,
-  options: { forcePick?: boolean; passive?: boolean; noPick?: boolean },
-): Promise<DetectedState> {
+/** `afterGrant`: the user has just given access to a player's site (see needsAccess). */
+type DetectOptions = {
+  forcePick?: boolean;
+  passive?: boolean;
+  noPick?: boolean;
+  afterGrant?: boolean;
+};
+
+async function detectState(tabId: number, options: DetectOptions): Promise<DetectedState> {
   let injection: Awaited<ReturnType<typeof injectAgent>>;
   try {
     injection = await injectAgent(tabId);
@@ -174,7 +182,7 @@ async function detectState(
     // Status refresh only: never select or start pick mode on our own.
     return { kind: 'nothing', diagnostics };
   }
-  if (summary.unreached.length > 0) {
+  if (needsAccess(summary, options.afterGrant === true)) {
     return {
       kind: 'needsPermission',
       iframes: summary.unreached,

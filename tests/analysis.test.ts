@@ -198,7 +198,7 @@ describe('player 1 (four tracks)', () => {
   });
 
   it('is case A: English full and Russian full, forced and SDH are not used', () => {
-    expect(result.decision).toEqual({ case: 'A', en: 2, ru: 1, translateFrom: null });
+    expect(result.decision).toEqual({ case: 'A', learn: 2, native: 1, translateFrom: null });
   });
 
   it('strips sound descriptions from the SDH track', () => {
@@ -216,7 +216,7 @@ describe('player 2 (one forced track)', () => {
   it('is case C: forced subtitles are not subtitles', () => {
     const result = analyzeTracks(tracks, { durationSec: EPISODE_SEC });
     expect(result.tracks[0]).toMatchObject({ lang: 'ru', type: 'forced' });
-    expect(result.decision).toEqual({ case: 'C', en: null, ru: null, translateFrom: null });
+    expect(result.decision).toEqual({ case: 'C', learn: null, native: null, translateFrom: null });
   });
 
   it('is case C even when the duration is unknown, because of the label', () => {
@@ -236,7 +236,12 @@ describe('forced detection', () => {
       { durationSec: null },
     );
     expect(result.tracks.map((t) => t.type)).toEqual(['forced', 'full']);
-    expect(result.decision).toMatchObject({ case: 'B', en: 1, ru: null, translateFrom: 'en' });
+    expect(result.decision).toMatchObject({
+      case: 'B',
+      learn: 1,
+      native: null,
+      translateFrom: 'learn',
+    });
   });
 
   it('uses cues per minute when a long video has a single short track', () => {
@@ -252,7 +257,7 @@ describe('forced detection', () => {
       durationSec: 120,
     });
     expect(result.tracks[0]!.type).toBe('full');
-    expect(result.decision).toMatchObject({ case: 'B', translateFrom: 'en' });
+    expect(result.decision).toMatchObject({ case: 'B', translateFrom: 'learn' });
   });
 
   it('does not judge by length when nothing can be compared and the duration is unknown', () => {
@@ -274,14 +279,14 @@ describe('decision', () => {
       ],
       { durationSec: EPISODE_SEC },
     );
-    expect(result.decision).toEqual({ case: 'B', en: 1, ru: null, translateFrom: 'en' });
+    expect(result.decision).toEqual({ case: 'B', learn: 1, native: null, translateFrom: 'learn' });
   });
 
   it('case B: only Russian, translate Russian into English', () => {
     const result = analyzeTracks([{ label: 'Русский', cues: makeCues(RU_LINES, EPISODE_CUES) }], {
       durationSec: EPISODE_SEC,
     });
-    expect(result.decision).toEqual({ case: 'B', en: null, ru: 0, translateFrom: 'ru' });
+    expect(result.decision).toEqual({ case: 'B', learn: null, native: 0, translateFrom: 'native' });
   });
 
   it('uses an SDH track when it is the only one for the language', () => {
@@ -292,7 +297,7 @@ describe('decision', () => {
       },
     );
     expect(result.tracks[0]!.type).toBe('sdh');
-    expect(result.decision).toMatchObject({ case: 'B', en: 0, translateFrom: 'en' });
+    expect(result.decision).toMatchObject({ case: 'B', learn: 0, translateFrom: 'learn' });
   });
 
   it('detects SDH by content when the label says nothing', () => {
@@ -319,7 +324,7 @@ describe('decision', () => {
       ],
       { durationSec: EPISODE_SEC },
     );
-    expect(result.decision.en).toBe(1);
+    expect(result.decision.learn).toBe(1);
   });
 
   it('ignores empty tracks and languages other than English and Russian', () => {
@@ -340,8 +345,8 @@ describe('decision', () => {
   it('case C when there are no tracks at all', () => {
     expect(analyzeTracks([], { durationSec: null }).decision).toEqual({
       case: 'C',
-      en: null,
-      ru: null,
+      learn: null,
+      native: null,
       translateFrom: null,
     });
   });

@@ -1,3 +1,4 @@
+import { SUBTITLE_LANGUAGES } from './languages';
 import type { WordLang } from './words';
 
 /** Page → background: say a word aloud with the system voice. */
@@ -9,8 +10,9 @@ export interface SpeakMessage {
   voice?: string;
 }
 
-/** BCP 47 tags the system voices are looked up by. */
-export const VOICE_LANG: Record<WordLang, string> = { en: 'en-US', ru: 'ru-RU' };
+/** BCP 47 tags the system voices are looked up by (a plain code lets the system pick the region). */
+const VOICE_REGION: Record<string, string> = { en: 'en-US', ru: 'ru-RU' };
+export const voiceLang = (lang: WordLang) => VOICE_REGION[lang] ?? lang;
 
 /** A little slower than normal speech: single words are easier to catch. */
 export const SPEECH_RATE = 0.9;
@@ -38,7 +40,8 @@ export function isValidSpeakMessage(message: unknown): message is SpeakMessage {
     typeof m.text === 'string' &&
     m.text.length > 0 &&
     m.text.length <= MAX_SPOKEN_CHARS &&
-    (m.lang === 'en' || m.lang === 'ru') &&
+    typeof m.lang === 'string' &&
+    (SUBTITLE_LANGUAGES as readonly string[]).includes(m.lang) &&
     (m.voice === undefined || (typeof m.voice === 'string' && m.voice.length <= MAX_VOICE_NAME))
   );
 }

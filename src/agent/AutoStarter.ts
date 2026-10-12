@@ -141,7 +141,7 @@ export class AutoStarter {
     this.busy = true;
     try {
       const session = this.host.session;
-      if (session?.video.isConnected) return this.waitForSubtitles(session);
+      if (session?.video.isConnected && !session.leftBehind) return this.waitForSubtitles(session);
       if (Date.now() < this.retryAt) return;
       // Walking the whole page is costly: do it often only when a <video> is plainly there, otherwise
       // (shadow DOM players) every few ticks.

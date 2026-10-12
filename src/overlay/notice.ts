@@ -23,6 +23,8 @@ const STYLE = `
     transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s 0.18s;
   }
   .chip.on { opacity: 1; visibility: visible; transform: none; transition: opacity 0.18s ease, transform 0.18s ease; }
+  .box.bottom .chip { top: auto; bottom: 12px; right: auto; left: 50%; transform: translate(-50%, 6px); }
+  .box.bottom .chip.on { transform: translate(-50%, 0); }
   .mark { flex: none; width: 20px; height: 20px; }
   .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #7d92ff; box-shadow: 0 0 0 3px rgba(125, 146, 255, 0.25); }
   .dot.ok { background: #46c98b; box-shadow: 0 0 0 3px rgba(70, 201, 139, 0.25); }
@@ -34,10 +36,11 @@ const MARK = `<svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect wid
 
 /**
  * A small chip in the corner of the video that says what Double Sub found and does ("Subtitles found
- * · EN + RU", translation progress). It never takes the mouse, so the player stays usable, and in
+ * · EN + RU", translation progress); `bottom`: at the bottom centre instead (a Short has YouTube's
+ * buttons in its top corner). It never takes the mouse, so the player stays usable, and in
  * fullscreen it moves into the fullscreen element like the subtitle bar does.
  */
-export function createNotice(video: HTMLVideoElement): Notice {
+export function createNotice(video: HTMLVideoElement, options: { bottom?: boolean } = {}): Notice {
   const host = document.createElement('double-sub-notice');
   host.style.cssText =
     'all: initial; position: fixed; inset: 0; pointer-events: none; z-index: 2147483647;';
@@ -45,6 +48,7 @@ export function createNotice(video: HTMLVideoElement): Notice {
   root.innerHTML = `<style>${STYLE}</style>
     <div class="box"><div class="chip" role="status" aria-live="polite">${MARK}<span class="dot"></span><span class="text"></span></div></div>`;
   const box = root.querySelector<HTMLElement>('.box')!;
+  box.classList.toggle('bottom', options.bottom === true);
   const chip = root.querySelector<HTMLElement>('.chip')!;
   const dot = root.querySelector<HTMLElement>('.dot')!;
   const text = root.querySelector<HTMLElement>('.text')!;

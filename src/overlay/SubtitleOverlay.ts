@@ -46,8 +46,9 @@ export class SubtitleOverlay implements Overlay {
   private readonly root = this.host.attachShadow({ mode: 'open' });
   private readonly box: HTMLElement;
   private readonly bar: HTMLElement;
-  private readonly enEl: HTMLElement;
-  private readonly ruEl: HTMLElement;
+  /** The line of the language the user learns and of their own one (classes .en and .ru: the names from when they were EN and RU). */
+  private readonly learnEl: HTMLElement;
+  private readonly nativeEl: HTMLElement;
   private readonly soundBtn: HTMLButtonElement;
   private readonly playBtn: HTMLButtonElement;
   private readonly gearBtn: HTMLButtonElement;
@@ -64,7 +65,7 @@ export class SubtitleOverlay implements Overlay {
   private hideStyle: HTMLStyleElement | null = null;
   private readonly resizeObserver: ResizeObserver;
 
-  private shown: LineTexts = { en: null, ru: null };
+  private shown: LineTexts = { learn: null, native: null };
   /** Whether the lines on screen are made of hoverable words; a change of the setting redraws them. */
   private renderedAsWords: boolean;
   private clearTimer = 0;
@@ -89,8 +90,8 @@ export class SubtitleOverlay implements Overlay {
     const q = <T extends HTMLElement>(selector: string) => this.root.querySelector<T>(selector)!;
     this.box = q('.box');
     this.bar = q('.bar');
-    this.enEl = q('.en');
-    this.ruEl = q('.ru');
+    this.learnEl = q('.en');
+    this.nativeEl = q('.ru');
     this.soundBtn = q('.sound');
     this.playBtn = q('.play');
     this.gearBtn = q('.gear');
@@ -192,7 +193,7 @@ export class SubtitleOverlay implements Overlay {
           <div class="edge l" data-edge="l" ${label('bar_width')}></div><div class="edge r" data-edge="r" ${label('bar_width')}></div><div class="edge t" data-edge="t" ${label('bar_text_size')}></div>
           <button class="close" type="button" aria-label="${h('bar_close')}" ${label('bar_close')} data-testid="close">${ICONS.close}</button>
           <div class="grip" ${label('bar_drag')} data-testid="grip">${ICONS.grip}</div>
-          <div class="text"><div class="line en" hidden></div><div class="line ru" hidden></div></div>
+          <div class="text"><div class="line en" dir="auto" hidden></div><div class="line ru" dir="auto" hidden></div></div>
           <div class="divider"></div>
           <div class="controls">
             <button class="ctl sound" type="button" aria-label="${h('bar_sound')}" ${label('bar_sound')}></button>
@@ -324,10 +325,11 @@ export class SubtitleOverlay implements Overlay {
     this.applyLook();
 
     // Off: only the round button that brings the subtitles back, above the player's own controls.
-    this.restoreBtn.hidden = settings.enabled;
+    this.restoreBtn.hidden = settings.enabled || Boolean(this.options.noRestoreButton);
     bar.style.display = settings.enabled ? '' : 'none';
     if (!settings.enabled) {
-      this.panel.close();
+      // Only when open: closing reports a change, which asks for another layout (every frame, forever).
+      if (this.panel.isOpen) this.panel.close();
       this.restoreBtn.style.bottom = `${(settings.bottomOffset / 100) * rect.height}px`;
       return;
     }
@@ -370,8 +372,9 @@ export class SubtitleOverlay implements Overlay {
 
   // ---------------------------------------------------------------- lines
 
-  private showLine(el: HTMLElement, text: string | null, lang: 'en' | 'ru'): void {
+  private showLine(el: HTMLElement, text: string | null, lang: string): void {
     el.hidden = !text;
+    el.lang = lang; // the right letter shapes and fonts (Chinese, Japanese), and the direction of Arabic and Hebrew
     if (text && this.wordsUi && this.settings.hoverTranslate)
       this.wordsUi.renderLine(el, text, lang);
     else el.textContent = text ?? '';
@@ -384,15 +387,16 @@ export class SubtitleOverlay implements Overlay {
       force = true;
     }
     const next = this.resolve(this.video.currentTime);
-    const empty = !next.en && !next.ru;
+    const empty = !next.learn && !next.native;
     if (!empty) {
       clearTimeout(this.clearTimer);
       this.clearTimer = 0;
-      if (force || next.en !== this.shown.en || next.ru !== this.shown.ru) this.dirty = true;
-      if (force || next.en !== this.shown.en) this.showLine(this.enEl, next.en, 'en');
-      if (force || next.ru !== this.shown.ru) this.showLine(this.ruEl, next.ru, 'ru');
+      const changed = (role: 'learn' | 'native') => force || next[role] !== this.shown[role];
+      if (changed('learn') || changed('native')) this.dirty = true;
+      if (changed('learn')) this.showLine(this.learnEl, next.learn, this.settings.learnLang);
+      if (changed('native')) this.showLine(this.nativeEl, next.native, this.settings.nativeLang);
       this.shown = next;
-    } else if (this.shown.en || this.shown.ru) {
+    } else if (this.shown.learn || this.shown.native) {
       if (force) this.clearLines();
       else if (!this.clearTimer)
         this.clearTimer = window.setTimeout(() => this.clearLines(), CLEAR_AFTER_MS);
@@ -403,9 +407,9 @@ export class SubtitleOverlay implements Overlay {
 
   private clearLines(): void {
     this.clearTimer = 0;
-    this.showLine(this.enEl, null, 'en');
-    this.showLine(this.ruEl, null, 'ru');
-    this.shown = { en: null, ru: null };
+    this.showLine(this.learnEl, null, this.settings.learnLang);
+    this.showLine(this.nativeEl, null, this.settings.nativeLang);
+    this.shown = { learn: null, native: null };
     this.dirty = true;
   }
 

@@ -1,12 +1,15 @@
 import { toTranslatorText } from './polish';
 import { TranslationError } from './session';
 import type { Direction, ModelAvailability } from '../lib/translation-messages';
-import type { TranslatorInstance, TranslatorOptions, TranslatorStatic } from '../lib/translator';
+import {
+  translatorOptions,
+  type TranslatorInstance,
+  type TranslatorOptions,
+  type TranslatorStatic,
+} from '../lib/translator';
 
-const OPTIONS: Record<Direction, TranslatorOptions> = {
-  'en-ru': { sourceLanguage: 'en', targetLanguage: 'ru' },
-  'ru-en': { sourceLanguage: 'ru', targetLanguage: 'en' },
-};
+/** Only valid directions reach the pool (isValidTranslationRequest); anything else counts as unavailable. */
+const optionsOf = (direction: Direction): TranslatorOptions | null => translatorOptions(direction);
 
 /**
  * Translators of the built-in API, one per direction, created on first use. Lives in the offscreen
@@ -24,10 +27,9 @@ export class TranslatorPool {
 
   async availability(direction: Direction): Promise<ModelAvailability> {
     const api = await this.getApi();
-    if (!api) return 'unavailable';
-    const availability = await api
-      .availability(OPTIONS[direction])
-      .catch(() => 'unavailable' as const);
+    const options = optionsOf(direction);
+    if (!api || !options) return 'unavailable';
+    const availability = await api.availability(options).catch(() => 'unavailable' as const);
     if (availability === 'available') return 'available';
     return availability === 'unavailable' ? 'unavailable' : 'needs-model';
   }
@@ -40,7 +42,7 @@ export class TranslatorPool {
     const existing = this.instances.get(direction);
     if (existing?.api === api) return existing.translator;
 
-    const translator = api.create(OPTIONS[direction]);
+    const translator = api.create(optionsOf(direction)!);
     this.instances.set(direction, { api, translator });
     translator.catch(() => this.instances.delete(direction));
     return translator;

@@ -1,5 +1,5 @@
-import { loadSettings } from '../lib/settings';
-import { isValidSpeakMessage, SPEECH_RATE, VOICE_LANG, type SpeakMessage } from '../lib/speech';
+import { loadSettings, voiceFor } from '../lib/settings';
+import { isValidSpeakMessage, SPEECH_RATE, voiceLang, type SpeakMessage } from '../lib/speech';
 import { chooseVoice, loadVoices } from '../lib/voices';
 
 /** Says a hovered word aloud with a system voice (chrome.tts). A new word cuts off the one being spoken. */
@@ -24,7 +24,7 @@ export class SpeechService {
       return;
     }
     await browser.tts.speak(message.text, {
-      lang: VOICE_LANG[message.lang],
+      lang: voiceLang(message.lang),
       rate: SPEECH_RATE,
       enqueue: false,
       ...(voiceName ? { voiceName } : {}),
@@ -33,6 +33,6 @@ export class SpeechService {
 
   private async savedVoice(lang: SpeakMessage['lang']): Promise<string> {
     const settings = await loadSettings();
-    return lang === 'en' ? settings.voiceEn : settings.voiceRu;
+    return voiceFor(settings, lang);
   }
 }

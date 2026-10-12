@@ -36,26 +36,32 @@ describe('activeCueIndex', () => {
 describe('createLineResolver', () => {
   const en = [cue(1, 3, 'Hello'), cue(4, 6.5, 'Tonight'), cue(10, 12, 'Only English')];
   const ru = [cue(1.1, 3.1, 'Привет'), cue(4.1, 6.4, 'Сегодня'), cue(7, 8, 'Только русский')];
-  const resolve = createLineResolver({ en, ru });
+  const resolve = createLineResolver({ learn: en, native: ru });
 
   it('shows the Russian cue paired with the English one, so both change together', () => {
     // At 1.0 s the Russian cue has not started yet (1.1 s), but its English pair is on screen.
-    expect(resolve(1.0)).toEqual({ en: 'Hello', ru: 'Привет' });
+    expect(resolve(1.0)).toEqual({ learn: 'Hello', native: 'Привет' });
     // At 6.45 s the Russian cue has already ended (6.4 s), the English one is still on.
-    expect(resolve(6.45)).toEqual({ en: 'Tonight', ru: 'Сегодня' });
+    expect(resolve(6.45)).toEqual({ learn: 'Tonight', native: 'Сегодня' });
   });
 
   it('between English cues the Russian line follows its own timing', () => {
-    expect(resolve(7.5)).toEqual({ en: null, ru: 'Только русский' });
-    expect(resolve(9)).toEqual({ en: null, ru: null });
+    expect(resolve(7.5)).toEqual({ learn: null, native: 'Только русский' });
+    expect(resolve(9)).toEqual({ learn: null, native: null });
   });
 
   it('an English cue without a Russian pair shows nothing below', () => {
-    expect(resolve(11)).toEqual({ en: 'Only English', ru: null });
+    expect(resolve(11)).toEqual({ learn: 'Only English', native: null });
   });
 
   it('works with a single line (case B before translation)', () => {
-    expect(createLineResolver({ en, ru: null })(5)).toEqual({ en: 'Tonight', ru: null });
-    expect(createLineResolver({ en: null, ru })(5)).toEqual({ en: null, ru: 'Сегодня' });
+    expect(createLineResolver({ learn: en, native: null })(5)).toEqual({
+      learn: 'Tonight',
+      native: null,
+    });
+    expect(createLineResolver({ learn: null, native: ru })(5)).toEqual({
+      learn: null,
+      native: 'Сегодня',
+    });
   });
 });

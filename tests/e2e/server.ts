@@ -14,7 +14,7 @@ const CONTENT_TYPES: Record<string, string> = {
 
 /**
  * Fake YouTube /api/timedtext: without the player's `pot` token the body is empty, like on YouTube.
- * `tlang` stands for YouTube's machine translation; the fake only knows English and Russian.
+ * `tlang` stands for YouTube's machine translation; the fake knows English, Russian and German.
  */
 const flakyRuns = new Map<string, number>();
 
@@ -37,14 +37,17 @@ async function fakeTimedtext(params: URLSearchParams, res: ServerResponse): Prom
     return;
   }
   // The player's first request after a load: no token yet, but its client parameters, and YouTube answers it.
-  const playerWithoutToken = !params.get('pot') && params.get('c') === 'WEB';
+  // Its machine translation needs the token, though: without it the answer is empty.
+  const playerWithoutToken =
+    !params.get('pot') && params.get('c') === 'WEB' && !params.get('tlang');
   if (params.get('pot') !== 'SECRET' && !playerWithoutToken) {
     res.end('');
     return;
   }
   const lang = params.get('tlang') ?? params.get('lang');
   const asr = params.get('kind') === 'asr' && !params.get('tlang');
-  const file = lang === 'ru' ? 'ru.json' : asr ? 'en-asr.json' : 'en.json';
+  const file =
+    lang === 'ru' ? 'ru.json' : lang === 'de' ? 'de.json' : asr ? 'en-asr.json' : 'en.json';
   res.end(await readFile(join(FIXTURES, 'timedtext', file)));
 }
 
@@ -68,6 +71,8 @@ export async function startFixtureServer(
       return fakeTimedtext(requestUrl.searchParams, res);
     let pathname = requestUrl.pathname;
     if (pathname === '/') pathname = '/index.html';
+    // A YouTube Short lives at /shorts/<id>, a video at /watch?v=<id>: one fake page serves them all.
+    if (pathname.startsWith('/shorts/') || pathname === '/watch') pathname = '/fake-shorts.html';
     const file = join(FIXTURES, normalize(pathname).replace(/^(\.\.[/\\])+/, ''));
     try {
       let body = await readFile(file);

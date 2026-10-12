@@ -65,7 +65,7 @@ test('English only: the Russian line is translated, then the same subtitles come
   await expect(en).toHaveText('Hello, Dexter.');
   await expect(ru).toHaveText('Привет, Декстер.'); // the stand-in answers in lower case; polish capitalises
   await expect(badge).toHaveText('Перевод на русский готов');
-  await expect(popup.getByTestId('translation')).toContainText('Русская строка: перевод Chrome.');
+  await expect(popup.getByTestId('translation')).toContainText('Русский: перевод Chrome.');
   await expect(badge).toBeHidden({ timeout: 8000 }); // a finished translation leaves the badge after a few seconds
 
   // All three cues were translated, not only the visible one.
@@ -94,7 +94,7 @@ test('without the language model: one line, a note on the video and a download b
   await expect(badge).toContainText('Нужна модель перевода');
   await expect(popup.getByTestId('translation')).toHaveAttribute('data-state', 'needs-model');
   await expect(popup.getByTestId('download-model')).toBeVisible();
-  await expect(popup.getByTestId('decision')).toContainText('английские переведём');
+  await expect(popup.getByTestId('decision')).toContainText('перевод на английский сделаем сами');
 });
 
 test('Russian only: the English line is translated', async () => {
@@ -103,7 +103,7 @@ test('Russian only: the English line is translated', async () => {
   await seekTo(page, 'video', 1.5);
   const popup = await openPopupFor(session, page);
 
-  await expect(popup.getByTestId('translation')).toContainText('Английская строка: перевод Chrome');
+  await expect(popup.getByTestId('translation')).toContainText('Английский: перевод Chrome');
   await expect(overlay(page).ru).toHaveText('Привет, Декстер.');
   await expect(overlay(page).en).toHaveText('[ru] Привет, Декстер.'); // the stand-in marks what it was given
 });

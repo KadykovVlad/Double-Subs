@@ -6,10 +6,19 @@
   a CC button, and a player that requests /api/timedtext with a `pot` token by itself soon after the
   video loads (CC on or off, like the real one). The user's own CC press makes one more request.
   The fixture server answers without `pot` with an empty body, like YouTube.
-  navigateTo(id) switches the video without reloading the page, like YouTube does.
+  navigateTo(id, ms) switches the video without reloading the page, like YouTube does; the player's
+  request for it comes `ms` later (default: as on load).
   ?foreign=1: another extension requests subtitles on load, without the token (the fake answers it).
   ?flaky=N: the first N subtitle requests of the extension get 503, like YouTube does at times.
-  ?silent=1: the player does not request subtitles by itself, only when the user presses CC.
+  ?silent=1: the player does not request subtitles by itself, only while CC is on.
+  ?autocc=1: CC is on from the start (the user's own YouTube setting), so the player requests them.
+  ?coldcc=N: clicks on CC in the first N ms are lost (the player is not ready yet).
+  ?lagaria=N: the CC button shows the new state N ms after the click; the request goes at once.
+  ?stale=1: the player's token is no good: YouTube answers its requests with an empty body.
+  YouTube's own captions show their text only while CC is on; CC stays as it is across videos.
+  window.setOptionCalls: what the player was told through its API (setOption).
+  window.ccClicks: every click on CC. window.nativeSeen: how many changes of the page left YouTube's
+  own captions visible once Double Sub had started reading the player (getPlayerResponse).
   ?dead=1: the player never requests subtitles: the token cannot be had.
   ?early=1: on load the player requests subtitles without the token, with its client parameters.
 -->
@@ -18,9 +27,7 @@
   <div
     class="ytp-caption-window-container"
     style="position: absolute; bottom: 10px; left: 0; right: 0; color: #fff"
-  >
-    YouTube's own captions
-  </div>
+  ></div>
   <button
     class="ytp-subtitles-button"
     aria-pressed="false"
@@ -69,7 +76,7 @@
   function playerRequest() {
     const first = tracks()[0];
     if (!first || params().get('dead')) return;
-    const url = `/api/timedtext?v=${videoId()}&lang=${first.lang}${first.kind ? '&kind=asr' : ''}&fmt=json3&pot=SECRET&c=WEB&cver=2.0`;
+    const url = `/api/timedtext?v=${videoId()}&lang=${first.lang}${first.kind ? '&kind=asr' : ''}&fmt=json3&pot=${params().get('stale') ? 'STALE' : 'SECRET'}&c=WEB&cver=2.0`;
     if (params().get('transport') === 'fetch') {
       void fetch(url).then((response) => response.text());
     } else {
@@ -78,9 +85,31 @@
       xhr.send();
     }
   }
+  // The player API: told to show a caption track, the player requests it at once, with its token.
+  window.setOptionCalls = [];
+  player.setOption = (module, option, value) => {
+    window.setOptionCalls.push({ module, option, value });
+    if (module !== 'captions' || option !== 'track') return;
+    const xhr = new XMLHttpRequest();
+    xhr.open(
+      'GET',
+      `/api/timedtext?v=${videoId()}&lang=${value.languageCode}${value.kind === 'asr' ? '&kind=asr' : ''}&fmt=json3&pot=SECRET&c=WEB&cver=2.0`,
+    );
+    xhr.send();
+  };
+
   // ?late=N: the player's request comes N ms after load, later than the extension waits for it.
   const delay = () => Number(params().get('late') ?? 100);
-  if (!params().get('silent')) setTimeout(playerRequest, delay());
+  const button = document.querySelector('.ytp-subtitles-button');
+  // The player's own state; the button shows it (?lagaria=N: N ms later, like YouTube at times).
+  let ccState = Boolean(params().get('autocc'));
+  const ccOn = () => ccState;
+  const native = document.querySelector('.ytp-caption-window-container');
+  const renderNative = () => (native.textContent = ccOn() ? "YouTube's own captions" : '');
+  button.setAttribute('aria-pressed', String(ccState));
+  renderNative();
+  const requestsByItself = () => !params().get('silent') || ccOn();
+  if (requestsByItself()) setTimeout(playerRequest, delay());
   if (params().get('early')) {
     const first = tracks()[0];
     if (first)
@@ -93,19 +122,44 @@
       response.text(),
     );
 
-  window.navigateTo = (id) => {
+  window.navigateTo = (id, ms = delay()) => {
     const next = params();
     next.set('v', id);
     history.pushState({}, '', `?${next}`);
-    document.querySelector('.ytp-subtitles-button').setAttribute('aria-pressed', 'false');
     document.dispatchEvent(new Event('yt-navigate-finish'));
-    if (!params().get('silent')) setTimeout(playerRequest, delay());
+    if (requestsByItself()) setTimeout(playerRequest, ms);
   };
 
-  document.querySelector('.ytp-subtitles-button').addEventListener('click', (event) => {
-    const button = event.currentTarget;
-    const on = button.getAttribute('aria-pressed') !== 'true';
-    button.setAttribute('aria-pressed', String(on));
+  window.ccClicks = 0;
+  window.nativeSeen = 0;
+  let reading = false;
+  const look = () => {
+    const shown = native.textContent.trim() !== '' && getComputedStyle(native).display !== 'none';
+    if (shown && reading) window.nativeSeen += 1;
+  };
+  const describe = player.getPlayerResponse;
+  player.getPlayerResponse = () => {
+    reading = window.dsReading = true;
+    look();
+    return describe();
+  };
+  // Every change that can show or hide them: their text, a style sheet added or removed.
+  new MutationObserver(look).observe(document, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+
+  button.addEventListener('click', () => {
+    window.ccClicks += 1;
+    // ?coldcc=N: for N ms after load the player is not ready and a click on CC is lost, as on YouTube.
+    if (performance.now() < Number(params().get('coldcc') ?? 0)) return;
+    const on = !ccOn();
+    ccState = on;
+    const lag = Number(params().get('lagaria') ?? 0);
+    if (lag) setTimeout(() => button.setAttribute('aria-pressed', String(on)), lag);
+    else button.setAttribute('aria-pressed', String(on));
+    renderNative();
     window.ccRequests = (window.ccRequests ?? 0) + (on ? 1 : 0);
     if (on) playerRequest();
   });

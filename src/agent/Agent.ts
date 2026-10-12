@@ -6,6 +6,7 @@ import { AutoStarter, type AutoHost } from './AutoStarter';
 import { isExtensionAlive, PanelLink } from './host';
 import { PageScanner } from './PageScanner';
 import { TranslatorProbeService } from './PrototypeProbe';
+import { pairOf } from '../lib/settings';
 import { UserData } from './UserData';
 import { VideoSession } from './VideoSession';
 import { WordService } from './WordService';
@@ -24,7 +25,7 @@ export class Agent implements AutoHost {
 
   private readonly scanner = new PageScanner();
   private readonly data = new UserData();
-  private readonly words = new WordService();
+  private readonly words = new WordService(() => pairOf(this.data.settings));
   private readonly panel = new PanelLink();
   private auto: AutoStarter | null = null;
   private stopPick: (() => void) | null = null;

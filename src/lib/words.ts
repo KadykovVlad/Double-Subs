@@ -1,4 +1,5 @@
-export type WordLang = 'en' | 'ru';
+/** The language of a word: a base code ('en', 'de'…), the language of the line it is in. */
+export type WordLang = string;
 
 export interface TextPart {
   text: string;

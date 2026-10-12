@@ -1,0 +1,132 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Fake YouTube Shorts page</title>
+<!--
+  Mimics a Short as Double Sub meets it (served at /shorts/<id>, the id is in the path, not in ?v=):
+  - its own player, #shorts-player, with getPlayerResponse() and YouTube's caption window;
+  - its CC button above the video, outside the player (ytm-closed-captioning-button);
+  - the hidden watch player YouTube keeps in the page, describing another video, with its own CC
+    button (window.watchCcClicks counts the clicks on it: there must be none);
+  - while CC is on the player requests the subtitles by itself, with the token, also for the next
+    Short; window.navigateTo(id) scrolls to the next Short (same player, same <video>).
+  ?cc=off: CC starts off. window.ccClicks: clicks on the Short's CC button.
+  Served at /watch?v=<id> too: then the watch player is on screen (its CC on), the Shorts are hidden,
+  and window.goToShorts(id) goes to a Short without reloading, as YouTube does (the watch player and
+  its <video> stay in the page, hidden).
+-->
+<ytd-shorts style="display: block">
+  <ytd-reel-video-renderer>
+    <div
+      id="shorts-player"
+      class="html5-video-player"
+      style="position: relative; width: 360px; height: 640px; background: #000"
+    >
+      <video width="360" height="640" src="/clip.webm"></video>
+      <div
+        class="ytp-caption-window-container"
+        style="position: absolute; bottom: 60px; left: 0; right: 0; color: #fff"
+      ></div>
+    </div>
+    <ytd-shorts-player-controls>
+      <div id="right-controls">
+        <div id="closed-captioning-button-container">
+          <ytm-closed-captioning-button>
+            <button class="ytmClosedCaptioningButtonButton" aria-pressed="true">CC</button>
+          </ytm-closed-captioning-button>
+        </div>
+      </div>
+    </ytd-shorts-player-controls>
+  </ytd-reel-video-renderer>
+</ytd-shorts>
+<div
+  id="movie_player"
+  class="html5-video-player"
+  style="display: none; position: relative; width: 640px; height: 360px"
+>
+  <video width="640" height="360" src="/clip.webm"></video>
+  <button class="ytp-subtitles-button ytp-button" aria-pressed="false">CC</button>
+</div>
+<script>
+  const TRACKS = {
+    BOTH: [
+      { lang: 'en', kind: null, name: 'English' },
+      { lang: 'ru', kind: null, name: 'Русский' },
+    ],
+    ASR: [{ lang: 'en', kind: 'asr', name: 'English (auto-generated)' }],
+  };
+  const onWatch = () => location.pathname === '/watch';
+  const videoId = () =>
+    onWatch() ? new URLSearchParams(location.search).get('v') : location.pathname.split('/')[2];
+  const shorts = document.querySelector('ytd-shorts');
+  const watch = document.getElementById('movie_player');
+  if (onWatch()) {
+    shorts.style.display = 'none';
+    watch.style.display = 'block';
+    watch.querySelector('.ytp-subtitles-button').setAttribute('aria-pressed', 'true');
+  }
+  const tracks = () => TRACKS[videoId()] ?? [];
+  const describe = (id) => ({
+    videoDetails: { videoId: id },
+    captions: {
+      playerCaptionsTracklistRenderer: {
+        captionTracks: (TRACKS[id] ?? []).map((t) => ({
+          baseUrl: `${location.origin}/api/timedtext?v=${id}&lang=${t.lang}${t.kind ? '&kind=asr' : ''}&signature=sig`,
+          languageCode: t.lang,
+          ...(t.kind ? { kind: t.kind } : {}),
+          name: { simpleText: t.name },
+          isTranslatable: true,
+        })),
+      },
+    },
+  });
+  document.getElementById('shorts-player').getPlayerResponse = () => describe(videoId());
+  document.getElementById('movie_player').getPlayerResponse = () =>
+    describe(onWatch() ? videoId() : 'WATCH');
+
+  const button = document.querySelector('ytm-closed-captioning-button button');
+  const native = document.querySelector('#shorts-player .ytp-caption-window-container');
+  if (new URLSearchParams(location.search).get('cc') === 'off')
+    button.setAttribute('aria-pressed', 'false');
+  const ccOn = () => button.getAttribute('aria-pressed') === 'true';
+  const renderNative = () => (native.textContent = ccOn() ? "YouTube's own captions" : '');
+  renderNative();
+
+  function playerRequest() {
+    const first = tracks()[0];
+    if (!first) return;
+    const xhr = new XMLHttpRequest();
+    xhr.open(
+      'GET',
+      `/api/timedtext?v=${videoId()}&lang=${first.lang}${first.kind ? '&kind=asr' : ''}&fmt=json3&pot=SECRET&c=WEB&cver=2.0`,
+    );
+    xhr.send();
+  }
+  if (ccOn() || onWatch()) setTimeout(playerRequest, 100);
+
+  window.ccClicks = 0;
+  button.addEventListener('click', () => {
+    window.ccClicks += 1;
+    const on = !ccOn();
+    button.setAttribute('aria-pressed', String(on));
+    renderNative();
+    if (on) playerRequest();
+  });
+  window.watchCcClicks = 0;
+  document
+    .querySelector('#movie_player .ytp-subtitles-button')
+    .addEventListener('click', () => (window.watchCcClicks += 1));
+
+  window.goToShorts = (id) => {
+    history.pushState({}, '', `/shorts/${id}`);
+    watch.style.display = 'none';
+    shorts.style.display = 'block';
+    document.dispatchEvent(new Event('yt-navigate-finish'));
+    if (ccOn()) setTimeout(playerRequest, 100);
+  };
+
+  window.navigateTo = (id) => {
+    history.pushState({}, '', `/shorts/${id}${location.search}`);
+    document.dispatchEvent(new Event('yt-navigate-finish'));
+    if (ccOn()) setTimeout(playerRequest, 100);
+  };
+</script>

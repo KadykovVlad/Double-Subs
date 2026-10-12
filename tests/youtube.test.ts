@@ -97,19 +97,27 @@ describe('normalizeTracks', () => {
 describe('planTracks', () => {
   it('uses English and Russian subtitles made by people when both exist', () => {
     const plan = planTracks([track('ru'), track('en')]);
-    expect(plan.en).toMatchObject({ tlang: null, source: 'manual', track: { languageCode: 'en' } });
-    expect(plan.ru).toMatchObject({ tlang: null, source: 'manual', track: { languageCode: 'ru' } });
+    expect(plan.learn).toMatchObject({
+      tlang: null,
+      source: 'manual',
+      track: { languageCode: 'en' },
+    });
+    expect(plan.native).toMatchObject({
+      tlang: null,
+      source: 'manual',
+      track: { languageCode: 'ru' },
+    });
   });
 
   it('prefers subtitles made by people over automatic ones, any English variant counts', () => {
     const plan = planTracks([track('en', 'asr'), track('en-GB')]);
-    expect(plan.en).toMatchObject({ source: 'manual', track: { languageCode: 'en-GB' } });
+    expect(plan.learn).toMatchObject({ source: 'manual', track: { languageCode: 'en-GB' } });
   });
 
   it('only automatic English: Russian comes from YouTube translation of it', () => {
     const plan = planTracks([track('en', 'asr')]);
-    expect(plan.en).toMatchObject({ source: 'auto', tlang: null });
-    expect(plan.ru).toMatchObject({
+    expect(plan.learn).toMatchObject({ source: 'auto', tlang: null });
+    expect(plan.native).toMatchObject({
       source: 'youtube-translation',
       tlang: 'ru',
       track: { kind: 'asr' },
@@ -118,28 +126,50 @@ describe('planTracks', () => {
 
   it('only Russian: English comes from YouTube translation of it', () => {
     const plan = planTracks([track('ru')]);
-    expect(plan.en).toMatchObject({
+    expect(plan.learn).toMatchObject({
       source: 'youtube-translation',
       tlang: 'en',
       track: { languageCode: 'ru' },
     });
-    expect(plan.ru).toMatchObject({ source: 'manual' });
+    expect(plan.native).toMatchObject({ source: 'manual' });
   });
 
   it('another language: both lines are YouTube translations of it', () => {
     const plan = planTracks([track('es')]);
-    expect(plan.en).toMatchObject({ tlang: 'en', track: { languageCode: 'es' } });
-    expect(plan.ru).toMatchObject({ tlang: 'ru', track: { languageCode: 'es' } });
+    expect(plan.learn).toMatchObject({ tlang: 'en', track: { languageCode: 'es' } });
+    expect(plan.native).toMatchObject({ tlang: 'ru', track: { languageCode: 'es' } });
+  });
+
+  it('follows the chosen pair: German to learn, French as the own language', () => {
+    const pair = { learn: 'de', native: 'fr' };
+    // German by people, French only as YouTube's translation (of the German, the learnt language).
+    const plan = planTracks([track('en'), track('de-DE', 'asr'), track('de')], pair);
+    expect(plan.learn).toMatchObject({
+      source: 'manual',
+      tlang: null,
+      track: { languageCode: 'de' },
+    });
+    expect(plan.native).toMatchObject({
+      source: 'youtube-translation',
+      tlang: 'fr',
+      track: { languageCode: 'de' },
+    });
+  });
+
+  it("takes YouTube's old codes for the same language (iw is Hebrew)", () => {
+    const plan = planTracks([track('iw'), track('en')], { learn: 'he', native: 'en' });
+    expect(plan.learn).toMatchObject({ source: 'manual', track: { languageCode: 'iw' } });
+    expect(plan.native).toMatchObject({ source: 'manual', track: { languageCode: 'en' } });
   });
 
   it('cannot translate a track YouTube marks as not translatable', () => {
     const plan = planTracks([track('en', null, false)]);
-    expect(plan.en).toMatchObject({ source: 'manual' });
-    expect(plan.ru).toBeNull();
+    expect(plan.learn).toMatchObject({ source: 'manual' });
+    expect(plan.native).toBeNull();
   });
 
   it('nothing to show without tracks', () => {
-    expect(planTracks([])).toEqual({ en: null, ru: null });
+    expect(planTracks([])).toEqual({ learn: null, native: null });
   });
 });
 
@@ -202,7 +232,7 @@ describe('buildYouTubeReport', () => {
       { pick: pick('en', 'auto'), cues },
       { pick: pick('en', 'youtube-translation', 'ru'), cues },
     );
-    expect(report.decision).toEqual({ case: 'A', en: 0, ru: 1, translateFrom: null });
+    expect(report.decision).toEqual({ case: 'A', learn: 0, native: 1, translateFrom: null });
     expect(report.tracks.map((t) => t.label)).toEqual([
       'en (автосубтитры)',
       'en (автоперевод YouTube → ru)',
@@ -214,7 +244,7 @@ describe('buildYouTubeReport', () => {
       { pick: pick('en', 'manual'), cues },
       { pick: pick('en', 'youtube-translation', 'ru'), cues: null },
     );
-    expect(report.decision).toEqual({ case: 'B', en: 0, ru: null, translateFrom: 'en' });
+    expect(report.decision).toEqual({ case: 'B', learn: 0, native: null, translateFrom: 'learn' });
     expect(report.tracks[1]!.status).toBe('error');
   });
 
@@ -257,6 +287,40 @@ describe('TimedtextTemplates', () => {
     expect(templates.get('vid')).toBeNull();
   });
 
+  it("keeps the player's answer by video and track; the same request again tells nothing", () => {
+    const templates = new TimedtextTemplates();
+    const seen: string[] = [];
+    templates.onTemplate((id) => seen.push(id));
+    const track = (languageCode: string, kind: 'asr' | null = null) => ({
+      baseUrl: '',
+      languageCode,
+      kind,
+      name: '',
+      isTranslatable: true,
+    });
+    const pick = (
+      languageCode: string,
+      tlang: 'en' | 'ru' | null = null,
+      kind: 'asr' | null = null,
+    ) => ({ track: track(languageCode, kind), tlang, source: 'manual' }) as const;
+
+    expect(templates.offer(url('&pot=T&fmt=json3'), 'EN')).toBe(true);
+    expect(templates.offer(url('&pot=T&fmt=json3'), 'EN')).toBe(false);
+    expect(seen).toEqual(['vid']);
+    expect(templates.answer('vid', pick('en'))).toBe('EN');
+    expect(templates.answer('vid', pick('en', 'ru'))).toBeNull(); // the translation is another track
+    expect(templates.answer('vid', pick('en', null, 'asr'))).toBeNull();
+    expect(templates.answer('other', pick('en'))).toBeNull(); // never another video's
+    templates.offer(url('&pot=T&tlang=ru'), 'RU');
+    expect(templates.answer('vid', pick('en', 'ru'))).toBe('RU');
+
+    // Only the last few videos are kept.
+    for (const id of ['a', 'b', 'c', 'd'])
+      templates.offer(`https://www.youtube.com/api/timedtext?v=${id}&lang=en&c=WEB&cver=2`, id);
+    expect(templates.answer('vid', pick('en'))).toBeNull();
+    expect(templates.answer('d', pick('en'))).toBe('d');
+  });
+
   it("ignores other extensions' requests and tells about the player's", () => {
     const templates = new TimedtextTemplates();
     const seen: string[] = [];
@@ -271,8 +335,8 @@ describe('youtubeBlocked', () => {
   const report = (statuses: Array<'loaded' | 'error' | 'empty'>, mode = 'youtube') => ({
     decision: {
       case: statuses.includes('loaded') ? ('B' as const) : ('C' as const),
-      en: null,
-      ru: null,
+      learn: null,
+      native: null,
       translateFrom: null,
     },
     tracks: statuses.map((status) => ({

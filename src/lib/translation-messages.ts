@@ -1,4 +1,5 @@
 import type { Direction } from './offscreen-messages';
+import { translatorOptions } from './translator';
 
 export type { Direction };
 
@@ -51,7 +52,7 @@ export function isValidTranslationRequest(request: unknown): request is Translat
     Array.isArray(value) &&
     value.length <= max &&
     value.every((t) => typeof t === 'string' && t.length <= MAX_TEXT_CHARS);
-  const direction = r.direction === 'en-ru' || r.direction === 'ru-en';
+  const direction = typeof r.direction === 'string' && translatorOptions(r.direction) !== null;
   switch (r.type) {
     case 'availability':
       return direction;

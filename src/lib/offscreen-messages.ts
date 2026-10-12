@@ -1,6 +1,7 @@
 import type { TranslationRequest } from './translation-messages';
 
-export type Direction = 'en-ru' | 'ru-en';
+/** "en-ru": from English into Russian. The codes are those of SUBTITLE_LANGUAGES (none has a hyphen). */
+export type Direction = `${string}-${string}`;
 
 /** Extension page → offscreen document. Other contexts ignore messages with this target. */
 export type OffscreenRequest =

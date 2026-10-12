@@ -37,10 +37,13 @@ export interface VideoReport {
   decision: Decision;
 }
 
-/** The cues of the two lines to show; null when the language is not available (yet). */
+/**
+ * The cues of the two lines to show, by role: the language the user learns (the upper line) and
+ * their own language (the lower one); null when the language is not available (yet).
+ */
 export interface SubtitleLines {
-  en: Cue[] | null;
-  ru: Cue[] | null;
+  learn: Cue[] | null;
+  native: Cue[] | null;
 }
 
 /** What inspecting a video gives: the report for the popup and the cues for the overlay. */

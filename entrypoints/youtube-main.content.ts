@@ -4,10 +4,14 @@ import {
   MAIN_SOURCE,
   normalizeTracks,
   REQUEST_SOURCE,
+  shortsIdOf,
+  trackKeyOfUrl,
+  videoIdOf,
   type MainMessage,
   type RequestMessage,
   type YtCaptionTrack,
 } from '../src/lib/youtube';
+import { logTiming } from '../src/youtube/timing';
 
 const YOUTUBE = ['*://*.youtube.com/*'];
 // The e2e build also runs on the local fake YouTube page.
@@ -30,26 +34,51 @@ export default defineContentScript({
   main() {
     const post = (message: MainMessage) => window.postMessage(message, location.origin);
 
-    const captured = (url: string, body: string) => {
-      if (body)
-        post({
-          source: MAIN_SOURCE,
-          type: 'timedtext',
-          url: new URL(url, location.href).href,
-          body,
+    // Timing (see logTiming): the first request and the first answer with text, once per video.
+    const requested = new Set<string>();
+    const answered = new Set<string>();
+    const sent = (url: string) => {
+      post({ source: MAIN_SOURCE, type: 'timedtext-sent', url: new URL(url, location.href).href });
+      const videoId = videoIdOf(url);
+      if (videoId && !requested.has(videoId)) {
+        requested.add(videoId);
+        logTiming('first-request', { videoId, lang: trackKeyOfUrl(url) });
+      }
+      return performance.now();
+    };
+
+    const captured = (url: string, body: string, requestedAt: number) => {
+      if (!body) return;
+      const videoId = videoIdOf(url);
+      if (videoId && !answered.has(videoId)) {
+        answered.add(videoId);
+        logTiming('first-answer', {
+          videoId,
+          lang: trackKeyOfUrl(url),
+          bytes: body.length,
+          sinceRequestMs: Math.round(performance.now() - requestedAt),
         });
+      }
+      post({
+        source: MAIN_SOURCE,
+        type: 'timedtext',
+        url: new URL(url, location.href).href,
+        body,
+        requestedAt,
+      });
     };
 
     // fetch
     const originalFetch = window.fetch;
     window.fetch = async function (input, init) {
-      const response = await originalFetch.call(this, input, init);
       const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
-      if (isTimedtextUrl(url)) {
+      const requestedAt = isTimedtextUrl(url) ? sent(url) : 0;
+      const response = await originalFetch.call(this, input, init);
+      if (requestedAt) {
         response
           .clone()
           .text()
-          .then((body) => captured(url, body))
+          .then((body) => captured(url, body, requestedAt))
           .catch(() => {});
       }
       return response;
@@ -75,19 +104,29 @@ export default defineContentScript({
     ) {
       const url = urls.get(this);
       if (url && isTimedtextUrl(url)) {
+        const requestedAt = sent(url);
         this.addEventListener('load', () => {
           if (this.responseType === '' || this.responseType === 'text')
-            captured(url, this.responseText);
-          else if (this.responseType === 'json') captured(url, JSON.stringify(this.response));
+            captured(url, this.responseText, requestedAt);
+          else if (this.responseType === 'json')
+            captured(url, JSON.stringify(this.response), requestedAt);
         });
       }
       return originalSend.call(this, body);
     };
 
+    // Shorts have a player of their own; the watch player YouTube keeps in the page describes another video.
+    const currentPlayer = () =>
+      document.getElementById(shortsIdOf(location.pathname) ? 'shorts-player' : 'movie_player') as
+        | (HTMLElement & {
+            getPlayerResponse?: () => YtPlayerResponse;
+            setOption?: (module: string, option: string, value: unknown) => void;
+          })
+        | null;
+
     // Caption track list: asked for by the isolated world (on popup open and after navigation).
     const playerResponse = (): YtPlayerResponse | null => {
-      const player = document.getElementById('movie_player') as
-        (HTMLElement & { getPlayerResponse?: () => YtPlayerResponse }) | null;
+      const player = currentPlayer();
       return (
         player?.getPlayerResponse?.() ??
         (window as { ytInitialPlayerResponse?: YtPlayerResponse }).ytInitialPlayerResponse ??
@@ -128,6 +167,18 @@ export default defineContentScript({
           .catch(() =>
             post({ source: MAIN_SOURCE, type: 'fetched', id: request.id, status: 0, body: '' }),
           );
+        return;
+      }
+      if (request.type === 'load-track') {
+        // The player loads this track itself, with its token (its own captions are hidden by us).
+        try {
+          currentPlayer()?.setOption?.('captions', 'track', {
+            languageCode: request.languageCode,
+            ...(request.kind ? { kind: request.kind } : {}),
+          });
+        } catch {
+          // An older player without the option: the wait for its next request stays.
+        }
         return;
       }
       const response = playerResponse();

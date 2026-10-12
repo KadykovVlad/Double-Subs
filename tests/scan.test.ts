@@ -3,6 +3,7 @@ import type { FrameScan } from '../src/lib/messages';
 import {
   isSubtitleUrl,
   isVisibleBox,
+  needsAccess,
   originPattern,
   summarizeScans,
   toOrigin,
@@ -118,7 +119,7 @@ describe('summarizeScans', () => {
   it('remembers an earlier selection', () => {
     const report = {
       tracks: [],
-      decision: { case: 'C' as const, en: null, ru: null, translateFrom: null },
+      decision: { case: 'C' as const, learn: null, native: null, translateFrom: null },
     };
     const summary = summarizeScans([
       { frameId: 0, scan: scan({}) },
@@ -130,5 +131,36 @@ describe('summarizeScans', () => {
       report,
       translation: null,
     });
+  });
+});
+
+describe('needsAccess', () => {
+  // The player's frame was reached (its video is found), but another visible iframe is still out of reach.
+  const summary = summarizeScans([
+    {
+      frameId: 0,
+      scan: scan({ iframes: [iframe('https://player.dev'), iframe('https://ads.com')] }),
+    },
+    {
+      frameId: 3,
+      scan: scan({ isTop: false, origin: 'https://player.dev', videos: [video(0)] }),
+    },
+  ]);
+
+  it('asks while there is an iframe out of reach', () => {
+    expect(summary.unreached.map((i) => i.origin)).toEqual(['https://ads.com']);
+    expect(needsAccess(summary, false)).toBe(true);
+  });
+
+  it('does not ask again right after access was given, when a player is there to use', () => {
+    expect(needsAccess(summary, true)).toBe(false);
+  });
+
+  it('still asks after a grant when no player has been found', () => {
+    const none = summarizeScans([
+      { frameId: 0, scan: scan({ iframes: [iframe('https://p.dev')] }) },
+    ]);
+    expect(needsAccess(none, true)).toBe(true);
+    expect(needsAccess(summarizeScans([{ frameId: 0, scan: scan({}) }]), false)).toBe(false);
   });
 });

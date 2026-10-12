@@ -1,3 +1,6 @@
+import { baseLang, SUBTITLE_LANGUAGES } from './languages';
+import type { Direction } from './offscreen-messages';
+
 /**
  * Chrome's built-in on-device Translator API (Chrome 138+, desktop).
  * TypeScript has no types for it yet, so the part we use is declared here.
@@ -33,6 +36,23 @@ export function getTranslatorApi(scope: object = globalThis): TranslatorStatic |
 
 export const EN_RU: TranslatorOptions = { sourceLanguage: 'en', targetLanguage: 'ru' };
 export const RU_EN: TranslatorOptions = { sourceLanguage: 'ru', targetLanguage: 'en' };
+
+/** "en-ru" from two language codes. */
+export const directionOf = (from: string, to: string): Direction =>
+  `${baseLang(from)}-${baseLang(to)}`;
+
+/** The translator's options for a direction; null for anything but two different known languages. */
+export function translatorOptions(direction: string): TranslatorOptions | null {
+  const [sourceLanguage, targetLanguage, ...rest] = direction.split('-');
+  const known = (code: string | undefined): code is string =>
+    code !== undefined && (SUBTITLE_LANGUAGES as readonly string[]).includes(code);
+  return rest.length === 0 &&
+    known(sourceLanguage) &&
+    known(targetLanguage) &&
+    sourceLanguage !== targetLanguage
+    ? { sourceLanguage, targetLanguage }
+    : null;
+}
 
 // ---------------------------------------------------------------- probe
 

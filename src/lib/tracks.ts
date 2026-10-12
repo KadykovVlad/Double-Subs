@@ -1,3 +1,4 @@
+import { DEFAULT_PAIR, type LanguagePair } from './languages';
 import { analyzeTracks } from './analysis';
 import type { Cue, Inspection, TrackReport, TrackStatus } from './types';
 
@@ -174,6 +175,7 @@ export async function inspectVideo(
   video: HTMLVideoElement,
   extra?: ExtraSource,
   timeoutMs = 5000,
+  pair: LanguagePair = DEFAULT_PAIR,
 ): Promise<Inspection> {
   const loaded = await loadTracks(
     video,
@@ -182,7 +184,7 @@ export async function inspectVideo(
   );
   const durationSec = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : null;
 
-  let result = analyse(loaded, durationSec);
+  let result = analyse(loaded, durationSec, pair);
   if (extra && result.decision.case !== 'A') {
     const files = await extra().catch(() => []);
     if (files.length > 0) {
@@ -197,7 +199,7 @@ export async function inspectVideo(
           cues,
         })),
       ];
-      const better = analyse(withFiles, durationSec);
+      const better = analyse(withFiles, durationSec, pair);
       // Keep the plain tracks unless the files really add a language.
       if (better.decision.case < result.decision.case) result = better;
     }
@@ -205,10 +207,10 @@ export async function inspectVideo(
   return result.inspection;
 }
 
-function analyse(loaded: LoadedTrack[], durationSec: number | null) {
+function analyse(loaded: LoadedTrack[], durationSec: number | null, pair: LanguagePair) {
   const { tracks: analysis, decision } = analyzeTracks(
-    loaded.map(({ label, cues }) => ({ label, cues })),
-    { durationSec },
+    loaded.map(({ label, cues, language }) => ({ label, cues, declared: language })),
+    { durationSec, pair },
   );
   const report = {
     decision,
@@ -229,8 +231,8 @@ function analyse(loaded: LoadedTrack[], durationSec: number | null) {
   const inspection: Inspection = {
     report,
     lines: {
-      en: decision.en !== null ? analysis[decision.en]!.cues : null,
-      ru: decision.ru !== null ? analysis[decision.ru]!.cues : null,
+      learn: decision.learn !== null ? analysis[decision.learn]!.cues : null,
+      native: decision.native !== null ? analysis[decision.native]!.cues : null,
     },
   };
   return { decision, inspection };

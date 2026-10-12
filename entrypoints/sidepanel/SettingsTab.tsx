@@ -13,6 +13,8 @@ import {
   TEXT_COLORS,
   TEXT_EFFECTS,
   TRANSLATION_SIZE,
+  voiceFor,
+  voicePatch,
   type FontFamily,
   type TextEffect,
 } from '../../src/lib/settings';
@@ -26,6 +28,7 @@ import {
   voiceOptions,
   type VoiceOption,
 } from '../../src/lib/voices';
+import { sampleWord } from '../../src/lib/languages';
 import type { WordLang } from '../../src/lib/words';
 import {
   openTranslatorLab,
@@ -83,12 +86,7 @@ export function SettingsTab({
           palette={TEXT_COLORS}
           onChange={(colorEn) => change({ colorEn })}
         />
-        <VoiceRow
-          lang="en"
-          label={t('set_voice')}
-          value={settings.voiceEn}
-          onChange={(voiceEn) => change({ voiceEn })}
-        />
+        <LineVoice lang={settings.learnLang} />
       </Card>
 
       <SectionTitle>{t('set_native')}</SectionTitle>
@@ -110,12 +108,7 @@ export function SettingsTab({
           palette={TEXT_COLORS}
           onChange={(colorRu) => change({ colorRu })}
         />
-        <VoiceRow
-          lang="ru"
-          label={t('set_voice')}
-          value={settings.voiceRu}
-          onChange={(voiceRu) => change({ voiceRu })}
-        />
+        <LineVoice lang={settings.nativeLang} />
       </Card>
 
       <SectionTitle>{t('set_window')}</SectionTitle>
@@ -275,6 +268,19 @@ export function SettingsTab({
  * sample word at once; "a different voice every word" gives variety. The count is whatever the
  * system has: more can be added in its speech settings.
  */
+/** The voice of a line's words, for whatever language the line is in. */
+function LineVoice({ lang }: { lang: string }) {
+  const [settings, change] = useSettings();
+  return (
+    <VoiceRow
+      lang={lang}
+      label={t('set_voice')}
+      value={voiceFor(settings, lang)}
+      onChange={(name) => change(voicePatch(settings, lang, name))}
+    />
+  );
+}
+
 function VoiceRow(props: {
   lang: WordLang;
   label: string;
@@ -289,7 +295,7 @@ function VoiceRow(props: {
   const local = options.filter((v) => !v.remote);
   const online = options.filter((v) => v.remote);
   const accents = [...new Set(local.map((v) => v.accent))];
-  const sample = props.lang === 'en' ? 'Hello, world' : 'Привет, мир';
+  const sample = sampleWord(props.lang);
   const choose = (name: string) => {
     props.onChange(name);
     speakWord(sample, props.lang, name === RANDOM_VOICE ? undefined : name);

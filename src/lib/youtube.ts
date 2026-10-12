@@ -1,6 +1,7 @@
 import type { Decision } from './analysis';
 import type { Cue, Inspection, TrackReport, VideoReport } from './types';
 import { t, type MessageKey } from './i18n';
+import { baseLang, DEFAULT_PAIR, sameLanguage, type LanguagePair } from './languages';
 
 /**
  * YouTube subtitles (stage 5). Pure helpers; the page side lives in src/youtube/.
@@ -24,7 +25,16 @@ export interface CaptionTrack {
 }
 
 export type MainMessage =
-  | { source: typeof MAIN_SOURCE; type: 'timedtext'; url: string; body: string }
+  | {
+      source: typeof MAIN_SOURCE;
+      type: 'timedtext';
+      url: string;
+      body: string;
+      /** performance.now() when the request was sent (the same clock in both worlds). */
+      requestedAt: number;
+    }
+  /** A subtitle request has just been sent (its answer, if any, comes as 'timedtext'). */
+  | { source: typeof MAIN_SOURCE; type: 'timedtext-sent'; url: string }
   | { source: typeof MAIN_SOURCE; type: 'tracks'; videoId: string | null; tracks: CaptionTrack[] }
   | { source: typeof MAIN_SOURCE; type: 'fetched'; id: string; status: number; body: string };
 
@@ -34,7 +44,14 @@ export type MainMessage =
  */
 export type RequestMessage =
   | { source: typeof REQUEST_SOURCE; type: 'tracks' }
-  | { source: typeof REQUEST_SOURCE; type: 'fetch'; id: string; url: string };
+  | { source: typeof REQUEST_SOURCE; type: 'fetch'; id: string; url: string }
+  /** Asks the player to load this caption track itself (see YouTubeSource.askForMissing). */
+  | {
+      source: typeof REQUEST_SOURCE;
+      type: 'load-track';
+      languageCode: string;
+      kind: CaptionTrack['kind'];
+    };
 
 const YT = 'https://www.youtube.com';
 
@@ -69,6 +86,11 @@ export function hasToken(url: string): boolean {
   }
 }
 
+/** The video of a Shorts page (/shorts/<id>): it is in the path, not in `?v=`. */
+export function shortsIdOf(pathname: string): string | null {
+  return /^\/shorts\/([\w-]+)/.exec(pathname)?.[1] ?? null;
+}
+
 export function videoIdOf(url: string): string | null {
   try {
     return new URL(url, YT).searchParams.get('v');
@@ -76,6 +98,22 @@ export function videoIdOf(url: string): string | null {
     return null;
   }
 }
+
+/** Which track a timedtext request asks for: language, automatic or not, translation. */
+export function trackKeyOfUrl(url: string): string | null {
+  try {
+    const params = new URL(url, YT).searchParams;
+    const lang = params.get('lang');
+    if (!lang) return null;
+    return `${lang}|${params.get('kind') === 'asr' ? 'asr' : ''}|${params.get('tlang') ?? ''}`;
+  } catch {
+    return null;
+  }
+}
+
+/** The same key for a track we picked (see trackKeyOfUrl). */
+export const trackKeyOfPick = (pick: TrackPick) =>
+  `${pick.track.languageCode}|${pick.track.kind ?? ''}|${pick.tlang ?? ''}`;
 
 // ---------------------------------------------------------------- player response
 
@@ -110,20 +148,19 @@ export function normalizeTracks(raw: YtCaptionTrack[] | undefined): CaptionTrack
 export interface TrackPick {
   track: CaptionTrack;
   /** Target language of YouTube's own machine translation, or null for the track as is. */
-  tlang: 'en' | 'ru' | null;
+  tlang: string | null;
   source: 'manual' | 'auto' | 'youtube-translation';
 }
 
+/** The track of each line: the language the user learns and their own one. */
 export interface YouTubePlan {
-  en: TrackPick | null;
-  ru: TrackPick | null;
+  learn: TrackPick | null;
+  native: TrackPick | null;
 }
 
-const baseLang = (code: string) => code.toLowerCase().split(/[-_]/)[0];
-
 /** Subtitles made by people beat automatic ones; en-US, en-GB etc. all count as English. */
-function bestTrack(tracks: CaptionTrack[], lang: 'en' | 'ru'): CaptionTrack | null {
-  const ofLang = tracks.filter((track) => baseLang(track.languageCode) === lang);
+function bestTrack(tracks: CaptionTrack[], lang: string): CaptionTrack | null {
+  const ofLang = tracks.filter((track) => sameLanguage(track.languageCode, lang));
   return ofLang.find((track) => track.kind === null) ?? ofLang[0] ?? null;
 }
 
@@ -134,24 +171,24 @@ const asIs = (track: CaptionTrack): TrackPick => ({
 });
 
 /**
- * English and Russian lines for a video. A missing language comes from YouTube's own translation
- * of the other one: free and server-side, so better than the on-device translator.
+ * The two lines of a video, in the languages of `pair`. A missing language comes from YouTube's own
+ * translation of the other one (the learnt language first): free and server-side, so better than
+ * the on-device translator.
  */
-export function planTracks(tracks: CaptionTrack[]): YouTubePlan {
-  const en = bestTrack(tracks, 'en');
-  const ru = bestTrack(tracks, 'ru');
+export function planTracks(tracks: CaptionTrack[], pair: LanguagePair = DEFAULT_PAIR): YouTubePlan {
+  const learn = bestTrack(tracks, pair.learn);
+  const native = bestTrack(tracks, pair.native);
   const translatable = (track: CaptionTrack | null) => (track?.isTranslatable ? track : null);
   const base =
-    translatable(en) ??
-    translatable(ru) ??
+    translatable(learn) ??
+    translatable(native) ??
     tracks.find((track) => track.isTranslatable && track.kind === null) ??
     tracks.find((track) => track.isTranslatable) ??
     null;
+  const pickFor = (track: CaptionTrack | null, lang: string): TrackPick | null =>
+    track ? asIs(track) : base ? { track: base, tlang: lang, source: 'youtube-translation' } : null;
 
-  return {
-    en: en ? asIs(en) : base ? { track: base, tlang: 'en', source: 'youtube-translation' } : null,
-    ru: ru ? asIs(ru) : base ? { track: base, tlang: 'ru', source: 'youtube-translation' } : null,
-  };
+  return { learn: pickFor(learn, pair.learn), native: pickFor(native, pair.native) };
 }
 
 /** Parameters that say which track to load; everything else (pot, client info) is copied. */
@@ -249,7 +286,7 @@ const SOURCE_LABEL: Record<TrackPick['source'], MessageKey> = {
   'youtube-translation': 'yt_translation',
 };
 
-function trackReport(loaded: LoadedPick, lang: 'en' | 'ru'): TrackReport {
+function trackReport(loaded: LoadedPick): TrackReport {
   const cues = loaded.cues ?? [];
   const { track, tlang, source } = loaded.pick;
   return {
@@ -261,27 +298,32 @@ function trackReport(loaded: LoadedPick, lang: 'en' | 'ru'): TrackReport {
     cueCount: cues.length,
     firstCue: cues[0] ?? null,
     lastCue: cues[cues.length - 1] ?? null,
-    lang,
+    lang: baseLang(tlang ?? track.languageCode),
     type: cues.length > 0 ? 'full' : 'empty',
     usableCueCount: cues.length,
   };
 }
 
 /** The same report shape as for <track> players, so the popup shows YouTube the same way. */
-export function buildYouTubeReport(en: LoadedPick | null, ru: LoadedPick | null): VideoReport {
+export function buildYouTubeReport(
+  learn: LoadedPick | null,
+  native: LoadedPick | null,
+): VideoReport {
   const tracks: TrackReport[] = [];
-  const enIndex = en ? tracks.push(trackReport(en, 'en')) - 1 : null;
-  const ruIndex = ru ? tracks.push(trackReport(ru, 'ru')) - 1 : null;
+  const learnIndex = learn ? tracks.push(trackReport(learn)) - 1 : null;
+  const nativeIndex = native ? tracks.push(trackReport(native)) - 1 : null;
   const usable = (i: number | null) => (i !== null && tracks[i]!.status === 'loaded' ? i : null);
 
-  const enOk = usable(enIndex);
-  const ruOk = usable(ruIndex);
+  const learnOk = usable(learnIndex);
+  const nativeOk = usable(nativeIndex);
   let decision: Decision;
-  if (enOk !== null && ruOk !== null)
-    decision = { case: 'A', en: enOk, ru: ruOk, translateFrom: null };
-  else if (enOk !== null) decision = { case: 'B', en: enOk, ru: null, translateFrom: 'en' };
-  else if (ruOk !== null) decision = { case: 'B', en: null, ru: ruOk, translateFrom: 'ru' };
-  else decision = { case: 'C', en: null, ru: null, translateFrom: null };
+  if (learnOk !== null && nativeOk !== null)
+    decision = { case: 'A', learn: learnOk, native: nativeOk, translateFrom: null };
+  else if (learnOk !== null)
+    decision = { case: 'B', learn: learnOk, native: null, translateFrom: 'learn' };
+  else if (nativeOk !== null)
+    decision = { case: 'B', learn: null, native: nativeOk, translateFrom: 'native' };
+  else decision = { case: 'C', learn: null, native: null, translateFrom: null };
 
   return { tracks, decision };
 }
@@ -299,12 +341,18 @@ export function youtubeBlocked(report: VideoReport): boolean {
 }
 
 /** Report plus the cues of the lines it decided to show. */
-export function buildYouTubeInspection(en: LoadedPick | null, ru: LoadedPick | null): Inspection {
-  const report = buildYouTubeReport(en, ru);
+export function buildYouTubeInspection(
+  learn: LoadedPick | null,
+  native: LoadedPick | null,
+): Inspection {
+  const report = buildYouTubeReport(learn, native);
   const cuesOf = (index: number | null) => {
     if (index === null) return null;
-    const loaded = index === 0 && en ? en : ru;
+    const loaded = index === 0 && learn ? learn : native;
     return loaded?.cues ?? null;
   };
-  return { report, lines: { en: cuesOf(report.decision.en), ru: cuesOf(report.decision.ru) } };
+  return {
+    report,
+    lines: { learn: cuesOf(report.decision.learn), native: cuesOf(report.decision.native) },
+  };
 }

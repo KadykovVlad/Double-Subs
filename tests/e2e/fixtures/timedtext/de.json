@@ -1,0 +1,12 @@
+{
+  "wireMagic": "pb3",
+  "events": [
+    { "tStartMs": 1100, "dDurationMs": 2000, "segs": [{ "utf8": "Hallo, Dexter." }] },
+    { "tStartMs": 4100, "dDurationMs": 2300, "segs": [{ "utf8": "Heute ist die Nacht." }] },
+    {
+      "tStartMs": 7000,
+      "dDurationMs": 2200,
+      "segs": [{ "utf8": "Ich bin nicht der, für den du mich hältst." }]
+    }
+  ]
+}

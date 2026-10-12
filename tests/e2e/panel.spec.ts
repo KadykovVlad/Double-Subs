@@ -110,6 +110,42 @@ test('a panel without a player shows what to do instead of a blank page', async 
   await expect(panel.getByTestId('status')).toBeVisible();
 });
 
+test('the languages are chosen at the top of "Now", whatever the page', async () => {
+  const page = await openPage('index.html');
+  const panel = await openPopupFor(session, page);
+  await expect(panel.getByTestId('learn-lang')).toHaveValue('en');
+  await expect(panel.getByTestId('native-lang')).toHaveValue('ru');
+  await panel.getByTestId('learn-lang').selectOption('de');
+  await expect
+    .poll(() => stored<{ learnLang: string; nativeLang: string }>('settings'))
+    .toMatchObject({ learnLang: 'de', nativeLang: 'ru' });
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('learn-lang')).toHaveCount(0); // not in two places
+});
+
+test('the switch that shows our subtitles is at the top of "Now", whatever the page, and is stored', async () => {
+  const page = await openPage('index.html');
+  const panel = await openPopupFor(session, page);
+  const show = panel.getByTestId('toggle-overlay');
+  await expect(show).toBeVisible();
+  await expect(show).toBeChecked();
+  // Above the status of the page (which redraws while the panel looks at the page: asked again until both are there).
+  await expect
+    .poll(async () => {
+      const [switchBox, statusBox] = await Promise.all([
+        show.boundingBox(),
+        panel.getByTestId('status').boundingBox(),
+      ]);
+      return switchBox && statusBox ? switchBox.y < statusBox.y : null;
+    })
+    .toBe(true);
+
+  await show.uncheck();
+  await expect
+    .poll(() => stored<{ enabled: boolean }>('settings').then((s) => s.enabled))
+    .toBe(false);
+});
+
 // ---------------------------------------------------------------- words: review
 
 const seedWords = () =>
@@ -356,6 +392,42 @@ test('picking a voice stores it and says a sample with it; the preview button re
   await expect.poll(spokenVoices).toEqual(['Daniel']);
   await panel.getByTestId('voice-preview-en').click();
   await expect.poll(spokenVoices).toEqual(['Daniel', 'Daniel']);
+});
+
+test('a language other than English and Russian has its voice row too: Korean to learn', async () => {
+  await session.worker.evaluate(() =>
+    chrome.storage.local.set({
+      settings: { learnLang: 'ko', nativeLang: 'ru' },
+      e2eVoices: [
+        { voiceName: 'Yuna', lang: 'ko-KR', remote: false },
+        { voiceName: 'Google 한국의', lang: 'ko-KR', remote: true },
+        { voiceName: 'Daniel', lang: 'en-GB', remote: false },
+      ],
+    }),
+  );
+  const page = await openPage('shadow-video.html');
+  const panel = await openPopupFor(session, page);
+  await openPanelTab(panel, 'settings');
+
+  const select = panel.getByTestId('voice-ko');
+  await expect(select).toBeVisible();
+  // Only Korean voices (and "auto", "random"); the English one does not belong here.
+  expect(await select.locator('option').allTextContents()).toEqual(
+    expect.arrayContaining(['Yuna', 'Google 한국의']),
+  );
+  await expect(select.locator('option[value="Daniel"]')).toHaveCount(0);
+
+  await select.selectOption('Yuna');
+  await expect
+    .poll(
+      async () => (await stored<{ voicesOther: Record<string, string> }>('settings')).voicesOther,
+    )
+    .toEqual({ ko: 'Yuna' });
+  await expect
+    .poll(async () =>
+      (await stored<Array<{ lang: string; voice: string; text: string }>>('e2eSpoken')).at(-1),
+    )
+    .toMatchObject({ lang: 'ko', voice: 'Yuna', text: '안녕하세요' });
 });
 
 test('"a different voice every word" really changes the voice, and only to built-in ones', async () => {
