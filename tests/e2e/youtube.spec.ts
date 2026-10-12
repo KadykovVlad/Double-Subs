@@ -561,6 +561,32 @@ test('from a video to Shorts without reloading: the lines move onto the Short, o
   expect(await clicksOn(page, 'watchCcClicks')).toBe(0);
 });
 
+test("from YouTube's home page to a Short: the Short is taken, not the preview a card played", async () => {
+  await makeKnown();
+  const page = await session.context.newPage();
+  const reports = collectReports(page);
+  // The home page: a card plays its preview under the pointer, nothing else is on screen.
+  await page.goto(`${server.origin}/watch?v=BOTH&home=1&test=${++counter}`);
+  await page.waitForTimeout(1500); // the automatic start has had its look at the page
+  await expect(page.locator('double-sub-notice')).toHaveCount(0); // the preview is not taken
+  await page.evaluate(() =>
+    (window as unknown as { goToShorts: (id: string) => void }).goToShorts('ASR'),
+  );
+  await expect
+    .poll(() => statuses(reports))
+    .toEqual([
+      ['English (auto-generated) (автосубтитры)', 'loaded'],
+      ['English (auto-generated) (автоперевод YouTube → ru)', 'loaded'],
+    ]);
+  // Ours in the CC button's place in the Short's controls, YouTube's CC and captions hidden.
+  await expect(page.getByTestId('yt-toggle')).toHaveClass(/shorts/);
+  await expect(page.locator('ytm-closed-captioning-button')).toBeHidden();
+  await expect(page.locator('#shorts-player .ytp-caption-window-container')).toBeHidden();
+  const short = page.locator('#shorts-player video');
+  await short.evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
+  await expect(page.locator('double-sub-overlay .en')).toHaveText('hello dexter');
+});
+
 // ---------------------------------------------------------------- the languages the user chose
 
 const chooseLanguages = (learnLang: string, nativeLang: string) =>

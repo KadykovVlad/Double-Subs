@@ -13,6 +13,8 @@
   Served at /watch?v=<id> too: then the watch player is on screen (its CC on), the Shorts are hidden,
   and window.goToShorts(id) goes to a Short without reloading, as YouTube does (the watch player and
   its <video> stay in the page, hidden).
+  ?home: YouTube's home page instead: only the preview a card plays under the pointer is on screen
+  (#inline-preview-player, another video); going to a Short shrinks it to nothing, it stays in the page.
 -->
 <ytd-shorts style="display: block">
   <ytd-reel-video-renderer>
@@ -46,6 +48,13 @@
   <video width="640" height="360" src="/clip.webm"></video>
   <button class="ytp-subtitles-button ytp-button" aria-pressed="false">CC</button>
 </div>
+<div
+  id="inline-preview-player"
+  class="html5-video-player"
+  style="display: none; width: 480px; height: 270px"
+>
+  <video width="480" height="270" src="/clip.webm" muted loop></video>
+</div>
 <script>
   const TRACKS = {
     BOTH: [
@@ -59,10 +68,19 @@
     onWatch() ? new URLSearchParams(location.search).get('v') : location.pathname.split('/')[2];
   const shorts = document.querySelector('ytd-shorts');
   const watch = document.getElementById('movie_player');
+  const preview = document.getElementById('inline-preview-player');
+  const onHome = new URLSearchParams(location.search).has('home');
   if (onWatch()) {
     shorts.style.display = 'none';
-    watch.style.display = 'block';
+    watch.style.display = onHome ? 'none' : 'block';
     watch.querySelector('.ytp-subtitles-button').setAttribute('aria-pressed', 'true');
+  }
+  if (onHome) {
+    preview.style.display = 'block';
+    void preview
+      .querySelector('video')
+      .play()
+      .catch(() => {});
   }
   const tracks = () => TRACKS[videoId()] ?? [];
   const describe = (id) => ({
@@ -119,7 +137,15 @@
   window.goToShorts = (id) => {
     history.pushState({}, '', `/shorts/${id}`);
     watch.style.display = 'none';
-    shorts.style.display = 'block';
+    // From the home page YouTube is not that quick: the Short comes a moment after the address, and
+    // the preview the card played is still on screen a moment longer.
+    const lag = onHome ? 400 : 0;
+    setTimeout(() => (shorts.style.display = 'block'), lag);
+    setTimeout(() => {
+      preview.style.width = preview.style.height = '0';
+      preview.querySelector('video').style.width = preview.querySelector('video').style.height =
+        '0';
+    }, lag * 2);
     document.dispatchEvent(new Event('yt-navigate-finish'));
     if (ccOn()) setTimeout(playerRequest, 100);
   };

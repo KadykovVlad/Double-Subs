@@ -50,8 +50,17 @@ export class Agent implements AutoHost {
 
   // ---------------------------------------------------------------- AutoHost
 
+  /**
+   * The videos the automatic start may take. On a YouTube page (it has YouTube's players) only those
+   * players, the watch one and the Shorts one: the preview a card plays under the pointer on the home
+   * page is not what is watched, and a session left on it would keep the Short opened next from
+   * getting ours.
+   */
   videos(): HTMLVideoElement[] {
-    return this.scanner.refresh();
+    const videos = this.scanner.refresh();
+    const youtube = window.__doubleSubYouTube;
+    if (!youtube || !videos.some((video) => youtube.owns(video))) return videos;
+    return videos.filter((video) => youtube.owns(video));
   }
 
   async open(video: HTMLVideoElement, quiet: boolean): Promise<void> {
