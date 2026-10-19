@@ -312,7 +312,9 @@ export class VideoSession {
       pair: () => this.pair,
       onProgress: () => panel.status(),
     });
-    if (!this.awaitsYouTubeLine(inspection.report)) this.translation.start(inspection);
+    // YouTube's line on its way (its translation of a whole track can take seconds): the device
+    // fills the line at once, from the cue on screen on, until YouTube's comes and takes its place.
+    this.translation.start(inspection, false, this.awaitsYouTubeLine(inspection.report));
     this.history.start();
   }
 

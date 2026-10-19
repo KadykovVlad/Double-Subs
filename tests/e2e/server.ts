@@ -50,7 +50,7 @@ async function fakeTimedtext(params: URLSearchParams, res: ServerResponse): Prom
     return;
   }
   // YouTube's translation is slow at times: seconds, while the player's own track came at once.
-  if (params.get('v') === 'SLOWTR' && params.get('tlang'))
+  if (params.get('v')?.startsWith('SLOW') && params.get('tlang'))
     await new Promise((resolve) => setTimeout(resolve, 3000));
   const lang = params.get('tlang') ?? params.get('lang');
   const asr = params.get('kind') === 'asr' && !params.get('tlang');

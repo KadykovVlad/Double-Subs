@@ -390,7 +390,7 @@ test('a site that starts by itself, with our subtitles off: CC is not touched, Y
   await expect(nativeCaptions(page)).toBeHidden();
 });
 
-test("automatic subtitles whose YouTube translation needs the player's token: waited for, not translated on the device", async () => {
+test("automatic subtitles whose YouTube translation needs the player's token: YouTube's line wins, the device fills in without a word on the chip", async () => {
   // The player's first request has no token yet (YouTube translates nothing for it); the one with the token comes later.
   const { page, reports } = await openVideo('ASR&early=1&late=800');
   const chips: string[] = [];
@@ -434,7 +434,7 @@ test('when YouTube gives nothing at all, the user is told to switch other subtit
   );
 });
 
-test("YouTube's translation takes seconds: the line that came is shown at once, the late one joins it", async () => {
+test("YouTube's translation takes seconds: the line that came is shown at once, the other is not waited for", async () => {
   await makeKnown();
   const { page } = await openVideo('SLOWTR');
   await page.locator('video').evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
@@ -442,12 +442,15 @@ test("YouTube's translation takes seconds: the line that came is shown at once, 
   await expect(page.locator('double-sub-overlay .en')).toHaveText('Hello, Dexter.', {
     timeout: 1000,
   });
-  await expect(page.locator('double-sub-overlay .ru')).toBeHidden();
-  // When YouTube's translation comes, it joins without anything else to do.
+  // Russian is not waited for: the device fills it at once (YouTube's comes after 3 s).
   await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.', {
-    timeout: 5000,
+    timeout: 1000,
   });
-  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+  await expect(page.locator('double-sub-notice .text')).toHaveText('Загружаю субтитры YouTube…');
+  // When YouTube's translation comes, it takes the line over without anything else to do.
+  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU', {
+    timeout: 6000,
+  });
 });
 
 test("the Russian track comes empty from YouTube: YouTube's translation of the English one is taken at once", async () => {
@@ -465,6 +468,27 @@ test("the Russian track comes empty from YouTube: YouTube's translation of the E
     ['English (субтитры)', 'loaded'],
     ['English (автоперевод YouTube → ru)', 'loaded'],
   ]);
+});
+
+test("YouTube's translation of the only line takes seconds: the device fills the missing line at once, then YouTube's takes its place", async () => {
+  await makeKnown();
+  const { page } = await openVideo('SLOWRU');
+  await page.locator('video').evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
+  // Russian is the player's own answer; English comes from the device in a moment (the stand-in
+  // translator marks what it was given), long before YouTube's translation (3 s).
+  await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.', {
+    timeout: 1000,
+  });
+  await expect(page.locator('double-sub-overlay .en')).toHaveText('[ru] Привет, Декстер.', {
+    timeout: 1000,
+  });
+  // No word about the device on the chip: YouTube's line is the one awaited.
+  await expect(page.locator('double-sub-notice .text')).toHaveText('Загружаю субтитры YouTube…');
+  // YouTube's translation comes and replaces the device's.
+  await expect(page.locator('double-sub-overlay .en')).toHaveText('Hello, Dexter.', {
+    timeout: 6000,
+  });
+  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
 });
 
 test('a player that sent its request before it had its token: it is told to reload the track, and the lines come within two seconds', async () => {

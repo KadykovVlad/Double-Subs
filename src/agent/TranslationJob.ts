@@ -54,8 +54,12 @@ export class TranslationJob {
 
   constructor(private readonly target: TranslationTarget) {}
 
-  /** Starts translating the missing line of `inspection`; `quiet` keeps the chip silent (a restart answered from the cache). */
-  start(inspection: Inspection, quiet = false): void {
+  /**
+   * Starts translating the missing line of `inspection`; `quiet` keeps the chip silent (a restart
+   * answered from the cache). `meanwhile`: YouTube's own line is on its way, the device only fills
+   * the line until it comes, without a word on the chip (no "translating", no "a model is needed").
+   */
+  start(inspection: Inspection, quiet = false, meanwhile = false): void {
     this.stop();
     const { translateFrom } = inspection.report.decision;
     const source = translateFrom ? inspection.lines[translateFrom] : null;
@@ -77,7 +81,8 @@ export class TranslationJob {
         if (controller.signal.aborted) return;
         this.status = status;
         this.target.overlay.setLines({ ...inspection.lines, [targetRole]: cues satisfies Cue[] });
-        const silent = quiet && (status.state === 'translating' || status.state === 'done');
+        const silent =
+          meanwhile || (quiet && (status.state === 'translating' || status.state === 'done'));
         if (!silent) {
           const { text, tone, sticky } = translationNotice(status, targetLang);
           this.target.notice.show(text, tone, { sticky });

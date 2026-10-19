@@ -24,7 +24,7 @@
   sends no other: it does not request subtitles by itself, and telling it the track it has changes
   nothing; reloaded (setOption captions reload), it requests the track at once, with the token.
   window.setOptionCalls lists both.
-  SLOWTR: English only, and YouTube's translation of it takes 3 s.
+  SLOWTR: English only, and YouTube's translation of it takes 3 s. SLOWRU: the same with Russian only.
   EMPTYRU: English and Russian, but YouTube gives the Russian track empty (its translation works).
   ?early=1: on load the player requests subtitles without the token, with its client parameters.
 -->
@@ -50,6 +50,7 @@
     ],
     ASR: [{ lang: 'en', kind: 'asr', name: 'English (auto-generated)' }],
     SLOWTR: [{ lang: 'en', kind: null, name: 'English' }],
+    SLOWRU: [{ lang: 'ru', kind: null, name: 'Русский' }],
     EMPTYRU: [
       { lang: 'en', kind: null, name: 'English' },
       { lang: 'ru', kind: null, name: 'Русский' },

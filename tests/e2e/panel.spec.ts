@@ -62,10 +62,24 @@ test('the chip on the video says that both subtitle tracks were found, then goes
 
 test('with one language the chip says which one was found and that the other is translated', async () => {
   const page = await openPage('shadow-video.html');
+  // The first message lasts only as long as the translation of three lines: every chip is recorded.
+  await page.evaluate(() => {
+    const seen: string[] = [];
+    (window as unknown as { chips: string[] }).chips = seen;
+    const look = () => {
+      const text = document
+        .querySelector('double-sub-notice')
+        ?.shadowRoot?.querySelector('.text')?.textContent;
+      if (text && seen.at(-1) !== text) seen.push(text);
+      requestAnimationFrame(look);
+    };
+    look();
+  });
   await openPopupFor(session, page);
-  await expect(chip(page)).toContainText('Субтитры готовы · EN, русский переведу');
   // Then it reports the translation, same place.
   await expect(chip(page)).toContainText('Перевод на русский готов');
+  const chips = await page.evaluate(() => (window as unknown as { chips: string[] }).chips);
+  expect(chips[0]).toContain('Субтитры готовы · EN, русский переведу');
 });
 
 test('without usable subtitles the chip says so', async () => {

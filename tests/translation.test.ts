@@ -189,14 +189,15 @@ describe('runTranslation', () => {
     const service = fakeService();
     const { last, updates } = await run(cues(12), service);
 
-    expect(service.calls.map((texts) => texts.length)).toEqual([5, 5, 2]);
+    // The first chunk is the line on screen and the next two only, then whole chunks.
+    expect(service.calls.map((texts) => texts.length)).toEqual([3, 2, 5, 2]);
     expect(last.status).toEqual({ state: 'done', total: 12, fromCache: false });
     expect(last.cues).toHaveLength(12);
     expect(last.cues[0]).toEqual({ start: 0, end: 2, text: 'Строка 0' }); // translated and capitalised
     expect(last.cues[11]).toEqual({ start: 33, end: 35, text: 'Строка 11' });
     // Progress is reported after each chunk, then the final state.
     expect(updates.map((u) => (u.status.state === 'translating' ? u.status.done : 'done'))).toEqual(
-      [0, 5, 10, 12, 'done'],
+      [0, 3, 5, 10, 12, 'done'],
     );
   });
 
@@ -214,8 +215,23 @@ describe('runTranslation', () => {
       },
     };
     await run(source, tracking, { time: () => time });
-    // First the chunk with cue 17 (15–19), then, after the seek to 0, the chunks from the start.
-    expect(seen).toEqual(['line 15', 'line 0', 'line 5', 'line 10', 'line 20', 'line 25']);
+    // First cue 17 and the next ones, then, after the seek to 0, the chunks from the start.
+    expect(seen).toEqual([
+      'line 17',
+      'line 0',
+      'line 5',
+      'line 10',
+      'line 15',
+      'line 20',
+      'line 25',
+    ]);
+  });
+
+  it('shows the line on screen first: it alone with the next two, before any whole chunk', async () => {
+    const service = fakeService();
+    const { updates } = await run(cues(40), service, { time: () => 3 * 22 + 1 }); // cue 22 on screen
+    expect(service.calls[0]).toEqual(['line 22', 'line 23', 'line 24']);
+    expect(updates[1]!.cues.map((c) => c.text)).toEqual(['Строка 22', 'Строка 23', 'Строка 24']);
   });
 
   it('uses a complete cache without translating anything', async () => {
@@ -242,7 +258,10 @@ describe('runTranslation', () => {
 
     const { updates } = await run(source, service);
     expect(updates[0]!.cues.map((c) => c.text)).toEqual(['Один', 'Два', 'Три', 'Четыре', 'Пять']);
-    expect(service.calls).toEqual([['line 5', 'line 6', 'line 7', 'line 8', 'line 9']]);
+    expect(service.calls).toEqual([
+      ['line 5', 'line 6', 'line 7'],
+      ['line 8', 'line 9'],
+    ]);
   });
 
   it('ignores a cache entry that does not fit the subtitles', async () => {
@@ -307,7 +326,7 @@ describe('runTranslation', () => {
     };
     const { last } = await run(cues(15), flaky);
     expect(last.status).toEqual({ state: 'needs-model' });
-    expect(last.cues).toHaveLength(5);
+    expect(last.cues).toHaveLength(3);
   });
 
   it('retries a failed chunk and carries on', async () => {

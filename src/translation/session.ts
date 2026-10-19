@@ -40,11 +40,14 @@ export interface TranslationOptions {
   signal?: AbortSignal;
   /** About 0.3 s of translator time per chunk, so the first lines appear at once. */
   chunkSize?: number;
+  /** The very first chunk: the cue on screen and the next ones only, so a line is there in a moment. */
+  firstChunkSize?: number;
   /** Pause between retries; tests pass 0. */
   retryDelayMs?: number;
 }
 
 const DEFAULT_CHUNK_SIZE = 20;
+const DEFAULT_FIRST_CHUNK_SIZE = 3;
 const ATTEMPTS_PER_CHUNK = 3;
 const FAILED_CHUNKS_BEFORE_GIVING_UP = 3;
 /** The cache is written every few chunks, not after each one: it holds a whole episode. */
@@ -60,6 +63,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export async function runTranslation(options: TranslationOptions): Promise<void> {
   const { source, direction, getTime, service, onUpdate, signal } = options;
   const chunkSize = options.chunkSize ?? DEFAULT_CHUNK_SIZE;
+  const firstChunkSize = options.firstChunkSize ?? DEFAULT_FIRST_CHUNK_SIZE;
   const retryDelayMs = options.retryDelayMs ?? 300;
   const total = source.length;
 
@@ -107,15 +111,27 @@ export async function runTranslation(options: TranslationOptions): Promise<void>
 
   let failedChunks = 0;
   let chunksSinceSave = 0;
+  let first = true;
 
   try {
     while (!signal?.aborted) {
-      const start = nextChunkStart(pending, total, chunkSize, currentCueIndex(source, getTime()));
-      if (start === null) break;
-      const indexes = Array.from(
-        { length: Math.min(chunkSize, total - start) },
-        (_, k) => start + k,
-      ).filter(pending);
+      let indexes: number[];
+      if (first) {
+        // The line on screen first, alone with the next ones: it is there before a whole chunk is done.
+        first = false;
+        const from = currentCueIndex(source, getTime());
+        indexes = [];
+        for (let i = from; i < total && indexes.length < firstChunkSize; i++)
+          if (pending(i)) indexes.push(i);
+        if (indexes.length === 0) continue;
+      } else {
+        const start = nextChunkStart(pending, total, chunkSize, currentCueIndex(source, getTime()));
+        if (start === null) break;
+        indexes = Array.from(
+          { length: Math.min(chunkSize, total - start) },
+          (_, k) => start + k,
+        ).filter(pending);
+      }
 
       let result: string[] | null = null;
       for (
