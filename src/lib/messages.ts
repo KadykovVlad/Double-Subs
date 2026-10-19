@@ -66,3 +66,8 @@ export interface SelectedMessage {
 export interface StartAgentMessage {
   type: 'start-agent';
 }
+
+/** The agent on TikTok found no page-world script (the site is not registered yet): inject it now. */
+export interface InjectTikTokMainMessage {
+  type: 'inject-tiktok-main';
+}

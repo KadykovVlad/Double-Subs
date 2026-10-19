@@ -59,6 +59,7 @@ export function createNotice(
   let timer: ReturnType<typeof setTimeout> | undefined;
   let frame = 0;
   let shown = false;
+  let destroyed = false;
 
   const place = () => placeHost(host, video, options.anchor);
 
@@ -90,6 +91,7 @@ export function createNotice(
 
   return {
     show(message, tone, options = {}) {
+      if (destroyed) return; // its session is over: nothing of it may come back on the page
       clearTimeout(timer);
       place();
       text.textContent = message;
@@ -101,6 +103,7 @@ export function createNotice(
     },
     hide,
     destroy() {
+      destroyed = true;
       hide();
       cancelAnimationFrame(frame);
       document.removeEventListener('fullscreenchange', onFullscreen);

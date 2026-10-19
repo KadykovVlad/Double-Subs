@@ -18,6 +18,8 @@ import { createNotice, type Notice } from '../overlay/notice';
 import { startOverlay, type Overlay } from '../overlay/overlay';
 import type { WordTools } from '../overlay/words-ui';
 import type { YouTubeBridge } from '../youtube/bridge';
+import { isTikTokHost } from '../lib/tiktok';
+import { TIKTOK_CAPTION_SELECTOR, tikTokSource, type TikTokSource } from '../tiktok/TikTokSource';
 import { HistoryRecorder } from './HistoryRecorder';
 import type { PanelLink } from './host';
 import { PlayerWatcher } from './PlayerWatcher';
@@ -84,6 +86,13 @@ export class VideoSession {
   private readonly youtube: YouTubeBridge | null;
   /** The page's container that moves with the video, for the overlay and the chip to live in (only on YouTube so far). */
   private readonly anchor = () => this.youtube?.overlayParent(this.video) ?? null;
+  /** On TikTok: its subtitle files (it has no <track>), see TikTokSource. */
+  private readonly tiktok: TikTokSource | null = isTikTokHost(location.hostname)
+    ? tikTokSource()
+    : null;
+  private closed = false;
+  /** The TikTok video the lines on screen belong to: the feed puts another one into the same <video>. */
+  private tiktokId: string | null = null;
   private stopFollowing: Array<() => void> = [];
   private watcher: PlayerWatcher | null = null;
   private loading = false;
@@ -127,6 +136,7 @@ export class VideoSession {
 
   /** A YouTube video that is no longer the one on screen (the user went from a video to Shorts or back). */
   get leftBehind(): boolean {
+    if (this.tiktok) return !this.tiktok.playsHere(this.video);
     return this.youtube !== null && !this.youtube.playsHere(this.video);
   }
 
@@ -163,6 +173,8 @@ export class VideoSession {
   }
 
   close(): void {
+    this.generation++; // a look still running belongs to a closed session: its result is dropped
+    this.closed = true;
     this.history.stop();
     this.translation?.stop();
     this.translation = null;
@@ -200,7 +212,7 @@ export class VideoSession {
       const pair = pairOf(this.deps.data.settings);
       const inspection = this.youtube
         ? await this.youtube.inspect(pair)
-        : await inspectVideo(this.video, subtitleFilesAsTracks, undefined, pair);
+        : await inspectVideo(this.video, this.extraFiles, undefined, pair);
       // YouTube switched to another video meanwhile: these lines are of the old one, the newer look shows its own.
       if (generation !== this.generation) return inspection.report;
       this.pair = pair;
@@ -271,6 +283,7 @@ export class VideoSession {
   private waitingForFilm(report: VideoReport): boolean {
     return (
       !this.youtube &&
+      !this.tiktok && // its clips are short and have no film after them
       report.decision.case === 'C' &&
       report.tracks.length === 0 &&
       mayBeBeforeTheFilm(readPlayerFacts(this.video))
@@ -290,10 +303,12 @@ export class VideoSession {
     if (!learn && !native) return;
 
     await this.deps.data.ready;
+    if (this.closed) return;
     const { data, words, panel } = this.deps;
     this.stopListeningToUser.forEach((stop) => stop());
     this.overlay = startOverlay(this.video, inspection.lines, data.settings, {
-      hideSelector: this.youtube?.nativeCaptionSelector,
+      hideSelector:
+        this.youtube?.nativeCaptionSelector ?? (this.tiktok ? TIKTOK_CAPTION_SELECTOR : undefined),
       noRestoreButton: this.youtube !== null, // our switch sits in YouTube's control bar
       anchor: this.anchor,
       words,
@@ -346,6 +361,38 @@ export class VideoSession {
       .catch(() => {});
   }
 
+  /** Subtitles that are not tracks: TikTok's files of this video, or the files the page fetched. */
+  private readonly extraFiles = async () => {
+    if (!this.tiktok) return subtitleFilesAsTracks();
+    this.tiktokId = this.tiktok.idOf(this.video);
+    return this.tiktok.files(this.video);
+  };
+
+  /**
+   * The feed puts the next video into the same <video>: the lines of the old one must not stay on it
+   * while the player settles (the watcher would look again only after a moment), so they go at once.
+   */
+  private followTikTok(tiktok: TikTokSource): void {
+    const check = () => {
+      const id = tiktok.idOf(this.video);
+      // The <video> that went below the screen takes the video after next: the one on screen is followed.
+      if (!id || id === this.tiktokId || this.loading || this.leftBehind) return;
+      this.tiktokId = id;
+      this.translation?.stop();
+      this.translation = null;
+      this.overlay?.stop();
+      this.overlay = null;
+      this.inspection = null;
+      void this.load(false)
+        .then(() => this.deps.panel.selected())
+        .catch(() => {});
+    };
+    for (const name of ['loadstart', 'play', 'playing'] as const) {
+      this.video.addEventListener(name, check);
+      this.stopFollowing.push(() => this.video.removeEventListener(name, check));
+    }
+  }
+
   /** Follows what the page does with the player: another video in YouTube, another episode in the same element. */
   private follow(): void {
     this.stopFollowing.forEach((stop) => stop());
@@ -390,6 +437,8 @@ export class VideoSession {
       );
       return;
     }
+
+    if (this.tiktok) this.followTikTok(this.tiktok);
 
     // A single-page site may load the next episode into the same <video>, an ad may come before the
     // film, tracks may be added late: look again whenever the player changes.

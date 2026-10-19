@@ -10,6 +10,8 @@ import { pairOf } from '../lib/settings';
 import { UserData } from './UserData';
 import { VideoSession } from './VideoSession';
 import { WordService } from './WordService';
+import { isTikTokHost } from '../lib/tiktok';
+import { tikTokSource } from '../tiktok/TikTokSource';
 
 /** The session of a video that the page took away is let go of within this time. */
 const WATCH_EVERY_MS = import.meta.env.VITE_DS_E2E ? 250 : 1500;
@@ -58,6 +60,9 @@ export class Agent implements AutoHost {
    */
   videos(): HTMLVideoElement[] {
     const videos = this.scanner.refresh();
+    // TikTok's feed keeps the next video waiting below the screen in a second <video>: only the one on screen.
+    const tiktok = isTikTokHost(location.hostname) ? tikTokSource() : null;
+    if (tiktok) return videos.filter((video) => tiktok.playsHere(video));
     const youtube = window.__doubleSubYouTube;
     if (!youtube || !videos.some((video) => youtube.owns(video))) return videos;
     return videos.filter((video) => youtube.owns(video));

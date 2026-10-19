@@ -59,6 +59,37 @@ async function fakeTimedtext(params: URLSearchParams, res: ServerResponse): Prom
   res.end(await readFile(join(FIXTURES, 'timedtext', file)));
 }
 
+/** TikTok's feed answer: the next videos, with their subtitle files (333 has none: no speech). */
+function fakeTikTokFeed(host: string | undefined, res: ServerResponse): void {
+  const file = (id: string, language: string) => ({
+    Url: `http://${host}/tt-vtt/${id}?mime_type=video_mp4`,
+    LanguageCodeName: language,
+    Source: 'ASR',
+    Format: 'webvtt',
+  });
+  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+  res.end(
+    JSON.stringify({
+      itemList: [
+        { id: '2220000222', desc: 'two', video: { subtitleInfos: [file('2220000222', 'rus-RU')] } },
+        { id: '3330000333', desc: 'three', video: { claInfo: { noCaptionReason: 3 } } },
+      ],
+    }),
+  );
+}
+
+/** A TikTok subtitle file: WebVTT at an address without an extension. */
+async function fakeTikTokFile(pathname: string, res: ServerResponse): Promise<void> {
+  const id = pathname.split('/').pop();
+  const name = id === '1110000111' ? 'en-full.vtt' : id === '2220000222' ? 'ru-full.vtt' : null;
+  if (!name) {
+    res.writeHead(404).end();
+    return;
+  }
+  res.writeHead(200, { 'Content-Type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+  res.end(await readFile(join(FIXTURES, name)));
+}
+
 export interface FixtureServer {
   origin: string;
   close: () => Promise<void>;
@@ -77,10 +108,15 @@ export async function startFixtureServer(
     const requestUrl = new URL(req.url ?? '/', 'http://x');
     if (requestUrl.pathname === '/api/timedtext')
       return fakeTimedtext(requestUrl.searchParams, res);
+    if (requestUrl.pathname === '/api/recommend/item_list/')
+      return fakeTikTokFeed(req.headers.host, res);
+    if (requestUrl.pathname.startsWith('/tt-vtt/')) return fakeTikTokFile(requestUrl.pathname, res);
     let pathname = requestUrl.pathname;
     if (pathname === '/') pathname = '/index.html';
     // A YouTube Short lives at /shorts/<id>, a video at /watch?v=<id>: one fake page serves them all.
     if (pathname.startsWith('/shorts/') || pathname === '/watch') pathname = '/fake-shorts.html';
+    // TikTok: the feed and a video's own page.
+    if (pathname === '/foryou' || pathname.startsWith('/@')) pathname = '/fake-tiktok.html';
     const file = join(FIXTURES, normalize(pathname).replace(/^(\.\.[/\\])+/, ''));
     try {
       let body = await readFile(file);

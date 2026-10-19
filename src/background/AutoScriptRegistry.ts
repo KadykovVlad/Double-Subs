@@ -7,9 +7,12 @@ import {
   type KnownSites,
 } from '../lib/known-sites';
 import { originPattern } from '../lib/scan';
+import { isTikTokPattern } from '../lib/tiktok';
 
 /** The one script that is registered for the sites the user chose: it only asks "is this a known site?". */
 export const PROBE_SCRIPT_ID = 'ds-auto-probe';
+/** TikTok's page-world script, from the very start of its pages, where TikTok is one of the user's sites. */
+export const TIKTOK_SCRIPT_ID = 'ds-tiktok-main';
 const OLD_SCRIPT_PREFIX = 'ds-auto-';
 const SEEDED_KEY = 'knownSitesSeeded';
 
@@ -62,6 +65,7 @@ export class AutoScriptRegistry {
       if (await browser.permissions.contains({ origins: [pattern] })) granted.add(pattern);
     }
     const matches = desiredMatches(sites, mirrorsOn, (pattern) => granted.has(pattern));
+    await this.applyTikTok(matches);
 
     const registered = await browser.scripting.getRegisteredContentScripts();
     const old = registered.filter(
@@ -85,6 +89,29 @@ export class AutoScriptRegistry {
     };
     if (!probe) await browser.scripting.registerContentScripts([script]);
     else if ([...(probe.matches ?? [])].sort().join('|') !== matches.join('|'))
+      await browser.scripting.updateContentScripts([script]);
+  }
+
+  /** The TikTok script follows the TikTok sites among the user's (and the access given to them). */
+  private async applyTikTok(matches: string[]): Promise<void> {
+    const tiktok = matches.filter(isTikTokPattern);
+    const registered = (await browser.scripting.getRegisteredContentScripts()).find(
+      (script) => script.id === TIKTOK_SCRIPT_ID,
+    );
+    if (tiktok.length === 0) {
+      if (registered) await browser.scripting.unregisterContentScripts({ ids: [TIKTOK_SCRIPT_ID] });
+      return;
+    }
+    const script = {
+      id: TIKTOK_SCRIPT_ID,
+      matches: tiktok,
+      js: ['/tiktok-main.js'],
+      runAt: 'document_start' as const,
+      world: 'MAIN' as const,
+      persistAcrossSessions: true,
+    };
+    if (!registered) await browser.scripting.registerContentScripts([script]);
+    else if ([...(registered.matches ?? [])].sort().join('|') !== tiktok.join('|'))
       await browser.scripting.updateContentScripts([script]);
   }
 }

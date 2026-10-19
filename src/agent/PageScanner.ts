@@ -4,6 +4,8 @@ import { isSubtitleTrack } from '../lib/tracks';
 import type { VideoReport } from '../lib/types';
 import type { TranslationStatus } from '../lib/translation-messages';
 import { findVideos } from '../lib/video-finder';
+import { isTikTokHost } from '../lib/tiktok';
+import { tikTokSource } from '../tiktok/TikTokSource';
 
 function boxOf(el: Element) {
   const rect = el.getBoundingClientRect();
@@ -51,11 +53,13 @@ export class PageScanner {
 
   private describeVideo(video: HTMLVideoElement, index: number): VideoInfo {
     const box = boxOf(video);
+    // TikTok's feed keeps the next video waiting below the screen in a second <video>: not a player to offer.
+    const offScreen = isTikTokHost(location.hostname) && !tikTokSource().playsHere(video);
     return {
       index,
       width: box.width,
       height: box.height,
-      visible: isVisibleBox(box),
+      visible: isVisibleBox(box) && !offScreen,
       trackCount: Array.from(video.textTracks).filter(isSubtitleTrack).length,
     };
   }

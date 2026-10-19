@@ -1,4 +1,5 @@
-import type { StartAgentMessage } from '../lib/messages';
+import type { InjectTikTokMainMessage, StartAgentMessage } from '../lib/messages';
+import { isTikTokHost } from '../lib/tiktok';
 import { loadKnownSites } from '../lib/known-sites';
 import { hostsOf, matchKnownHost } from '../lib/site-match';
 
@@ -24,6 +25,28 @@ export class AgentLauncher {
       .executeScript({
         target: { tabId, frameIds: [frameId] },
         files: ['/auto-flag.js', '/agent.js'],
+      })
+      .catch(() => {});
+  }
+
+  /**
+   * TikTok's page-world script, for a page that has the agent but not the script (opened before the
+   * site was registered, or the agent was started from the side panel). Only on TikTok itself.
+   */
+  async injectTikTokMain(
+    message: InjectTikTokMainMessage,
+    sender: chrome.runtime.MessageSender,
+  ): Promise<void> {
+    const tabId = sender.tab?.id;
+    const frameId = sender.frameId;
+    if (message.type !== 'inject-tiktok-main' || tabId === undefined || frameId === undefined)
+      return;
+    if (!sender.url || !isTikTokHost(new URL(sender.url).hostname)) return;
+    await browser.scripting
+      .executeScript({
+        target: { tabId, frameIds: [frameId] },
+        files: ['/tiktok-main.js'],
+        world: 'MAIN',
       })
       .catch(() => {});
   }

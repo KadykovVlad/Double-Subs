@@ -1,0 +1,93 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Fake TikTok</title>
+<!--
+  Mimics what Double Sub relies on in TikTok (served at /foryou and /@user/video/<id>, under
+  www.tiktok.localhost):
+  - no <track>: the subtitle files of the videos are listed in their data, at addresses without
+    a file extension (/tt-vtt/<id>?mime_type=video_mp4);
+  - the data of the first video comes with the page (__UNIVERSAL_DATA_FOR_REHYDRATION__), of the next
+    ones in the answer of the feed request (/api/recommend/item_list/), sent a moment after load;
+  - the feed has two <video> elements for all its videos, each in div#xgwrapper-0-<video id>: the one
+    playing at the top, the next one waiting below the screen. window.next() scrolls on: the waiting one
+    comes up with the next video, the other goes down and takes the one after;
+  - TikTok's own captions over the video (DivVideoClosedCaption).
+  Videos: 111 (English), 222 (Russian only), 333 (no speech: no file).
+-->
+<style>
+  body {
+    margin: 0;
+    background: #000;
+  }
+  article {
+    position: absolute;
+    left: 0;
+    width: 360px;
+    height: 640px;
+  }
+  video {
+    width: 360px;
+    height: 640px;
+    display: block;
+  }
+  .css-1x-DivVideoClosedCaption {
+    position: absolute;
+    bottom: 40px;
+    left: 10px;
+    color: #fff;
+  }
+</style>
+<script>
+  // The page's own data, as TikTok writes it into the page (addresses with this page's origin).
+  const file = (id, language) => ({
+    Url: `${location.origin}/tt-vtt/${id}?mime_type=video_mp4`,
+    LanguageCodeName: language,
+    Source: 'ASR',
+    Format: 'webvtt',
+  });
+  const data = {
+    __DEFAULT_SCOPE__: {
+      'webapp.updated-items': [
+        { id: '1110000111', desc: 'one', video: { subtitleInfos: [file('1110000111', 'eng-US')] } },
+      ],
+    },
+  };
+  document.write(
+    `<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application/json">${JSON.stringify(data)}<\/script>`,
+  );
+</script>
+<div id="feed">
+  <article style="top: 0">
+    <div id="xgwrapper-0-1110000111"><video muted loop src="/clip.webm?v=1110000111"></video></div>
+    <div class="css-1x-DivVideoClosedCaption e1">TikTok's own captions</div>
+  </article>
+  <article style="top: 2000px">
+    <div id="xgwrapper-0-2220000222"><video muted loop src="/clip.webm?v=2220000222"></video></div>
+  </article>
+</div>
+<script>
+  const order = ['1110000111', '2220000222', '3330000333', '1110000111'];
+  let at = 0;
+  // The feed asks for its next videos a moment after load.
+  setTimeout(() => void fetch('/api/recommend/item_list/?count=8').then((r) => r.json()), 300);
+  const articles = [...document.querySelectorAll('article')];
+  window.next = () => {
+    at += 1;
+    const [up, down] = at % 2 === 1 ? [articles[1], articles[0]] : [articles[0], articles[1]];
+    up.style.top = '0';
+    down.style.top = '2000px';
+    down.querySelector('video').pause();
+    // The one going down takes the video after the next one.
+    const later = order[at + 1] ?? order[0];
+    down.querySelector('[id^="xgwrapper-"]').id = `xgwrapper-0-${later}`;
+    down.querySelector('video').src = `/clip.webm?v=${later}`;
+    const video = up.querySelector('video');
+    const caption = document.querySelector('.css-1x-DivVideoClosedCaption');
+    up.append(caption);
+    void video.play().catch(() => {});
+  };
+  void document
+    .querySelector('video')
+    .play()
+    .catch(() => {});
+</script>

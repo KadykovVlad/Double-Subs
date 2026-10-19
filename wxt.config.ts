@@ -17,6 +17,7 @@ const PRODUCT_ENTRYPOINTS = [
   'offscreen',
   'youtube',
   'youtube-main',
+  'tiktok-main',
 ];
 
 const prototypes = E2E || !process.argv.some((arg) => arg === 'build' || arg === 'zip');

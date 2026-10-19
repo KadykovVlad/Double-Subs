@@ -50,6 +50,8 @@ export class AutoStarter {
     this.running = true;
     this.timer = setInterval(() => this.onTimer(), CHECK_EVERY_MS);
     window.addEventListener('click', this.onClick, true);
+    // A video started to play (the next one of a feed, scrolled to): look at once. Media events do not bubble.
+    window.addEventListener('play', this.onPlay, true);
     window.addEventListener('popstate', this.onNavigate);
     window.addEventListener('hashchange', this.onNavigate);
     (window as unknown as { navigation?: EventTarget }).navigation?.addEventListener(
@@ -72,6 +74,7 @@ export class AutoStarter {
     this.clearBurst();
     clearTimeout(this.domTimer);
     window.removeEventListener('click', this.onClick, true);
+    window.removeEventListener('play', this.onPlay, true);
     window.removeEventListener('popstate', this.onNavigate);
     window.removeEventListener('hashchange', this.onNavigate);
     (window as unknown as { navigation?: EventTarget }).navigation?.removeEventListener(
@@ -93,6 +96,11 @@ export class AutoStarter {
   // ---------------------------------------------------------------- signs that a player may be there
 
   private readonly onClick = () => this.burst();
+
+  private readonly onPlay = (event: Event) => {
+    if (event.target instanceof HTMLVideoElement && event.target !== this.host.session?.video)
+      void this.tick();
+  };
 
   private readonly onNavigate = () => {
     if (location.href === this.href) return;

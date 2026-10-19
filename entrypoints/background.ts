@@ -4,12 +4,22 @@ import type { LookupWordMessage } from '../src/lib/dictionary-messages';
 import { DictionaryService } from '../src/background/DictionaryService';
 import { SpeechService } from '../src/background/SpeechService';
 import { TranslationRelay } from '../src/background/TranslationRelay';
-import type { AgentRequest, PickedMessage, StartAgentMessage } from '../src/lib/messages';
+import type {
+  AgentRequest,
+  InjectTikTokMainMessage,
+  PickedMessage,
+  StartAgentMessage,
+} from '../src/lib/messages';
 import type { SpeakMessage } from '../src/lib/speech';
 import type { TranslationEnvelope } from '../src/lib/translation-messages';
 
 type Message =
-  PickedMessage | TranslationEnvelope | SpeakMessage | StartAgentMessage | LookupWordMessage;
+  | PickedMessage
+  | TranslationEnvelope
+  | SpeakMessage
+  | StartAgentMessage
+  | InjectTikTokMainMessage
+  | LookupWordMessage;
 
 /**
  * The service worker only wires the parts together: each job has its own class in src/background/.
@@ -57,6 +67,9 @@ export default defineBackground(() => {
         return false;
       case 'start-agent':
         void launcher.launch(message, sender);
+        return false;
+      case 'inject-tiktok-main':
+        void launcher.injectTikTokMain(message, sender);
         return false;
       case 'lookup-word':
         void dictionary.lookup(message).then(sendResponse);
