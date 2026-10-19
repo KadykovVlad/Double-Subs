@@ -321,6 +321,54 @@ describe('TimedtextTemplates', () => {
     expect(templates.answer('d', pick('en'))).toBe('d');
   });
 
+  describe('lineFromPlayer', () => {
+    const pick = (languageCode: string, tlang: 'ru' | null = null) =>
+      ({
+        track: { baseUrl: '', languageCode, kind: null, name: '', isTranslatable: true },
+        tlang,
+        source: 'manual',
+      }) as const;
+
+    it('gives the answer the player has, and waits for one that is on its way', async () => {
+      const templates = new TimedtextTemplates();
+      templates.sent(url('&pot=T')); // the player has asked for en, no answer yet
+      const waiting = templates.lineFromPlayer('vid', pick('en'), 1000);
+      templates.answered(url('&pot=T'), 'EN');
+      expect(await waiting).toBe('EN');
+      expect(await templates.lineFromPlayer('vid', pick('en'), 1000)).toBe('EN');
+    });
+
+    it('does not wait for what the player never asked for', async () => {
+      const templates = new TimedtextTemplates();
+      templates.sent(url('&pot=T'));
+      templates.answered(url('&pot=T'), 'EN');
+      expect(await templates.lineFromPlayer('vid', pick('ru'), 1000)).toBeNull();
+    });
+
+    it("stops waiting when the player's answer is empty", async () => {
+      const templates = new TimedtextTemplates();
+      templates.sent(url('&pot=T'));
+      const waiting = templates.lineFromPlayer('vid', pick('en'), 1000);
+      templates.answered(url('&pot=T'), '');
+      expect(await waiting).toBeNull();
+    });
+
+    it("takes the player's translation into the language, whichever track it translated", async () => {
+      const templates = new TimedtextTemplates();
+      const portuguese = `https://www.youtube.com/api/timedtext?v=vid&lang=pt&kind=asr&tlang=ru&pot=T&c=WEB&cver=2`;
+      templates.sent(portuguese);
+      templates.answered(portuguese, 'RU-FROM-PT');
+      expect(await templates.lineFromPlayer('vid', pick('en', 'ru'), 1000)).toBe('RU-FROM-PT');
+      expect(await templates.lineFromPlayer('vid', pick('en'), 1000)).toBeNull();
+    });
+
+    it('gives up after the time given', async () => {
+      const templates = new TimedtextTemplates();
+      templates.sent(url('&pot=T'));
+      expect(await templates.lineFromPlayer('vid', pick('en'), 20)).toBeNull();
+    });
+  });
+
   it("ignores other extensions' requests and tells about the player's", () => {
     const templates = new TimedtextTemplates();
     const seen: string[] = [];

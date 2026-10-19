@@ -3,7 +3,7 @@ import { WORDS_STYLE } from './words-ui';
 /** Frosted glass: a translucent grey, the video behind it blurred. */
 export const OVERLAY_STYLE = `
   :host { all: initial; }
-  .box { position: fixed; overflow: hidden; }
+  .box { position: absolute; overflow: hidden; }
   .bar {
     position: absolute; display: flex; align-items: center; gap: 0.85em; box-sizing: border-box;
     width: var(--bar-width, 70%); max-width: 100%; padding: 0.55em 0.8em 0.55em 0.5em;

@@ -51,6 +51,12 @@ export type RequestMessage =
       type: 'load-track';
       languageCode: string;
       kind: CaptionTrack['kind'];
+      /**
+       * The player has sent nothing for this track, not even again: its first request went out before
+       * it had its token and got an empty answer. Telling it the same track changes nothing; a reload
+       * makes it request the track again, now with the token.
+       */
+      reload?: boolean;
     };
 
 const YT = 'https://www.youtube.com';

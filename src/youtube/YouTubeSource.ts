@@ -68,6 +68,14 @@ const CC_RETRY_MS = 300;
 const CC_TRIES = 10;
 /** YouTube sometimes answers 503 even to its own player: try again after these pauses. */
 const LOAD_RETRY_MS = [700, 2000];
+/** The player's request for a line is on its way: its answer is waited for this long before ours goes. */
+const PLAYER_ANSWER_MS = 4000;
+/** One line has come: the other is given this long to come too, then the first is shown alone. */
+const SECOND_LINE_GRACE_MS = 250;
+/** No request from the player this long after CC is on: it is asked to load the track itself. */
+const NUDGE_PLAYER_MS = 800;
+/** Lines being read or read, per video and track: a second look takes them from here. */
+const KEEP_LOADS = 8;
 
 const currentVideoId = () =>
   new URLSearchParams(location.search).get('v') ?? shortsIdOf(location.pathname);
@@ -142,6 +150,8 @@ export class YouTubeSource implements YouTubeBridge {
   private pair: LanguagePair = DEFAULT_PAIR;
   /** Videos whose player was asked to load a missing track (see askForMissing). */
   private readonly askedPlayer = new Set<string>();
+  /** Lines being read or read (see loadOnce), by video, track and template. */
+  private readonly loads = new Map<string, Promise<LoadedPick | null>>();
   private nativeHidden: HTMLStyleElement | null = null;
   private oursOn = false;
   private toggle: HTMLButtonElement | null = null;
@@ -178,6 +188,15 @@ export class YouTubeSource implements YouTubeBridge {
 
   isShort(video: HTMLVideoElement): boolean {
     return video.closest('#shorts-player') !== null;
+  }
+
+  /**
+   * Where our overlays live: the reel of a Short (its controls are above the player in it, and it
+   * scrolls with the video), the player of a video. Below YouTube's header, so scrolling never
+   * puts them over its search bar.
+   */
+  overlayParent(video: HTMLVideoElement): HTMLElement | null {
+    return video.closest<HTMLElement>('ytd-reel-video-renderer') ?? video.closest('#movie_player');
   }
 
   onVideoChange(listener: () => void): () => void {
@@ -394,7 +413,7 @@ export class YouTubeSource implements YouTubeBridge {
     ];
     if (!plan.learn && !plan.native) return { plan, loaded, tokenMs: 0, ms: 0 };
 
-    const template = await this.ensureTemplate(videoId);
+    const template = await this.ensureTemplate(videoId, plan);
     const tokenMs = Math.round(performance.now() - started);
     if (template) {
       loaded = await this.loadAll(videoId, template, plan);
@@ -416,11 +435,12 @@ export class YouTubeSource implements YouTubeBridge {
     if (message.type === 'timedtext-sent') {
       const videoId = videoIdOf(message.url);
       if (videoId && isPlayerTemplate(message.url)) this.playerAsked.add(videoId);
+      this.templates.sent(message.url);
     } else if (message.type === 'timedtext') {
       const videoId = videoIdOf(message.url);
-      if (videoId && !this.firstRequest.has(videoId))
+      if (message.body && videoId && !this.firstRequest.has(videoId))
         this.firstRequest.set(videoId, message.requestedAt);
-      this.templates.offer(message.url, message.body);
+      this.templates.answered(message.url, message.body);
     } else if (message.type === 'tracks') {
       this.tracksWaiters.forEach((waiter) => waiter(message));
     } else if (message.type === 'fetched') {
@@ -461,13 +481,21 @@ export class YouTubeSource implements YouTubeBridge {
    * with CC off (and ours on) CC is turned on so that it does, see turnOnCaptions. Waits for the
    * request, not longer.
    */
-  private async ensureTemplate(videoId: string): Promise<string | null> {
+  private async ensureTemplate(videoId: string, plan: YouTubePlan): Promise<string | null> {
     const known = this.templates.get(videoId);
     if (known) return known;
     void this.turnOnCaptions();
     return new Promise((resolve) => {
+      // Some players stay silent with CC on (a Short opened from the home page): asked to load the
+      // track, the player requests it at once, with its token.
+      const nudge = setTimeout(() => {
+        const pick = plan.learn ?? plan.native;
+        if (pick && this.oursOn && !this.askedPlayer.has(videoId))
+          this.askPlayer(videoId, pick, true);
+      }, NUDGE_PLAYER_MS);
       const done = (template: string | null) => {
         clearTimeout(timer);
+        clearTimeout(nudge);
         stop();
         resolve(template);
       };
@@ -478,12 +506,84 @@ export class YouTubeSource implements YouTubeBridge {
     });
   }
 
-  /** Both lines, with the player's token. */
-  private loadAll(videoId: string, template: string, plan: YouTubePlan): Promise<Loaded> {
-    return Promise.all([
-      this.load(videoId, template, plan.learn),
-      this.load(videoId, template, plan.native),
-    ]);
+  /**
+   * Both lines, with the player's token. YouTube's translation sometimes takes seconds: as soon as
+   * one line has come (and the other has had a moment), what has come is given, and the late line
+   * keeps loading; when it comes, YouTube "ready" is told, and the next look takes it from `loads`.
+   */
+  private async loadAll(videoId: string, template: string, plan: YouTubePlan): Promise<Loaded> {
+    const picks = [plan.learn, plan.native] as const;
+    const loads = [
+      this.loadLine(videoId, template, plan.learn, plan.native),
+      this.loadLine(videoId, template, plan.native, plan.learn),
+    ];
+    const results: Array<LoadedPick | null | undefined> = [undefined, undefined];
+    loads.forEach((load, i) => void load.then((result) => (results[i] = result)));
+    await new Promise<void>((resolve) => {
+      let settled = 0;
+      for (const load of loads)
+        void load.then((result) => {
+          settled++;
+          if (settled === loads.length || (result?.cues && result.cues.length > 0)) resolve();
+        });
+    });
+    if (results.some((result) => result === undefined))
+      await Promise.race([Promise.all(loads), sleep(SECOND_LINE_GRACE_MS)]);
+    const late = loads.filter((_, i) => results[i] === undefined);
+    if (late.length > 0)
+      void Promise.all(late).then(() => {
+        if (currentVideoId() === videoId) this.readyListeners.forEach((listener) => listener());
+      });
+    return [
+      results[0] === undefined ? { pick: picks[0]!, cues: null } : results[0],
+      results[1] === undefined ? { pick: picks[1]!, cues: null } : results[1],
+    ];
+  }
+
+  /**
+   * One line. A track of its own language that YouTube gives empty (it happens, with the token too)
+   * is not waited for again and again: YouTube's translation of the other line's track into that
+   * language is taken at once.
+   */
+  private async loadLine(
+    videoId: string,
+    template: string,
+    pick: TrackPick | null,
+    other: TrackPick | null,
+  ): Promise<LoadedPick | null> {
+    const loaded = await this.loadOnce(videoId, template, pick);
+    if (!pick || pick.tlang || !loaded?.cues || loaded.cues.length > 0 || !hasToken(template))
+      return loaded;
+    const base = other?.track.isTranslatable ? other.track : null;
+    if (!base || base === pick.track) return loaded;
+    const translated = await this.loadOnce(videoId, template, {
+      track: base,
+      tlang: pick.track.languageCode,
+      source: 'youtube-translation',
+    });
+    return translated?.cues && translated.cues.length > 0 ? translated : loaded;
+  }
+
+  /** One line, read once: a look while it loads waits for the same load; a failed one is tried again. */
+  private loadOnce(
+    videoId: string,
+    template: string,
+    pick: TrackPick | null,
+  ): Promise<LoadedPick | null> {
+    if (!pick) return Promise.resolve(null);
+    const key = `${videoId}|${trackKeyOfPick(pick)}|${template}`;
+    const known = this.loads.get(key);
+    if (known) return known;
+    const load = this.load(videoId, template, pick);
+    this.loads.set(key, load);
+    void load.then((result) => {
+      if (!result?.cues || result.cues.length === 0) this.loads.delete(key);
+    });
+    for (const old of this.loads.keys()) {
+      if (this.loads.size <= KEEP_LOADS) break;
+      this.loads.delete(old);
+    }
+    return load;
   }
 
   /**
@@ -497,8 +597,13 @@ export class YouTubeSource implements YouTubeBridge {
     if (hasToken(template) || this.askedPlayer.has(videoId)) return;
     const missing = loaded.find((one) => one && !hasLines(one));
     if (!missing) return;
+    this.askPlayer(videoId, missing.pick);
+  }
+
+  /** The player loads this track itself (with its token); once per video. `reload`: see RequestMessage. */
+  private askPlayer(videoId: string, pick: TrackPick, reload = false): void {
     this.askedPlayer.add(videoId);
-    const { track } = missing.pick;
+    const { track } = pick;
     logTiming('ask-player', { videoId, lang: track.languageCode });
     window.postMessage(
       {
@@ -506,6 +611,7 @@ export class YouTubeSource implements YouTubeBridge {
         type: 'load-track',
         languageCode: track.languageCode,
         kind: track.kind,
+        ...(reload ? { reload } : {}),
       } satisfies RequestMessage,
       location.origin,
     );
@@ -521,7 +627,7 @@ export class YouTubeSource implements YouTubeBridge {
     pick: TrackPick | null,
   ): Promise<LoadedPick | null> {
     if (!pick) return null;
-    const heard = this.templates.answer(videoId, pick);
+    const heard = await this.templates.lineFromPlayer(videoId, pick, PLAYER_ANSWER_MS);
     if (heard) {
       const cues = parseJson3(heard, { rolling: pick.track.kind === 'asr' });
       if (cues.length > 0) {

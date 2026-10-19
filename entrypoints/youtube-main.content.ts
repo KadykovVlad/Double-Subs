@@ -47,10 +47,10 @@ export default defineContentScript({
       return performance.now();
     };
 
+    // Every answer is told, an empty one too: the extension waits for the player's answer of a track.
     const captured = (url: string, body: string, requestedAt: number) => {
-      if (!body) return;
       const videoId = videoIdOf(url);
-      if (videoId && !answered.has(videoId)) {
+      if (body && videoId && !answered.has(videoId)) {
         answered.add(videoId);
         logTiming('first-answer', {
           videoId,
@@ -172,10 +172,12 @@ export default defineContentScript({
       if (request.type === 'load-track') {
         // The player loads this track itself, with its token (its own captions are hidden by us).
         try {
-          currentPlayer()?.setOption?.('captions', 'track', {
+          const player = currentPlayer();
+          player?.setOption?.('captions', 'track', {
             languageCode: request.languageCode,
             ...(request.kind ? { kind: request.kind } : {}),
           });
+          if (request.reload) player?.setOption?.('captions', 'reload', true);
         } catch {
           // An older player without the option: the wait for its next request stays.
         }

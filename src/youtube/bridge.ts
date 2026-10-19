@@ -15,6 +15,8 @@ export interface YouTubeBridge {
   playsHere(video: HTMLVideoElement): boolean;
   /** A Short: tall video with YouTube's own buttons at its top. */
   isShort(video: HTMLVideoElement): boolean;
+  /** The element of the page that moves with this video (the player, the reel of a Short): overlays live in it. */
+  overlayParent(video: HTMLVideoElement): HTMLElement | null;
   /** Loads the two lines of the current video, in the languages of `pair`. */
   inspect(pair: LanguagePair): Promise<Inspection>;
   /** Called when YouTube switches to another video without reloading the page. */

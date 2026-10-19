@@ -3,6 +3,7 @@ import { FONT_FAMILIES, glassAlpha, TEXT_EFFECTS, type Settings } from '../lib/s
 import { isSubtitleTrack } from '../lib/tracks';
 import type { SubtitleLines } from '../lib/types';
 import { BarGestures } from './BarGestures';
+import { boxInHost, placeHost } from './host';
 import { ICONS } from './icons';
 import { OVERLAY_STYLE } from './overlay-styles';
 import type { Overlay, OverlayOptions } from './overlay-types';
@@ -84,8 +85,6 @@ export class SubtitleOverlay implements Overlay {
     this.settings = settings;
     this.resolve = createLineResolver(lines);
 
-    this.host.style.cssText =
-      'all: initial; position: fixed; inset: 0; pointer-events: none; z-index: 2147483647;';
     this.root.innerHTML = this.markup();
     const q = <T extends HTMLElement>(selector: string) => this.root.querySelector<T>(selector)!;
     this.box = q('.box');
@@ -273,14 +272,9 @@ export class SubtitleOverlay implements Overlay {
     document.addEventListener('fullscreenchange', this.onFullscreen);
   }
 
-  /** A fullscreen <video> shows no children at all: the overlay can only live next to it. */
+  /** Where the overlay lives: in the site's container that moves with the video, or over the page (see host.ts). */
   private place(): void {
-    const fullscreen = document.fullscreenElement;
-    const target =
-      fullscreen && fullscreen !== this.video && fullscreen.contains(this.video)
-        ? fullscreen
-        : document.documentElement;
-    if (this.host.parentNode !== target) target.append(this.host);
+    placeHost(this.host, this.video, this.options.anchor);
   }
 
   // ---------------------------------------------------------------- settings changed in the bar
@@ -310,7 +304,8 @@ export class SubtitleOverlay implements Overlay {
     // Test build only: lets e2e tests see how often the layout is redone.
     if (import.meta.env.VITE_DS_E2E) this.host.dataset.layouts = String(++this.layoutCount);
     const { box, bar, settings } = this;
-    const rect = this.video.getBoundingClientRect();
+    this.place(); // the site may have moved the player: the container the overlay lives in is looked for again
+    const rect = boxInHost(this.host, this.video);
     if (rect.width === 0 || rect.height === 0) {
       box.style.display = 'none';
       return;
@@ -342,7 +337,8 @@ export class SubtitleOverlay implements Overlay {
     bar.style.bottom = `${(settings.bottomOffset / 100) * rect.height}px`;
 
     this.panel.scaleTo(settings.fontSize);
-    if (this.panel.isOpen) this.panel.placeAbove(bar.getBoundingClientRect(), rect);
+    if (this.panel.isOpen)
+      this.panel.placeAbove(bar.getBoundingClientRect(), this.video.getBoundingClientRect());
   }
 
   /** Sizes, colours, glass: the settings as CSS variables (the glass ones on the host, so the panel and the tip share them). */
@@ -419,7 +415,8 @@ export class SubtitleOverlay implements Overlay {
   private readonly tick = () => {
     this.frame = 0;
     this.render();
-    const r = this.video.getBoundingClientRect();
+    // Relative to the host: where the page scrolls the video and the overlay together, nothing changes.
+    const r = boxInHost(this.host, this.video);
     const key = `${r.left}|${r.top}|${r.width}|${r.height}`;
     if (this.dirty || key !== this.lastRect) {
       this.lastRect = key;

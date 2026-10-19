@@ -434,6 +434,54 @@ test('when YouTube gives nothing at all, the user is told to switch other subtit
   );
 });
 
+test("YouTube's translation takes seconds: the line that came is shown at once, the late one joins it", async () => {
+  await makeKnown();
+  const { page } = await openVideo('SLOWTR');
+  await page.locator('video').evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
+  // English is the player's own answer: on screen within a second, Russian still on its way (3 s).
+  await expect(page.locator('double-sub-overlay .en')).toHaveText('Hello, Dexter.', {
+    timeout: 1000,
+  });
+  await expect(page.locator('double-sub-overlay .ru')).toBeHidden();
+  // When YouTube's translation comes, it joins without anything else to do.
+  await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.', {
+    timeout: 5000,
+  });
+  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+});
+
+test("the Russian track comes empty from YouTube: YouTube's translation of the English one is taken at once", async () => {
+  await makeKnown();
+  const { page, reports } = await openVideo('EMPTYRU');
+  await page.locator('video').evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
+  await expect(page.locator('double-sub-overlay .en')).toHaveText('Hello, Dexter.', {
+    timeout: 1000,
+  });
+  await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.', {
+    timeout: 1000,
+  });
+  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+  expect(reports.at(-1)?.tracks.map((t) => [t.label, t.status])).toEqual([
+    ['English (субтитры)', 'loaded'],
+    ['English (автоперевод YouTube → ru)', 'loaded'],
+  ]);
+});
+
+test('a player that sent its request before it had its token: it is told to reload the track, and the lines come within two seconds', async () => {
+  await makeKnown();
+  const { page } = await openVideo('BOTH&mute=1&autocc=1');
+  await page.locator('video').evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
+  await expect(page.locator('double-sub-overlay .en')).toHaveText('Hello, Dexter.', {
+    timeout: 2500,
+  });
+  await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.');
+  const calls = await page.evaluate(
+    () => (window as unknown as { setOptionCalls: { option: string }[] }).setOptionCalls,
+  );
+  // Told once: the track, then the reload, which is what makes it request.
+  expect(calls.map((call) => call.option)).toEqual(['track', 'reload']);
+});
+
 // ---------------------------------------------------------------- Shorts (tests/e2e/fixtures/fake-shorts.html)
 
 async function openShort(id: string, query = '') {
@@ -585,6 +633,46 @@ test("from YouTube's home page to a Short: the Short is taken, not the preview a
   const short = page.locator('#shorts-player video');
   await short.evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
   await expect(page.locator('double-sub-overlay .en')).toHaveText('hello dexter');
+});
+
+test("the bar and the chip live inside the Short, below YouTube's header, and move with it at once when it scrolls", async () => {
+  const { page, reports } = await openShort('ASR');
+  await openPopupFor(session, page);
+  await expect.poll(() => statuses(reports)?.length).toBe(2);
+  await page
+    .locator('#shorts-player video')
+    .evaluate((v: HTMLVideoElement) => (v.currentTime = 1.5));
+  await expect(page.locator('double-sub-overlay .en')).toHaveText('hello dexter');
+
+  const where = await page.evaluate(() => {
+    const reel = document.querySelector('ytd-reel-video-renderer')!;
+    const style = (el: Element | null) => (el ? getComputedStyle(el) : null);
+    return {
+      overlayInReel: document.querySelector('double-sub-overlay')?.parentElement === reel,
+      noticeInReel: document.querySelector('double-sub-notice')?.parentElement === reel,
+      overlayZ: Number(style(document.querySelector('double-sub-overlay'))?.zIndex),
+      noticeZ: Number(style(document.querySelector('double-sub-notice'))?.zIndex),
+    };
+  });
+  expect(where.overlayInReel).toBe(true);
+  expect(where.noticeInReel).toBe(true);
+  // YouTube's header is 2020 and its controls in the reel reach 1001.
+  expect(where.overlayZ).toBeGreaterThan(1001);
+  expect(where.overlayZ).toBeLessThan(2020);
+  expect(where.noticeZ).toBeLessThan(2020);
+
+  // The page scrolls the reel (the browser moves it, our script is not asked): the bar is carried
+  // along in the very same frame, not put right afterwards.
+  const shift = await page.evaluate(() => {
+    const bar = document.querySelector('double-sub-overlay')!.shadowRoot!.querySelector('.bar')!;
+    const video = document.querySelector('#shorts-player video')!;
+    const before = [bar.getBoundingClientRect().top, video.getBoundingClientRect().top];
+    (document.querySelector('ytd-reel-video-renderer') as HTMLElement).style.transform =
+      'translateY(-137px)';
+    const after = [bar.getBoundingClientRect().top, video.getBoundingClientRect().top];
+    return [after[0]! - before[0]!, after[1]! - before[1]!];
+  });
+  expect(shift).toEqual([-137, -137]);
 });
 
 // ---------------------------------------------------------------- the languages the user chose

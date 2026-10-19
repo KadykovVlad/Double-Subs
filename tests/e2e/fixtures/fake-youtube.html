@@ -19,7 +19,13 @@
   window.setOptionCalls: what the player was told through its API (setOption).
   window.ccClicks: every click on CC. window.nativeSeen: how many changes of the page left YouTube's
   own captions visible once Double Sub had started reading the player (getPlayerResponse).
-  ?dead=1: the player never requests subtitles: the token cannot be had.
+  ?dead=1: the player never requests subtitles, not even when told to: the token cannot be had.
+  ?mute=1: the player's first request went out before it had its token and got nothing, and it
+  sends no other: it does not request subtitles by itself, and telling it the track it has changes
+  nothing; reloaded (setOption captions reload), it requests the track at once, with the token.
+  window.setOptionCalls lists both.
+  SLOWTR: English only, and YouTube's translation of it takes 3 s.
+  EMPTYRU: English and Russian, but YouTube gives the Russian track empty (its translation works).
   ?early=1: on load the player requests subtitles without the token, with its client parameters.
 -->
 <div id="movie_player" style="position: relative; width: 640px; height: 360px; background: #000">
@@ -43,6 +49,11 @@
       { lang: 'ru', kind: null, name: 'Русский' },
     ],
     ASR: [{ lang: 'en', kind: 'asr', name: 'English (auto-generated)' }],
+    SLOWTR: [{ lang: 'en', kind: null, name: 'English' }],
+    EMPTYRU: [
+      { lang: 'en', kind: null, name: 'English' },
+      { lang: 'ru', kind: null, name: 'Русский' },
+    ],
     NONE: [],
   };
   const params = () => new URLSearchParams(location.search);
@@ -89,7 +100,17 @@
   window.setOptionCalls = [];
   player.setOption = (module, option, value) => {
     window.setOptionCalls.push({ module, option, value });
-    if (module !== 'captions' || option !== 'track') return;
+    if (module !== 'captions' || params().get('dead')) return;
+    if (params().get('mute')) {
+      if (option !== 'reload') return;
+      const first = tracks()[0];
+      if (first)
+        void fetch(
+          `/api/timedtext?v=${videoId()}&lang=${first.lang}${first.kind ? '&kind=asr' : ''}&fmt=json3&pot=SECRET&c=WEB&cver=2.0`,
+        ).then((response) => response.text());
+      return;
+    }
+    if (option !== 'track') return;
     const xhr = new XMLHttpRequest();
     xhr.open(
       'GET',
@@ -108,7 +129,7 @@
   const renderNative = () => (native.textContent = ccOn() ? "YouTube's own captions" : '');
   button.setAttribute('aria-pressed', String(ccState));
   renderNative();
-  const requestsByItself = () => !params().get('silent') || ccOn();
+  const requestsByItself = () => !params().get('mute') && (!params().get('silent') || ccOn());
   if (requestsByItself()) setTimeout(playerRequest, delay());
   if (params().get('early')) {
     const first = tracks()[0];

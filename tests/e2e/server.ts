@@ -44,6 +44,14 @@ async function fakeTimedtext(params: URLSearchParams, res: ServerResponse): Prom
     res.end('');
     return;
   }
+  // A track YouTube gives empty though the token is good (its translation of another track works).
+  if (params.get('v') === 'EMPTYRU' && params.get('lang') === 'ru' && !params.get('tlang')) {
+    res.end('');
+    return;
+  }
+  // YouTube's translation is slow at times: seconds, while the player's own track came at once.
+  if (params.get('v') === 'SLOWTR' && params.get('tlang'))
+    await new Promise((resolve) => setTimeout(resolve, 3000));
   const lang = params.get('tlang') ?? params.get('lang');
   const asr = params.get('kind') === 'asr' && !params.get('tlang');
   const file =

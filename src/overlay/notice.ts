@@ -1,3 +1,5 @@
+import { boxInHost, placeHost, type OverlayAnchor } from './host';
+
 export type NoticeTone = 'ok' | 'info' | 'warn';
 
 export interface Notice {
@@ -11,7 +13,7 @@ const VISIBLE_MS = 4500;
 
 const STYLE = `
   :host { all: initial; }
-  .box { position: fixed; overflow: hidden; pointer-events: none; }
+  .box { position: absolute; overflow: hidden; pointer-events: none; }
   .chip {
     position: absolute; top: 12px; right: 12px; display: flex; align-items: center; gap: 8px; max-width: calc(100% - 24px);
     box-sizing: border-box; padding: 6px 14px 6px 8px; border-radius: 99px; color: #fff;
@@ -40,10 +42,11 @@ const MARK = `<svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect wid
  * buttons in its top corner). It never takes the mouse, so the player stays usable, and in
  * fullscreen it moves into the fullscreen element like the subtitle bar does.
  */
-export function createNotice(video: HTMLVideoElement, options: { bottom?: boolean } = {}): Notice {
+export function createNotice(
+  video: HTMLVideoElement,
+  options: { bottom?: boolean; anchor?: OverlayAnchor } = {},
+): Notice {
   const host = document.createElement('double-sub-notice');
-  host.style.cssText =
-    'all: initial; position: fixed; inset: 0; pointer-events: none; z-index: 2147483647;';
   const root = host.attachShadow({ mode: 'open' });
   root.innerHTML = `<style>${STYLE}</style>
     <div class="box"><div class="chip" role="status" aria-live="polite">${MARK}<span class="dot"></span><span class="text"></span></div></div>`;
@@ -57,18 +60,12 @@ export function createNotice(video: HTMLVideoElement, options: { bottom?: boolea
   let frame = 0;
   let shown = false;
 
-  const place = () => {
-    const fullscreen = document.fullscreenElement;
-    const target =
-      fullscreen && fullscreen !== video && fullscreen.contains(video)
-        ? fullscreen
-        : document.documentElement;
-    if (host.parentNode !== target) target.append(host);
-  };
+  const place = () => placeHost(host, video, options.anchor);
 
   const layout = () => {
     frame = 0;
-    const rect = video.getBoundingClientRect();
+    place();
+    const rect = boxInHost(host, video);
     box.style.display = rect.width === 0 || rect.height === 0 ? 'none' : '';
     Object.assign(box.style, {
       left: `${rect.left}px`,

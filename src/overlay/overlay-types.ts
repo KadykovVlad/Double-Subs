@@ -1,8 +1,11 @@
 import type { Settings } from '../lib/settings';
 import type { SubtitleLines } from '../lib/types';
+import type { OverlayAnchor } from './host';
 import type { WordTools } from './words-ui';
 
 export interface OverlayOptions {
+  /** The site's container that moves with the video, to live in (see host.ts); without it the overlay is fixed over the page. */
+  anchor?: OverlayAnchor;
   /** CSS selector of the site's own subtitle elements to hide while the overlay is on (YouTube). */
   hideSelector?: string;
   /** The player has its own switch for ours (YouTube's control bar): no round button on the video. */

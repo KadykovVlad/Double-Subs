@@ -82,6 +82,8 @@ export class VideoSession {
   private readonly notice: Notice;
   private readonly history: HistoryRecorder;
   private readonly youtube: YouTubeBridge | null;
+  /** The page's container that moves with the video, for the overlay and the chip to live in (only on YouTube so far). */
+  private readonly anchor = () => this.youtube?.overlayParent(this.video) ?? null;
   private stopFollowing: Array<() => void> = [];
   private watcher: PlayerWatcher | null = null;
   private loading = false;
@@ -108,7 +110,10 @@ export class VideoSession {
     const bridge = window.__doubleSubYouTube;
     this.youtube = bridge?.owns(video) ? bridge : null;
     // A Short has YouTube's buttons at its top: the chip goes to the bottom there.
-    this.notice = createNotice(video, { bottom: this.youtube?.isShort(video) ?? false });
+    this.notice = createNotice(video, {
+      bottom: this.youtube?.isShort(video) ?? false,
+      anchor: this.anchor,
+    });
     this.history = new HistoryRecorder(
       video,
       () => deps.data.settings.keepHistory && this.overlay !== null,
@@ -290,6 +295,7 @@ export class VideoSession {
     this.overlay = startOverlay(this.video, inspection.lines, data.settings, {
       hideSelector: this.youtube?.nativeCaptionSelector,
       noRestoreButton: this.youtube !== null, // our switch sits in YouTube's control bar
+      anchor: this.anchor,
       words,
       savedKeys: data.savedKeys,
       onSettingsChange: (patch) => void updateSettings(patch).catch(() => {}),
