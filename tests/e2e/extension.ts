@@ -26,10 +26,16 @@ export interface ExtensionSession {
 
 /** Chromium with the e2e build of the extension loaded (headless=new supports extensions). */
 export async function launchWithExtension(
-  options: { userAgent?: string; headless?: boolean; language?: string } = {},
+  options: {
+    userAgent?: string;
+    headless?: boolean;
+    language?: string;
+    plan?: 'free' | 'pro';
+  } = {},
   extraArgs: string[] = [],
 ): Promise<ExtensionSession> {
-  const { language = 'ru', ...launchOptions } = options;
+  // The tests run on the Pro plan (words, saving) unless a test asks for the free one.
+  const { language = 'ru', plan = 'pro', ...launchOptions } = options;
   const userDataDir = await mkdtemp(join(tmpdir(), 'double-sub-e2e-'));
   const context = await chromium.launchPersistentContext(userDataDir, {
     channel: 'chromium',
@@ -53,10 +59,14 @@ export async function launchWithExtension(
           ),
         );
   const seed = () =>
-    worker.evaluate((stored) => chrome.storage.local.set({ uiLanguage: stored }), {
-      code: language,
-      messages,
-    });
+    worker.evaluate(
+      (stored) =>
+        chrome.storage.local.set({
+          uiLanguage: stored.language,
+          entitlements: { plan: stored.plan, proUntil: null },
+        }),
+      { language: { code: language, messages }, plan },
+    );
   await seed();
   return {
     context,

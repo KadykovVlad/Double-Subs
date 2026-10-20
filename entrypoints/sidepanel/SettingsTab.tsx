@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
 import {
   BAR_OPACITY,
@@ -36,7 +37,7 @@ import {
   type Diagnostics,
 } from '../../src/panel/controller';
 import { forgetSite, MirrorsSwitch } from './NowTab';
-import { useHistory, useKnownSites, useSettings } from './hooks';
+import { useEntitlements, useHistory, useKnownSites, useSettings } from './hooks';
 import { Button, Card, ColorRow, Icons, RangeRow, SectionTitle, SelectRow, SwitchRow } from './ui';
 import { t } from '../../src/lib/i18n';
 
@@ -50,6 +51,7 @@ export function SettingsTab({
   const [settings, change] = useSettings();
   const sites = Object.values(useKnownSites());
   const history = useHistory();
+  const entitlements = useEntitlements();
 
   return (
     <>
@@ -251,6 +253,19 @@ export function SettingsTab({
         </Button>
       </Card>
 
+      {__DS_PROTOTYPES__ && (
+        <Card>
+          <SwitchRow
+            label="Pro (для разработки)"
+            hint="Только в dev- и e2e-сборках: настоящий план придёт с сервера"
+            testid="dev-pro"
+            checked={isPro(entitlements)}
+            onChange={(on) =>
+              void saveEntitlements(on ? { plan: 'pro', proUntil: null } : FREE_PLAN)
+            }
+          />
+        </Card>
+      )}
       {__DS_PROTOTYPES__ && diagnostics && tabId !== null && (
         <DiagnosticsView tabId={tabId} diagnostics={diagnostics} />
       )}

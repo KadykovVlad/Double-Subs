@@ -27,7 +27,10 @@ export class Agent implements AutoHost {
 
   private readonly scanner = new PageScanner();
   private readonly data = new UserData();
-  private readonly words = new WordService(() => pairOf(this.data.settings));
+  private readonly words = new WordService(
+    () => pairOf(this.data.settings),
+    () => this.data.canSaveWords(),
+  );
   private readonly panel = new PanelLink();
   private auto: AutoStarter | null = null;
   private stopPick: (() => void) | null = null;

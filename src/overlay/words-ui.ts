@@ -28,6 +28,8 @@ export interface WordTools {
   lookup(word: string, lang: WordLang): Promise<WordInfo | null>;
   /** Says the word aloud. */
   speak(word: string, lang: WordLang): void;
+  /** Saving words is part of the Pro plan: without it the tip does not offer to save. */
+  canSave(): boolean;
   /** Saves the word, or removes it when it is already saved. */
   toggleSaved(request: SaveRequest): void;
 }
@@ -97,7 +99,7 @@ class WordTip {
     root.append(this.el);
   }
 
-  show(word: HTMLElement, content: TipContent, isSaved: boolean): void {
+  show(word: HTMLElement, content: TipContent, isSaved: boolean, canSave = true): void {
     this.content = content;
     const head = div('tip-word', word.dataset.word ?? '');
     if (content.info?.ipa)
@@ -133,7 +135,7 @@ class WordTip {
       line.prepend(Object.assign(document.createElement('i'), { textContent: posName(sense.pos) }));
       this.el.append(line);
     }
-    this.el.append(div('tip-hint', t(isSaved ? 'tip_saved' : 'tip_save')));
+    if (canSave) this.el.append(div('tip-hint', t(isSaved ? 'tip_saved' : 'tip_save')));
     this.el.hidden = false;
     this.place(word);
   }
@@ -227,7 +229,7 @@ export class WordsUi {
     this.root.querySelectorAll<HTMLElement>('.w').forEach((el) => this.markSaved(el));
     // The tip of the hovered word says whether it is saved.
     if (this.active && this.tip.visible && this.tip.content)
-      this.tip.show(this.active, this.tip.content, this.isSaved(this.active));
+      this.tip.show(this.active, this.tip.content, this.isSaved(this.active), this.tools.canSave());
   }
 
   destroy(): void {
@@ -312,7 +314,7 @@ export class WordsUi {
       failure: null,
       info: null,
     };
-    this.tip.show(word, content, this.isSaved(word));
+    this.tip.show(word, content, this.isSaved(word), this.tools.canSave());
 
     const lang = word.dataset.lang as WordLang;
     const text = word.dataset.word!;
@@ -320,7 +322,7 @@ export class WordsUi {
 
     const refresh = () => {
       if (id !== this.request || this.active !== word) return; // the pointer has moved on
-      this.tip.show(word, content, this.isSaved(word));
+      this.tip.show(word, content, this.isSaved(word), this.tools.canSave());
       this.remember(word, content);
       this.highlightInOtherLine(word, [content.context, content.plain]);
     };

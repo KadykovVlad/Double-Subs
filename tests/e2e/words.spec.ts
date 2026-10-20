@@ -138,6 +138,33 @@ test('a video the user paused stays paused after hovering; the setting turns the
   expect(await isPaused(page)).toBe(false); // no pause with the setting off
 });
 
+test('free plan: the tip still translates, but nothing is offered, saved or underlined, and the panel has no words tab', async () => {
+  await session.worker.evaluate(() =>
+    chrome.storage.local.set({ entitlements: { plan: 'free', proUntil: null } }),
+  );
+  const { page, popup } = await openPlayer();
+  const word = overlay(page).enWord('Hello');
+  await word.hover();
+  await expectTip(page, 'привет');
+  await expect(overlay(page).tip.locator('.tip-hint')).toHaveCount(0);
+
+  await word.click();
+  await expect(word).not.toHaveClass(/saved/);
+  expect(await savedWords()).toEqual([]);
+
+  await expect(popup.getByTestId('tab-history')).toBeVisible();
+  await expect(popup.getByTestId('tab-words')).toHaveCount(0);
+
+  // Pro again (the switch of the development build): the tab and the saving come back.
+  await session.worker.evaluate(() =>
+    chrome.storage.local.set({ entitlements: { plan: 'pro', proUntil: null } }),
+  );
+  await expect(popup.getByTestId('tab-words')).toBeVisible();
+  await word.hover();
+  await word.click();
+  await expect(word).toHaveClass(/saved/);
+});
+
 test('click saves the word, underlines it, lists it in the popup, and a second click removes it', async () => {
   const { page, popup } = await openPlayer();
   // A click on a word must not reach the page (in fullscreen the overlay sits inside the player).

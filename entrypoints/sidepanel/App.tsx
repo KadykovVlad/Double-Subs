@@ -14,7 +14,8 @@ import { HistoryTab } from './HistoryTab';
 import { NowTab } from './NowTab';
 import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
-import { useSavedWords } from './hooks';
+import { useEntitlements, useSavedWords } from './hooks';
+import { hasFeature } from '../../src/lib/entitlements';
 import { Icons, Logo } from './ui';
 import { t, textDirection, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 import {
@@ -60,7 +61,7 @@ export function App() {
   const [language, setLanguage] = useState(uiLanguage());
   document.documentElement.lang = language;
   document.documentElement.dir = textDirection();
-  const [tab, setTab] = useState<TabId>('now');
+  const [chosenTab, setTab] = useState<TabId>('now');
   const [tabId, setTabId] = useState<number | null>(null);
   const [state, setState] = useState<PopupState>({
     kind: 'working',
@@ -69,7 +70,11 @@ export function App() {
     pageUrl: null,
   });
   const words = useSavedWords();
+  const showWords = hasFeature(useEntitlements(), 'words');
   const dueCount = dueWords(words).length;
+  // The words belong to the Pro plan: without it there is no tab (a plan that ends on the tab sends the user back).
+  const tabs = TABS.filter((item) => item.id !== 'words' || showWords);
+  const tab = tabs.some((item) => item.id === chosenTab) ? chosenTab : 'now';
   /** The panel stays open while the user moves between tabs and pages: always the tab we are showing. */
   const current = useRef<number | null>(null);
 
@@ -187,7 +192,7 @@ export function App() {
         <LanguagePicker code={language} />
       </header>
       <nav class="tabs" role="tablist" aria-label={t('tabs_label')}>
-        {TABS.map((item) => (
+        {tabs.map((item) => (
           <button
             key={item.id}
             class="tab"

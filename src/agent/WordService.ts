@@ -21,7 +21,11 @@ export class WordService implements WordTools {
   private readonly lookups = new Map<string, Promise<WordInfo | null>>();
 
   /** `pair`: the languages chosen now; a word is translated into the other one of the pair. */
-  constructor(private readonly pair: () => LanguagePair) {}
+  constructor(
+    private readonly pair: () => LanguagePair,
+    /** Saving words is a Pro feature: without it a click on a word saves nothing. */
+    private readonly canSaveWords: () => boolean = () => true,
+  ) {}
 
   /** A word of the learnt line goes into the user's language, a word of their own line into the learnt one. */
   private directionFrom(lang: WordLang): Direction {
@@ -67,6 +71,10 @@ export class WordService implements WordTools {
     speakWord(word, lang);
   }
 
+  canSave(): boolean {
+    return this.canSaveWords();
+  }
+
   /** One entry per dictionary word: "went" and "going" are saved as "go" (and the form that was met is kept). */
   toggleSaved({
     word,
@@ -75,6 +83,7 @@ export class WordService implements WordTools {
     context,
     info,
   }: Parameters<WordTools['toggleSaved']>[0]): void {
+    if (!this.canSaveWords()) return;
     const base = info?.inflected ? info.lemma : word;
     const entry = {
       key: wordKey(base, lang),

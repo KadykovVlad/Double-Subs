@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'preact/hooks';
+import {
+  FREE_PLAN,
+  loadEntitlements,
+  watchEntitlements,
+  type Entitlements,
+} from '../../src/lib/entitlements';
 import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/history';
 import {
   loadDismissed,
@@ -44,6 +50,16 @@ export function useSavedWords(): SavedWord[] {
     return watchSavedWords(setWords);
   }, []);
   return words;
+}
+
+/** The plan decides which tabs and features the panel offers. */
+export function useEntitlements(): Entitlements {
+  const [entitlements, setEntitlements] = useState<Entitlements>(FREE_PLAN);
+  useEffect(() => {
+    void loadEntitlements().then(setEntitlements);
+    return watchEntitlements(setEntitlements);
+  }, []);
+  return entitlements;
 }
 
 export function useHistory(): HistoryEntry[] {
