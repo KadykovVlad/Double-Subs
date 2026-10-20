@@ -8,3 +8,5 @@ dist
 .output-e2e
 test-results
 playwright-report
+.wrangler
+.dev.vars

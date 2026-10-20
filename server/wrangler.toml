@@ -1,0 +1,17 @@
+# Accounts and sync of Double Sub. See README.md for the first deploy.
+name = "double-sub-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "double-sub"
+# Replace with the id printed by `wrangler d1 create double-sub`.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[vars]
+# The extension's origin(s), comma-separated: chrome-extension://<id>. Only they get CORS answers.
+EXTENSION_ORIGINS = ""
+
+# Secrets (wrangler secret put): GOOGLE_CLIENT_ID, SESSION_SECRET.
