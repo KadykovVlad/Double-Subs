@@ -255,5 +255,14 @@
 "picker_this": "选择此播放器",
 "err_no_tab": "未找到活动标签页。",
 "bar_show": "显示字幕",
-"lang_label": "语言"
+"lang_label": "语言",
+"account_title": "账号",
+"account_sign_in": "使用 Google 登录",
+"account_signing_in": "正在登录…",
+"account_sign_out": "退出登录",
+"account_signed_in": "已登录为 $1",
+"account_plan_free": "免费版",
+"account_plan_pro": "Pro 版",
+"account_error": "登录失败，请重试。",
+"account_error_network": "无法连接到服务器，请稍后重试。"
 }

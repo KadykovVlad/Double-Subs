@@ -439,6 +439,7 @@ test('the popup has the same blocks, text colours and the "More styles" block', 
   const { page, popup } = await openPlayer();
   await openPanelTab(popup, 'settings');
   await expect(popup.locator('.section-title')).toHaveText([
+    'Аккаунт',
     'Субтитры для изучения',
     'Субтитры на родном языке',
     'Окно',

@@ -255,5 +255,14 @@
 "picker_this": "Alege acest player",
 "err_no_tab": "Fila activă nu a fost găsită.",
 "bar_show": "Afișează subtitrările",
-"lang_label": "Limbă"
+"lang_label": "Limbă",
+"account_title": "Cont",
+"account_sign_in": "Conectează-te cu Google",
+"account_signing_in": "Se conectează…",
+"account_sign_out": "Deconectează-te",
+"account_signed_in": "Conectat ca $1",
+"account_plan_free": "Plan gratuit",
+"account_plan_pro": "Plan Pro",
+"account_error": "Conectarea a eșuat. Încearcă din nou.",
+"account_error_network": "Serverul nu poate fi contactat. Încearcă mai târziu."
 }

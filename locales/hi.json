@@ -255,5 +255,14 @@
 "picker_this": "यह प्लेयर चुनें",
 "err_no_tab": "सक्रिय टैब नहीं मिला।",
 "bar_show": "उपशीर्षक दिखाएँ",
-"lang_label": "भाषा"
+"lang_label": "भाषा",
+"account_title": "खाता",
+"account_sign_in": "Google से साइन इन करें",
+"account_signing_in": "साइन इन हो रहा है…",
+"account_sign_out": "साइन आउट करें",
+"account_signed_in": "$1 के रूप में साइन इन हैं",
+"account_plan_free": "मुफ़्त प्लान",
+"account_plan_pro": "Pro प्लान",
+"account_error": "साइन इन नहीं हो सका। फिर से कोशिश करें।",
+"account_error_network": "सर्वर से कनेक्ट नहीं हो सका। बाद में फिर से कोशिश करें।"
 }

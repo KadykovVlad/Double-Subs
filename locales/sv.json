@@ -255,5 +255,14 @@
 "picker_this": "Välj den här spelaren",
 "err_no_tab": "Den aktiva fliken hittades inte.",
 "bar_show": "Visa undertexter",
-"lang_label": "Språk"
+"lang_label": "Språk",
+"account_title": "Konto",
+"account_sign_in": "Logga in med Google",
+"account_signing_in": "Loggar in…",
+"account_sign_out": "Logga ut",
+"account_signed_in": "Inloggad som $1",
+"account_plan_free": "Gratisplan",
+"account_plan_pro": "Pro-plan",
+"account_error": "Det gick inte att logga in. Försök igen.",
+"account_error_network": "Kan inte nå servern. Försök igen senare."
 }

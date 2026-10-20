@@ -255,5 +255,14 @@
 "picker_this": "選擇此播放器",
 "err_no_tab": "找不到使用中的分頁。",
 "bar_show": "顯示字幕",
-"lang_label": "語言"
+"lang_label": "語言",
+"account_title": "帳號",
+"account_sign_in": "使用 Google 登入",
+"account_signing_in": "登入中…",
+"account_sign_out": "登出",
+"account_signed_in": "已登入為 $1",
+"account_plan_free": "免費方案",
+"account_plan_pro": "Pro 方案",
+"account_error": "登入失敗，請再試一次。",
+"account_error_network": "無法連線至伺服器，請稍後再試。"
 }

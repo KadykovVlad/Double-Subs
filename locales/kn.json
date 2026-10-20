@@ -255,5 +255,14 @@
 "picker_this": "ಈ ಪ್ಲೇಯರ್ ಆರಿಸಿ",
 "err_no_tab": "ಸಕ್ರಿಯ ಟ್ಯಾಬ್ ಸಿಗಲಿಲ್ಲ.",
 "bar_show": "ಉಪಶೀರ್ಷಿಕೆಗಳನ್ನು ತೋರಿಸಿ",
-"lang_label": "ಭಾಷೆ"
+"lang_label": "ಭಾಷೆ",
+"account_title": "ಖಾತೆ",
+"account_sign_in": "Google ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ",
+"account_signing_in": "ಸೈನ್ ಇನ್ ಆಗುತ್ತಿದೆ…",
+"account_sign_out": "ಸೈನ್ ಔಟ್ ಮಾಡಿ",
+"account_signed_in": "$1 ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದೆ",
+"account_plan_free": "ಉಚಿತ ಯೋಜನೆ",
+"account_plan_pro": "Pro ಯೋಜನೆ",
+"account_error": "ಸೈನ್ ಇನ್ ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+"account_error_network": "ಸರ್ವರ್ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
 }

@@ -255,5 +255,14 @@
 "picker_this": "このプレーヤーを選択",
 "err_no_tab": "アクティブなタブが見つかりません。",
 "bar_show": "字幕を表示",
-"lang_label": "言語"
+"lang_label": "言語",
+"account_title": "アカウント",
+"account_sign_in": "Google でログイン",
+"account_signing_in": "ログイン中…",
+"account_sign_out": "ログアウト",
+"account_signed_in": "$1 としてログイン中",
+"account_plan_free": "無料プラン",
+"account_plan_pro": "Pro プラン",
+"account_error": "ログインできませんでした。もう一度お試しください。",
+"account_error_network": "サーバーに接続できません。しばらくしてからもう一度お試しください。"
 }

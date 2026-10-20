@@ -255,5 +255,14 @@
 "picker_this": "ഈ പ്ലേയർ തിരഞ്ഞെടുക്കുക",
 "err_no_tab": "സജീവ ടാബ് കണ്ടെത്തിയില്ല.",
 "bar_show": "സബ്ടൈറ്റിലുകൾ കാണിക്കുക",
-"lang_label": "ഭാഷ"
+"lang_label": "ഭാഷ",
+"account_title": "അക്കൗണ്ട്",
+"account_sign_in": "Google ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക",
+"account_signing_in": "സൈൻ ഇൻ ചെയ്യുന്നു…",
+"account_sign_out": "സൈൻ ഔട്ട് ചെയ്യുക",
+"account_signed_in": "$1 ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു",
+"account_plan_free": "സൗജന്യ പ്ലാൻ",
+"account_plan_pro": "Pro പ്ലാൻ",
+"account_error": "സൈൻ ഇൻ ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക.",
+"account_error_network": "സെർവറുമായി ബന്ധപ്പെടാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക."
 }

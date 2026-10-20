@@ -255,5 +255,14 @@
 "picker_this": "இந்தப் பிளேயரைத் தேர்ந்தெடு",
 "err_no_tab": "செயலில் உள்ள தாவல் கிடைக்கவில்லை.",
 "bar_show": "வசனங்களைக் காட்டு",
-"lang_label": "மொழி"
+"lang_label": "மொழி",
+"account_title": "கணக்கு",
+"account_sign_in": "Google மூலம் உள்நுழையவும்",
+"account_signing_in": "உள்நுழைகிறது…",
+"account_sign_out": "வெளியேறு",
+"account_signed_in": "$1 ஆக உள்நுழைந்துள்ளீர்கள்",
+"account_plan_free": "இலவசத் திட்டம்",
+"account_plan_pro": "Pro திட்டம்",
+"account_error": "உள்நுழைய முடியவில்லை. மீண்டும் முயலவும்.",
+"account_error_network": "சேவையகத்தை அடைய முடியவில்லை. பின்னர் மீண்டும் முயலவும்."
 }

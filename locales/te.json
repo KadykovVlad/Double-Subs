@@ -255,5 +255,14 @@
 "picker_this": "ఈ ప్లేయర్‌ను ఎంచుకో",
 "err_no_tab": "క్రియాశీల ట్యాబ్ దొరకలేదు.",
 "bar_show": "ఉపశీర్షికలను చూపించు",
-"lang_label": "భాష"
+"lang_label": "భాష",
+"account_title": "ఖాతా",
+"account_sign_in": "Googleతో సైన్ ఇన్ చేయండి",
+"account_signing_in": "సైన్ ఇన్ అవుతోంది…",
+"account_sign_out": "సైన్ అవుట్ చేయండి",
+"account_signed_in": "$1గా సైన్ ఇన్ చేసారు",
+"account_plan_free": "ఉచిత ప్లాన్",
+"account_plan_pro": "Pro ప్లాన్",
+"account_error": "సైన్ ఇన్ కాలేదు. మళ్లీ ప్రయత్నించండి.",
+"account_error_network": "సర్వర్‌ను చేరుకోలేకపోయాము. తర్వాత మళ్లీ ప్రయత్నించండి."
 }

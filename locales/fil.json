@@ -255,5 +255,14 @@
 "picker_this": "Piliin ang player na ito",
 "err_no_tab": "Hindi nahanap ang aktibong tab.",
 "bar_show": "Ipakita ang mga subtitle",
-"lang_label": "Wika"
+"lang_label": "Wika",
+"account_title": "Account",
+"account_sign_in": "Mag-sign in gamit ang Google",
+"account_signing_in": "Nagsa-sign in…",
+"account_sign_out": "Mag-sign out",
+"account_signed_in": "Naka-sign in bilang $1",
+"account_plan_free": "Libreng plano",
+"account_plan_pro": "Pro na plano",
+"account_error": "Hindi nakapag-sign in. Subukan ulit.",
+"account_error_network": "Hindi maabot ang server. Subukan ulit mamaya."
 }

@@ -255,5 +255,14 @@
 "picker_this": "Вибрати цей плеєр",
 "err_no_tab": "Активну вкладку не знайдено.",
 "bar_show": "Показати субтитри",
-"lang_label": "Мова"
+"lang_label": "Мова",
+"account_title": "Обліковий запис",
+"account_sign_in": "Увійти через Google",
+"account_signing_in": "Вхід…",
+"account_sign_out": "Вийти",
+"account_signed_in": "Ви увійшли як $1",
+"account_plan_free": "Безкоштовний план",
+"account_plan_pro": "План Pro",
+"account_error": "Не вдалося увійти. Спробуйте ще раз.",
+"account_error_network": "Немає зв’язку із сервером. Спробуйте пізніше."
 }

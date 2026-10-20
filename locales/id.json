@@ -255,5 +255,14 @@
 "picker_this": "Pilih pemutar ini",
 "err_no_tab": "Tab aktif tidak ditemukan.",
 "bar_show": "Tampilkan subtitel",
-"lang_label": "Bahasa"
+"lang_label": "Bahasa",
+"account_title": "Akun",
+"account_sign_in": "Masuk dengan Google",
+"account_signing_in": "Sedang masuk…",
+"account_sign_out": "Keluar",
+"account_signed_in": "Masuk sebagai $1",
+"account_plan_free": "Paket gratis",
+"account_plan_pro": "Paket Pro",
+"account_error": "Gagal masuk. Coba lagi.",
+"account_error_network": "Tidak dapat terhubung ke server. Coba lagi nanti."
 }

@@ -255,5 +255,14 @@
 "picker_this": "Pasirinkti šį grotuvą",
 "err_no_tab": "Aktyvus skirtukas nerastas.",
 "bar_show": "Rodyti subtitrus",
-"lang_label": "Kalba"
+"lang_label": "Kalba",
+"account_title": "Paskyra",
+"account_sign_in": "Prisijungti su „Google“",
+"account_signing_in": "Prisijungiama…",
+"account_sign_out": "Atsijungti",
+"account_signed_in": "Prisijungta kaip $1",
+"account_plan_free": "Nemokamas planas",
+"account_plan_pro": "„Pro“ planas",
+"account_error": "Prisijungti nepavyko. Bandykite dar kartą.",
+"account_error_network": "Nepavyksta pasiekti serverio. Bandykite vėliau."
 }

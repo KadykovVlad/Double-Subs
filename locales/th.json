@@ -255,5 +255,14 @@
 "picker_this": "เลือกเครื่องเล่นนี้",
 "err_no_tab": "ไม่พบแท็บที่ใช้งานอยู่",
 "bar_show": "แสดงคำบรรยาย",
-"lang_label": "ภาษา"
+"lang_label": "ภาษา",
+"account_title": "บัญชี",
+"account_sign_in": "ลงชื่อเข้าใช้ด้วย Google",
+"account_signing_in": "กำลังลงชื่อเข้าใช้…",
+"account_sign_out": "ออกจากระบบ",
+"account_signed_in": "ลงชื่อเข้าใช้เป็น $1",
+"account_plan_free": "แพ็กเกจฟรี",
+"account_plan_pro": "แพ็กเกจ Pro",
+"account_error": "ลงชื่อเข้าใช้ไม่สำเร็จ โปรดลองอีกครั้ง",
+"account_error_network": "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ โปรดลองอีกครั้งภายหลัง"
 }

@@ -255,5 +255,14 @@
 "picker_this": "Deze speler kiezen",
 "err_no_tab": "Actief tabblad niet gevonden.",
 "bar_show": "Ondertitels tonen",
-"lang_label": "Taal"
+"lang_label": "Taal",
+"account_title": "Account",
+"account_sign_in": "Inloggen met Google",
+"account_signing_in": "Inloggen…",
+"account_sign_out": "Uitloggen",
+"account_signed_in": "Ingelogd als $1",
+"account_plan_free": "Gratis abonnement",
+"account_plan_pro": "Pro-abonnement",
+"account_error": "Inloggen mislukt. Probeer het opnieuw.",
+"account_error_network": "Server niet bereikbaar. Probeer het later opnieuw."
 }

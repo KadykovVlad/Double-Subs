@@ -255,5 +255,14 @@
 "picker_this": "בחר את הנגן הזה",
 "err_no_tab": "הכרטיסייה הפעילה לא נמצאה.",
 "bar_show": "הצג כתוביות",
-"lang_label": "שפה"
+"lang_label": "שפה",
+"account_title": "חשבון",
+"account_sign_in": "התחברות באמצעות Google",
+"account_signing_in": "מתחבר…",
+"account_sign_out": "התנתקות",
+"account_signed_in": "מחובר בתור $1",
+"account_plan_free": "תוכנית חינמית",
+"account_plan_pro": "תוכנית Pro",
+"account_error": "ההתחברות נכשלה. נסו שוב.",
+"account_error_network": "לא ניתן להתחבר לשרת. נסו שוב מאוחר יותר."
 }

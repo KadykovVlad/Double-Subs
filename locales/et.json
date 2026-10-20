@@ -255,5 +255,14 @@
 "picker_this": "Vali see mängija",
 "err_no_tab": "Aktiivset vahelehte ei leitud.",
 "bar_show": "Näita subtiitreid",
-"lang_label": "Keel"
+"lang_label": "Keel",
+"account_title": "Konto",
+"account_sign_in": "Logi sisse Google’iga",
+"account_signing_in": "Sisselogimine…",
+"account_sign_out": "Logi välja",
+"account_signed_in": "Sisse logitud kasutajana $1",
+"account_plan_free": "Tasuta pakett",
+"account_plan_pro": "Pro pakett",
+"account_error": "Sisselogimine ebaõnnestus. Proovige uuesti.",
+"account_error_network": "Serveriga ei saa ühendust. Proovige hiljem uuesti."
 }

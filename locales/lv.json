@@ -255,5 +255,14 @@
 "picker_this": "Izvēlēties šo atskaņotāju",
 "err_no_tab": "Aktīvā cilne netika atrasta.",
 "bar_show": "Rādīt subtitrus",
-"lang_label": "Valoda"
+"lang_label": "Valoda",
+"account_title": "Konts",
+"account_sign_in": "Pieteikties ar Google",
+"account_signing_in": "Notiek pieteikšanās…",
+"account_sign_out": "Iziet",
+"account_signed_in": "Pieteicies kā $1",
+"account_plan_free": "Bezmaksas plāns",
+"account_plan_pro": "Pro plāns",
+"account_error": "Pieteikšanās neizdevās. Mēģiniet vēlreiz.",
+"account_error_network": "Nevar sasniegt serveri. Mēģiniet vēlāk."
 }

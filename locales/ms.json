@@ -255,5 +255,14 @@
 "picker_this": "Pilih pemain ini",
 "err_no_tab": "Tab aktif tidak ditemui.",
 "bar_show": "Tunjukkan sari kata",
-"lang_label": "Bahasa"
+"lang_label": "Bahasa",
+"account_title": "Akaun",
+"account_sign_in": "Log masuk dengan Google",
+"account_signing_in": "Sedang log masuk…",
+"account_sign_out": "Log keluar",
+"account_signed_in": "Log masuk sebagai $1",
+"account_plan_free": "Pelan percuma",
+"account_plan_pro": "Pelan Pro",
+"account_error": "Log masuk gagal. Sila cuba lagi.",
+"account_error_network": "Tidak dapat menghubungi pelayan. Sila cuba lagi kemudian."
 }

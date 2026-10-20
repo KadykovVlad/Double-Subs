@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { loadAccount, watchAccount, type Account } from '../../src/lib/account';
 import {
   FREE_PLAN,
   loadEntitlements,
@@ -50,6 +51,16 @@ export function useSavedWords(): SavedWord[] {
     return watchSavedWords(setWords);
   }, []);
   return words;
+}
+
+/** Who is signed in (null: nobody); the sign-in in any part of the extension shows up here. */
+export function useAccount(): Account | null {
+  const [account, setAccount] = useState<Account | null>(null);
+  useEffect(() => {
+    void loadAccount().then(setAccount);
+    return watchAccount(setAccount);
+  }, []);
+  return account;
 }
 
 /** The plan decides which tabs and features the panel offers. */

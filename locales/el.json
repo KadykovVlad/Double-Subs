@@ -255,5 +255,14 @@
 "picker_this": "Επιλογή αυτού του προγράμματος αναπαραγωγής",
 "err_no_tab": "Δεν βρέθηκε η ενεργή καρτέλα.",
 "bar_show": "Εμφάνιση υποτίτλων",
-"lang_label": "Γλώσσα"
+"lang_label": "Γλώσσα",
+"account_title": "Λογαριασμός",
+"account_sign_in": "Σύνδεση με Google",
+"account_signing_in": "Σύνδεση…",
+"account_sign_out": "Αποσύνδεση",
+"account_signed_in": "Συνδεδεμένος ως $1",
+"account_plan_free": "Δωρεάν πλάνο",
+"account_plan_pro": "Πλάνο Pro",
+"account_error": "Η σύνδεση απέτυχε. Δοκιμάστε ξανά.",
+"account_error_network": "Αδυναμία σύνδεσης με τον διακομιστή. Δοκιμάστε ξανά αργότερα."
 }

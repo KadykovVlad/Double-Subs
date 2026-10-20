@@ -255,5 +255,14 @@
 "picker_this": "Chagua kicheza hiki",
 "err_no_tab": "Kichupo kinachotumika hakikupatikana.",
 "bar_show": "Onyesha manukuu",
-"lang_label": "Lugha"
+"lang_label": "Lugha",
+"account_title": "Akaunti",
+"account_sign_in": "Ingia kwa Google",
+"account_signing_in": "Inaingia…",
+"account_sign_out": "Toka",
+"account_signed_in": "Umeingia kama $1",
+"account_plan_free": "Mpango wa bure",
+"account_plan_pro": "Mpango wa Pro",
+"account_error": "Imeshindwa kuingia. Jaribu tena.",
+"account_error_network": "Imeshindwa kufikia seva. Jaribu tena baadaye."
 }

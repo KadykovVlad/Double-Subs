@@ -255,5 +255,14 @@
 "picker_this": "اختيار هذا المشغّل",
 "err_no_tab": "لم يُعثر على علامة التبويب النشطة.",
 "bar_show": "إظهار الترجمة",
-"lang_label": "اللغة"
+"lang_label": "اللغة",
+"account_title": "الحساب",
+"account_sign_in": "تسجيل الدخول باستخدام Google",
+"account_signing_in": "جارٍ تسجيل الدخول…",
+"account_sign_out": "تسجيل الخروج",
+"account_signed_in": "تم تسجيل الدخول باسم $1",
+"account_plan_free": "الخطة المجانية",
+"account_plan_pro": "خطة Pro",
+"account_error": "فشل تسجيل الدخول. حاول مرة أخرى.",
+"account_error_network": "تعذّر الاتصال بالخادم. حاول مرة أخرى لاحقًا."
 }

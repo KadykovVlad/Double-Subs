@@ -255,5 +255,14 @@
 "picker_this": "이 플레이어 선택",
 "err_no_tab": "활성 탭을 찾지 못했습니다.",
 "bar_show": "자막 표시",
-"lang_label": "언어"
+"lang_label": "언어",
+"account_title": "계정",
+"account_sign_in": "Google로 로그인",
+"account_signing_in": "로그인하는 중…",
+"account_sign_out": "로그아웃",
+"account_signed_in": "$1(으)로 로그인됨",
+"account_plan_free": "무료 요금제",
+"account_plan_pro": "Pro 요금제",
+"account_error": "로그인하지 못했습니다. 다시 시도해 주세요.",
+"account_error_network": "서버에 연결할 수 없습니다. 나중에 다시 시도해 주세요."
 }

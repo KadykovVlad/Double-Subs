@@ -255,5 +255,14 @@
 "picker_this": "Vælg denne afspiller",
 "err_no_tab": "Den aktive fane blev ikke fundet.",
 "bar_show": "Vis undertekster",
-"lang_label": "Sprog"
+"lang_label": "Sprog",
+"account_title": "Konto",
+"account_sign_in": "Log ind med Google",
+"account_signing_in": "Logger ind…",
+"account_sign_out": "Log ud",
+"account_signed_in": "Logget ind som $1",
+"account_plan_free": "Gratis abonnement",
+"account_plan_pro": "Pro-abonnement",
+"account_error": "Login mislykkedes. Prøv igen.",
+"account_error_network": "Kan ikke nå serveren. Prøv igen senere."
 }

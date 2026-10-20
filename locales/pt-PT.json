@@ -255,5 +255,14 @@
 "picker_this": "Escolher este leitor",
 "err_no_tab": "A aba ativa não foi encontrada.",
 "bar_show": "Mostrar legendas",
-"lang_label": "Idioma"
+"lang_label": "Idioma",
+"account_title": "Conta",
+"account_sign_in": "Iniciar sessão com o Google",
+"account_signing_in": "A iniciar sessão…",
+"account_sign_out": "Terminar sessão",
+"account_signed_in": "Sessão iniciada como $1",
+"account_plan_free": "Plano gratuito",
+"account_plan_pro": "Plano Pro",
+"account_error": "Falha ao iniciar sessão. Tente novamente.",
+"account_error_network": "Não foi possível ligar ao servidor. Tente novamente mais tarde."
 }

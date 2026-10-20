@@ -255,5 +255,14 @@
 "picker_this": "Scegli questo player",
 "err_no_tab": "Scheda attiva non trovata.",
 "bar_show": "Mostra i sottotitoli",
-"lang_label": "Lingua"
+"lang_label": "Lingua",
+"account_title": "Account",
+"account_sign_in": "Accedi con Google",
+"account_signing_in": "Accesso in corso…",
+"account_sign_out": "Esci",
+"account_signed_in": "Accesso eseguito come $1",
+"account_plan_free": "Piano gratuito",
+"account_plan_pro": "Piano Pro",
+"account_error": "Accesso non riuscito. Riprova.",
+"account_error_network": "Impossibile raggiungere il server. Riprova più tardi."
 }

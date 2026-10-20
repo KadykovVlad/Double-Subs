@@ -255,5 +255,14 @@
 "picker_this": "Избор на този плейър",
 "err_no_tab": "Активният раздел не е намерен.",
 "bar_show": "Показване на субтитрите",
-"lang_label": "Език"
+"lang_label": "Език",
+"account_title": "Профил",
+"account_sign_in": "Вход с Google",
+"account_signing_in": "Влизане…",
+"account_sign_out": "Изход",
+"account_signed_in": "Влезли сте като $1",
+"account_plan_free": "Безплатен план",
+"account_plan_pro": "План Pro",
+"account_error": "Входът не бе успешен. Опитайте отново.",
+"account_error_network": "Няма връзка със сървъра. Опитайте по-късно."
 }

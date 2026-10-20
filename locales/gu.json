@@ -255,5 +255,14 @@
 "picker_this": "આ પ્લેયર પસંદ કરો",
 "err_no_tab": "સક્રિય ટૅબ મળ્યું નથી.",
 "bar_show": "સબટાઇટલ બતાવો",
-"lang_label": "ભાષા"
+"lang_label": "ભાષા",
+"account_title": "ખાતું",
+"account_sign_in": "Google વડે સાઇન ઇન કરો",
+"account_signing_in": "સાઇન ઇન થઈ રહ્યું છે…",
+"account_sign_out": "સાઇન આઉટ કરો",
+"account_signed_in": "$1 તરીકે સાઇન ઇન કર્યું છે",
+"account_plan_free": "મફત પ્લાન",
+"account_plan_pro": "Pro પ્લાન",
+"account_error": "સાઇન ઇન થઈ શક્યું નહીં. ફરી પ્રયાસ કરો.",
+"account_error_network": "સર્વર સાથે કનેક્ટ થઈ શકાતું નથી. પછી ફરી પ્રયાસ કરો."
 }

@@ -255,5 +255,14 @@
 "picker_this": "Выбрать этот плеер",
 "err_no_tab": "Не найдена активная вкладка.",
 "bar_show": "Показать субтитры",
-"lang_label": "Язык"
+"lang_label": "Язык",
+"account_title": "Аккаунт",
+"account_sign_in": "Войти через Google",
+"account_signing_in": "Вход…",
+"account_sign_out": "Выйти",
+"account_signed_in": "Вы вошли как $1",
+"account_plan_free": "Бесплатный план",
+"account_plan_pro": "План Pro",
+"account_error": "Не удалось войти. Попробуйте ещё раз.",
+"account_error_network": "Нет связи с сервером. Попробуйте позже."
 }

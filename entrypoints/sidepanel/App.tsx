@@ -14,6 +14,7 @@ import { HistoryTab } from './HistoryTab';
 import { NowTab } from './NowTab';
 import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
+import { refreshPlan } from '../../src/lib/account';
 import { useEntitlements, useSavedWords } from './hooks';
 import { hasFeature } from '../../src/lib/entitlements';
 import { Icons, Logo } from './ui';
@@ -125,6 +126,8 @@ export function App() {
       if (message?.type === 'selected' || message?.type === 'status') refresh();
     };
     browser.runtime.onMessage.addListener(onMessage);
+    // A payment or a change on the server shows up when the panel opens; offline is no problem.
+    void refreshPlan().catch(() => {});
     const stopLanguage = watchUiLanguage(setLanguage);
 
     const follow = (id: number) => {

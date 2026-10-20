@@ -255,5 +255,14 @@
 "picker_this": "انتخاب این پخش‌کننده",
 "err_no_tab": "زبانهٔ فعال پیدا نشد.",
 "bar_show": "نمایش زیرنویس",
-"lang_label": "زبان"
+"lang_label": "زبان",
+"account_title": "حساب",
+"account_sign_in": "ورود با Google",
+"account_signing_in": "در حال ورود…",
+"account_sign_out": "خروج",
+"account_signed_in": "وارد شده به‌عنوان $1",
+"account_plan_free": "طرح رایگان",
+"account_plan_pro": "طرح Pro",
+"account_error": "ورود ناموفق بود. دوباره امتحان کنید.",
+"account_error_network": "اتصال به سرور برقرار نشد. بعداً دوباره امتحان کنید."
 }

@@ -255,5 +255,14 @@
 "picker_this": "এই প্লেয়ার বাছুন",
 "err_no_tab": "সক্রিয় ট্যাব পাওয়া যায়নি।",
 "bar_show": "সাবটাইটেল দেখান",
-"lang_label": "ভাষা"
+"lang_label": "ভাষা",
+"account_title": "অ্যাকাউন্ট",
+"account_sign_in": "Google দিয়ে সাইন ইন করুন",
+"account_signing_in": "সাইন ইন হচ্ছে…",
+"account_sign_out": "সাইন আউট করুন",
+"account_signed_in": "$1 হিসেবে সাইন ইন করা আছে",
+"account_plan_free": "বিনামূল্যের প্ল্যান",
+"account_plan_pro": "Pro প্ল্যান",
+"account_error": "সাইন ইন করা যায়নি। আবার চেষ্টা করুন।",
+"account_error_network": "সার্ভারের সাথে সংযোগ করা যাচ্ছে না। পরে আবার চেষ্টা করুন।"
 }

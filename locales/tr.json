@@ -255,5 +255,14 @@
 "picker_this": "Bu oynatıcıyı seç",
 "err_no_tab": "Etkin sekme bulunamadı.",
 "bar_show": "Altyazıları göster",
-"lang_label": "Dil"
+"lang_label": "Dil",
+"account_title": "Hesap",
+"account_sign_in": "Google ile giriş yap",
+"account_signing_in": "Giriş yapılıyor…",
+"account_sign_out": "Çıkış yap",
+"account_signed_in": "$1 olarak giriş yapıldı",
+"account_plan_free": "Ücretsiz plan",
+"account_plan_pro": "Pro plan",
+"account_error": "Giriş başarısız oldu. Tekrar deneyin.",
+"account_error_network": "Sunucuya ulaşılamıyor. Daha sonra tekrar deneyin."
 }

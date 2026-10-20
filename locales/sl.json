@@ -255,5 +255,14 @@
 "picker_this": "Izberi ta predvajalnik",
 "err_no_tab": "Aktivni zavihek ni bil najden.",
 "bar_show": "Pokaži podnapise",
-"lang_label": "Jezik"
+"lang_label": "Jezik",
+"account_title": "Račun",
+"account_sign_in": "Prijava z Google",
+"account_signing_in": "Prijavljanje …",
+"account_sign_out": "Odjava",
+"account_signed_in": "Prijavljeni ste kot $1",
+"account_plan_free": "Brezplačni paket",
+"account_plan_pro": "Paket Pro",
+"account_error": "Prijava ni uspela. Poskusite znova.",
+"account_error_network": "Strežnika ni mogoče doseči. Poskusite pozneje."
 }

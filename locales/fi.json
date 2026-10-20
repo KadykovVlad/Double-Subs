@@ -255,5 +255,14 @@
 "picker_this": "Valitse tämä soitin",
 "err_no_tab": "Aktiivista välilehteä ei löytynyt.",
 "bar_show": "Näytä tekstitys",
-"lang_label": "Kieli"
+"lang_label": "Kieli",
+"account_title": "Tili",
+"account_sign_in": "Kirjaudu Googlella",
+"account_signing_in": "Kirjaudutaan…",
+"account_sign_out": "Kirjaudu ulos",
+"account_signed_in": "Kirjautunut käyttäjänä $1",
+"account_plan_free": "Ilmainen paketti",
+"account_plan_pro": "Pro-paketti",
+"account_error": "Kirjautuminen epäonnistui. Yritä uudelleen.",
+"account_error_network": "Palvelimeen ei saada yhteyttä. Yritä myöhemmin uudelleen."
 }

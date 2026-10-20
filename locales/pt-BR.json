@@ -255,5 +255,14 @@
 "picker_this": "Escolher este player",
 "err_no_tab": "A aba ativa não foi encontrada.",
 "bar_show": "Mostrar legendas",
-"lang_label": "Idioma"
+"lang_label": "Idioma",
+"account_title": "Conta",
+"account_sign_in": "Entrar com o Google",
+"account_signing_in": "Entrando…",
+"account_sign_out": "Sair",
+"account_signed_in": "Conectado como $1",
+"account_plan_free": "Plano gratuito",
+"account_plan_pro": "Plano Pro",
+"account_error": "Falha ao entrar. Tente novamente.",
+"account_error_network": "Não foi possível conectar ao servidor. Tente novamente mais tarde."
 }

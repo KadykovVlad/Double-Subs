@@ -12,7 +12,12 @@
 - Translated lines and single words are cached in the extension's own storage on your computer.
 - Your settings, the list of sites you switched automatic start on, the words you saved (with their repetition schedule) and the list of videos you watched with Double Sub (page address, title, the place where you stopped) are kept in `chrome.storage.local`. They are not uploaded anywhere. The history can be switched off and cleared in the settings.
 
-**What we do not do.** We have no servers, no accounts and no analytics in this version. We do not collect, sell or share personal data, browsing history, page content or the videos you watch. We do not use remote code.
+**Account (optional).** You can sign in with Google in the settings. Everything above works without it. When you sign in:
+- Google gives the extension an ID token for your Google account (we ask only for `openid`, `email` and `profile`). The extension sends it to our server (a Cloudflare Worker with a database), which checks it with Google's public keys.
+- The server stores the Google account identifier, your e-mail address, your plan (free or Pro) and the sign-in sessions of your browsers (only a hash of the renewal token). Nothing else is uploaded in this version: your words, history and settings stay on your computer. The sign-in sessions use tokens kept in `chrome.storage.local`.
+- "Sign out" in the settings ends the session on the server and removes the tokens from the browser. Deleting the account with the data stored for it on the server will be offered in the settings before synchronisation of words and history is switched on.
+
+**What we do not do.** We have no analytics. We do not collect, sell or share personal data, browsing history, page content or the videos you watch. We do not use remote code.
 
 **Third parties.**
 - *YouTube.* On YouTube the extension asks YouTube for the subtitles of the video you are watching (including YouTube's own machine translation), the same way the YouTube player does. This request goes to YouTube, not to us.
@@ -25,7 +30,7 @@
 
 **Your control.** Remove a site from the list, delete saved words, or uninstall the extension to delete all of its data.
 
-**Changes.** When accounts and a paid plan appear, this policy will be updated before they are enabled and the new data (account e-mail, synced words) will be described here.
+**Changes.** Before synchronisation of words, history and settings, and before a paid plan, are switched on, this policy will be updated and the new data will be described here.
 
 ## Русский
 
@@ -37,7 +42,12 @@
 - переводы кэшируются в хранилище расширения на вашем компьютере;
 - настройки, список сайтов с автозапуском, сохранённые слова (с графиком повторения) и история просмотра (адрес страницы, название, место остановки) лежат в `chrome.storage.local` и никуда не передаются. Историю можно выключить и очистить в настройках.
 
-**Чего мы не делаем.** В этой версии нет серверов, аккаунтов и аналитики. Мы не собираем, не продаём и не передаём личные данные, историю, содержимое страниц и то, что вы смотрите. Удалённый код не используется.
+**Аккаунт (по желанию).** В настройках можно войти через Google. Всё перечисленное выше работает и без входа. При входе:
+- Google выдаёт расширению ID-токен вашего аккаунта (запрашиваем только `openid`, `email` и `profile`). Расширение отправляет его на наш сервер (Cloudflare Worker с базой данных), который проверяет его по открытым ключам Google;
+- сервер хранит идентификатор аккаунта Google, ваш адрес электронной почты, тариф (бесплатный или Pro) и сеансы входа ваших браузеров (от токена обновления хранится только хэш). Больше в этой версии ничего не загружается: слова, история и настройки остаются на вашем компьютере. Токены сеанса лежат в `chrome.storage.local`;
+- «Выйти» в настройках завершает сеанс на сервере и удаляет токены из браузера. Удаление аккаунта вместе с данными на сервере появится в настройках до включения синхронизации слов и истории.
+
+**Чего мы не делаем.** У нас нет аналитики. Мы не собираем, не продаём и не передаём личные данные, историю, содержимое страниц и то, что вы смотрите. Удалённый код не используется.
 
 **Файлы субтитров.** Если плеер держит субтитры вне стандартных дорожек, расширение скачивает файлы `.vtt` и `.srt`, которые страница уже запрашивала сама, теми же правами, что у страницы (не более 6 файлов по 2 МБ). Больше ничего по этим адресам не отправляется, а сами файлы читаются только на устройстве.
 
@@ -49,4 +59,4 @@
 
 **Ваш контроль.** Уберите сайт из списка, удалите сохранённые слова или само расширение — данные удалятся.
 
-**Изменения.** Когда появятся аккаунты и платный тариф, политика будет обновлена до их включения.
+**Изменения.** До включения синхронизации слов, истории и настроек и до появления платного тарифа политика будет обновлена, а новые данные описаны здесь.

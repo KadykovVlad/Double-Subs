@@ -255,5 +255,14 @@
 "picker_this": "Vybrať tento prehrávač",
 "err_no_tab": "Aktívna karta sa nenašla.",
 "bar_show": "Zobraziť titulky",
-"lang_label": "Jazyk"
+"lang_label": "Jazyk",
+"account_title": "Účet",
+"account_sign_in": "Prihlásiť sa cez Google",
+"account_signing_in": "Prihlasovanie…",
+"account_sign_out": "Odhlásiť sa",
+"account_signed_in": "Prihlásený ako $1",
+"account_plan_free": "Bezplatný plán",
+"account_plan_pro": "Plán Pro",
+"account_error": "Prihlásenie zlyhalo. Skúste to znova.",
+"account_error_network": "Server nie je dostupný. Skúste to neskôr."
 }

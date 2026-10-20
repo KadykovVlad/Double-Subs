@@ -255,5 +255,14 @@
 "picker_this": "Elegir este reproductor",
 "err_no_tab": "No se encontró la pestaña activa.",
 "bar_show": "Mostrar subtítulos",
-"lang_label": "Idioma"
+"lang_label": "Idioma",
+"account_title": "Cuenta",
+"account_sign_in": "Acceder con Google",
+"account_signing_in": "Accediendo…",
+"account_sign_out": "Cerrar sesión",
+"account_signed_in": "Sesión iniciada como $1",
+"account_plan_free": "Plan gratuito",
+"account_plan_pro": "Plan Pro",
+"account_error": "No se pudo acceder. Vuelve a intentarlo.",
+"account_error_network": "No se puede conectar con el servidor. Inténtalo más tarde."
 }

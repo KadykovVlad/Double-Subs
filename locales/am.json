@@ -255,5 +255,14 @@
 "picker_this": "ይህን ማጫወቻ ምረጥ",
 "err_no_tab": "ንቁ ትር አልተገኘም።",
 "bar_show": "ንዑስ ጽሑፎችን አሳይ",
-"lang_label": "ቋንቋ"
+"lang_label": "ቋንቋ",
+"account_title": "መለያ",
+"account_sign_in": "በGoogle ይግቡ",
+"account_signing_in": "በመግባት ላይ…",
+"account_sign_out": "ውጣ",
+"account_signed_in": "እንደ $1 ገብተዋል",
+"account_plan_free": "ነጻ ዕቅድ",
+"account_plan_pro": "Pro ዕቅድ",
+"account_error": "መግባት አልተሳካም። እንደገና ይሞክሩ።",
+"account_error_network": "አገልጋዩን ማግኘት አልተቻለም። ቆይተው እንደገና ይሞክሩ።"
 }

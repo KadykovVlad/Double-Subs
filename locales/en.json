@@ -255,5 +255,14 @@
 "picker_this": "Choose this player",
 "err_no_tab": "No active tab found.",
 "bar_show": "Show subtitles",
-"lang_label": "Language"
+"lang_label": "Language",
+"account_title": "Account",
+"account_sign_in": "Sign in with Google",
+"account_signing_in": "Signing in…",
+"account_sign_out": "Sign out",
+"account_signed_in": "Signed in as $1",
+"account_plan_free": "Free plan",
+"account_plan_pro": "Pro plan",
+"account_error": "Sign-in failed. Try again.",
+"account_error_network": "Can't reach the server. Try again later."
 }

@@ -255,5 +255,14 @@
 "picker_this": "Chọn trình phát này",
 "err_no_tab": "Không tìm thấy thẻ đang hoạt động.",
 "bar_show": "Hiện phụ đề",
-"lang_label": "Ngôn ngữ"
+"lang_label": "Ngôn ngữ",
+"account_title": "Tài khoản",
+"account_sign_in": "Đăng nhập bằng Google",
+"account_signing_in": "Đang đăng nhập…",
+"account_sign_out": "Đăng xuất",
+"account_signed_in": "Đã đăng nhập với tên $1",
+"account_plan_free": "Gói miễn phí",
+"account_plan_pro": "Gói Pro",
+"account_error": "Đăng nhập không thành công. Hãy thử lại.",
+"account_error_network": "Không thể kết nối với máy chủ. Hãy thử lại sau."
 }

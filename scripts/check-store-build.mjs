@@ -33,7 +33,14 @@ const walk = (path) =>
   statSync(path).isDirectory() ? readdirSync(path).flatMap((n) => walk(join(path, n))) : [path];
 for (const file of walk(dir).filter((f) => f.endsWith('.js'))) {
   const text = readFileSync(file, 'utf8');
-  for (const marker of ['e2eSpoken', 'data-layouts', 'layouts =', 'VITE_DS_E2E']) {
+  for (const marker of [
+    'e2eSpoken',
+    'e2eApi',
+    'e2e-google-token',
+    'data-layouts',
+    'layouts =',
+    'VITE_DS_E2E',
+  ]) {
     if (text.includes(marker)) problems.push(`${file} contains test code (${marker})`);
   }
 }

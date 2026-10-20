@@ -255,5 +255,14 @@
 "picker_this": "Изабери овај плејер",
 "err_no_tab": "Активна картица није пронађена.",
 "bar_show": "Prikaži titlove",
-"lang_label": "Jezik"
+"lang_label": "Jezik",
+"account_title": "Налог",
+"account_sign_in": "Пријави се преко Google-а",
+"account_signing_in": "Пријављивање…",
+"account_sign_out": "Одјави се",
+"account_signed_in": "Пријављени сте као $1",
+"account_plan_free": "Бесплатни пакет",
+"account_plan_pro": "Пакет Pro",
+"account_error": "Пријава није успела. Покушајте поново.",
+"account_error_network": "Сервер није доступан. Покушајте касније."
 }

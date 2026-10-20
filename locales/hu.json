@@ -255,5 +255,14 @@
 "picker_this": "Ennek a lejátszónak a választása",
 "err_no_tab": "Az aktív lap nem található.",
 "bar_show": "Feliratok megjelenítése",
-"lang_label": "Nyelv"
+"lang_label": "Nyelv",
+"account_title": "Fiók",
+"account_sign_in": "Bejelentkezés Google-fiókkal",
+"account_signing_in": "Bejelentkezés…",
+"account_sign_out": "Kijelentkezés",
+"account_signed_in": "Bejelentkezve mint $1",
+"account_plan_free": "Ingyenes csomag",
+"account_plan_pro": "Pro csomag",
+"account_error": "A bejelentkezés sikertelen. Próbálja újra.",
+"account_error_network": "A szerver nem érhető el. Próbálja újra később."
 }

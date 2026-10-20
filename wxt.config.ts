@@ -57,7 +57,8 @@ export default defineConfig({
     // activeTab: the page the user opened the popup on. scripting: inject the agent there.
     // offscreen: stage 4 prototype of the built-in translator.
     // tts: the system voices that say a word aloud on hover.
-    permissions: ['storage', 'activeTab', 'scripting', 'offscreen', 'tts', 'sidePanel'],
+    // identity: the Google sign-in window (launchWebAuthFlow) of the account.
+    permissions: ['storage', 'activeTab', 'scripting', 'offscreen', 'tts', 'sidePanel', 'identity'],
     // No popup: a click on the icon opens the side panel (see the background).
     action: { default_title: '__MSG_extName__' },
     // Permanent access only to YouTube (stage 5).

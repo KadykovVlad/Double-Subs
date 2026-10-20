@@ -255,5 +255,14 @@
 "picker_this": "Wybierz ten odtwarzacz",
 "err_no_tab": "Nie znaleziono aktywnej karty.",
 "bar_show": "Pokaż napisy",
-"lang_label": "Język"
+"lang_label": "Język",
+"account_title": "Konto",
+"account_sign_in": "Zaloguj się przez Google",
+"account_signing_in": "Logowanie…",
+"account_sign_out": "Wyloguj się",
+"account_signed_in": "Zalogowano jako $1",
+"account_plan_free": "Plan bezpłatny",
+"account_plan_pro": "Plan Pro",
+"account_error": "Nie udało się zalogować. Spróbuj ponownie.",
+"account_error_network": "Brak połączenia z serwerem. Spróbuj ponownie później."
 }

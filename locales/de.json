@@ -255,5 +255,14 @@
 "picker_this": "Diesen Player wählen",
 "err_no_tab": "Aktiver Tab nicht gefunden.",
 "bar_show": "Untertitel anzeigen",
-"lang_label": "Sprache"
+"lang_label": "Sprache",
+"account_title": "Konto",
+"account_sign_in": "Mit Google anmelden",
+"account_signing_in": "Anmeldung läuft…",
+"account_sign_out": "Abmelden",
+"account_signed_in": "Angemeldet als $1",
+"account_plan_free": "Kostenloser Tarif",
+"account_plan_pro": "Pro-Tarif",
+"account_error": "Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
+"account_error_network": "Server nicht erreichbar. Bitte später erneut versuchen."
 }

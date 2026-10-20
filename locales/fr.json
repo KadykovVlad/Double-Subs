@@ -255,5 +255,14 @@
 "picker_this": "Choisir ce lecteur",
 "err_no_tab": "Onglet actif introuvable.",
 "bar_show": "Afficher les sous-titres",
-"lang_label": "Langue"
+"lang_label": "Langue",
+"account_title": "Compte",
+"account_sign_in": "Se connecter avec Google",
+"account_signing_in": "Connexion…",
+"account_sign_out": "Se déconnecter",
+"account_signed_in": "Connecté en tant que $1",
+"account_plan_free": "Forfait gratuit",
+"account_plan_pro": "Forfait Pro",
+"account_error": "Échec de la connexion. Réessayez.",
+"account_error_network": "Serveur injoignable. Réessayez plus tard."
 }

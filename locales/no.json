@@ -255,5 +255,14 @@
 "picker_this": "Velg denne spilleren",
 "err_no_tab": "Fant ikke den aktive fanen.",
 "bar_show": "Vis undertekster",
-"lang_label": "Språk"
+"lang_label": "Språk",
+"account_title": "Konto",
+"account_sign_in": "Logg inn med Google",
+"account_signing_in": "Logger inn…",
+"account_sign_out": "Logg ut",
+"account_signed_in": "Logget inn som $1",
+"account_plan_free": "Gratisplan",
+"account_plan_pro": "Pro-plan",
+"account_error": "Innlogging mislyktes. Prøv igjen.",
+"account_error_network": "Får ikke kontakt med serveren. Prøv igjen senere."
 }
