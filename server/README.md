@@ -37,15 +37,17 @@ npm run dev         # local server; put secrets for it in .dev.vars (not committ
 ## First deploy (needs your Cloudflare account and a Google OAuth client)
 
 1. Google Cloud Console → APIs & Services → Credentials → OAuth client ID, type **Web application**.
-   Authorized redirect URI: `https://<extension-id>.chromiumapp.org/` (what `chrome.identity.getRedirectURL()`
-   returns). The client id is `GOOGLE_CLIENT_ID`.
+   Authorized redirect URI: `https://kbipbdkmdaghooihkcmdjhfmeoimgnbm.chromiumapp.org/` (what
+   `chrome.identity.getRedirectURL()` returns). That ID comes from the key in `wxt.config.ts` and is the same for
+   `wxt`, `wxt build` and the e2e build; the package for the store (`wxt zip`) has no key, so after its first
+   upload add a second redirect URI with the ID the store gives. The client id is `GOOGLE_CLIENT_ID`.
 2. `npx wrangler login`
 3. `npx wrangler d1 create double-sub`, then put the printed `database_id` into `wrangler.toml`.
 4. `npm run migrate:remote`
 5. `npx wrangler secret put GOOGLE_CLIENT_ID` and `npx wrangler secret put SESSION_SECRET`
    (for the second: `openssl rand -base64 48`).
-6. Set `EXTENSION_ORIGINS` in `wrangler.toml` to `chrome-extension://<extension-id>` (comma-separated
-   for the store and the development id).
+6. `EXTENSION_ORIGINS` in `wrangler.toml` already has the development ID; after the first store upload add
+   `,chrome-extension://<store id>`.
 7. `npm run deploy`
 
 `GOOGLE_JWKS` exists for the tests only: never set it in production, it would replace Google's keys.

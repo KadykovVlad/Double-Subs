@@ -20,6 +20,13 @@ const PRODUCT_ENTRYPOINTS = [
   'tiktok-main',
 ];
 
+// A fixed key gives the unpacked extension the same ID on every machine (dev, build, e2e):
+// the redirect address of the Google sign-in, https://<id>.chromiumapp.org/, and the server's
+// CORS origin depend on it. The ID this key gives: kbipbdkmdaghooihkcmdjhfmeoimgnbm. The package for the store (`wxt zip`) has no key: the store gives its own ID.
+const DEV_KEY =
+  'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsv+ygtPx6GUzvxJ8uqhX0n22clAnRrPaRGNEjZ6HXytWzNtJ9RGJIDjnHCffuapoGytJtN/eEjwqC1fqQI7/2YFU8i3flqJxRJ1iraL5YJCWhaMTaQfnHx2lGpvxrnX3wMUKPGm6Ws1Bgo+iBJOTSmn5BNIRrwcB6zdhnaBellpDMbrDsf5KcbOUHJjPboUmDv59NEFFmSBhBLuIPCCKYbwBirMvdM5B/OfBn+m1APNVuzFVRBcGL0xO5gNHynjCPwYZRPlRSWlfWrgx0zpDY6gvKN+ecNyPYtgd/REri062hGW4yhq/n4M7rXiLXD5O+ayfq6RdchI9fhwvIcl/uwIDAQAB';
+const forStore = process.argv.some((arg) => arg === 'zip');
+
 const prototypes = E2E || !process.argv.some((arg) => arg === 'build' || arg === 'zip');
 
 export default defineConfig({
@@ -41,6 +48,7 @@ export default defineConfig({
     define: { __DS_PROTOTYPES__: JSON.stringify(prototypes) },
   }),
   manifest: {
+    ...(forStore ? {} : { key: DEV_KEY }),
     name: '__MSG_extName__',
     description: '__MSG_extDescription__',
     default_locale: SOURCE_LANGUAGE,
