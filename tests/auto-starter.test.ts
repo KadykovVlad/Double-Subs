@@ -3,15 +3,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('../src/lib/known-sites', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../src/lib/known-sites')>()),
   loadKnownSites: async () => ({}),
-  watchKnownSites: () => () => {},
+  watchExcludedSites: () => () => {},
 }));
-vi.mock('../src/agent/PageScanner', () => ({ isShown: () => true }));
+// A video that is not shown is one the page hid (the old player of a page that made a new one).
+vi.mock('../src/agent/PageScanner', () => ({
+  isShown: (el: { hidden?: boolean }) => !el.hidden,
+}));
 vi.mock('../src/agent/host', () => ({ isExtensionAlive: () => true }));
 
 import { AutoStarter, type AutoHost } from '../src/agent/AutoStarter';
 
 interface FakeVideo {
   isConnected: boolean;
+  hidden?: boolean;
   getBoundingClientRect: () => { width: number; height: number };
 }
 const video = (width = 640, height = 360): FakeVideo => ({
@@ -29,7 +33,7 @@ beforeEach(() => {
   vi.stubGlobal('window', events);
   vi.stubGlobal('document', {
     getElementsByTagName: (tag: string) =>
-      tag === 'video' ? page.videos : { length: page.iframes },
+      tag === 'video' ? page.videos : Array.from({ length: page.iframes }),
   });
   vi.stubGlobal('location', {
     get href() {
@@ -80,8 +84,8 @@ function makeHost(overrides: { failOnce?: boolean } = {}) {
   };
   return host;
 }
-const starterFor = (host: ReturnType<typeof makeHost>) =>
-  new AutoStarter(host as unknown as AutoHost);
+const starterFor = (host: ReturnType<typeof makeHost>, onStop?: () => void) =>
+  new AutoStarter(host as unknown as AutoHost, onStop);
 const advance = (ms: number) => vi.advanceTimersByTimeAsync(ms);
 
 describe('AutoStarter', () => {
@@ -186,6 +190,79 @@ describe('AutoStarter', () => {
     await advance(60_000); // a film that starts a minute after the ad is still caught
     expect(calls.mock.calls.length).toBeGreaterThan(0);
     expect(host.open).toHaveBeenCalledTimes(1); // asking does not reopen anything by itself
+  });
+
+  it('a player made again in the page: one taken away and one put in is a change, even if the count stays', async () => {
+    const first = video();
+    page.videos = [first];
+    const host = makeHost();
+    starterFor(host).start();
+    await advance(0);
+    expect(host.session!.video).toBe(first);
+
+    // The old element is gone from the page and a new one stands in its place, all inside one quiet moment.
+    first.isConnected = false;
+    const second = video();
+    page.videos = [second];
+    await advance(1600);
+    expect(host.session!.video).toBe(second);
+  });
+
+  it('a hidden old player does not keep the session when a visible one has appeared beside it', async () => {
+    const old = video();
+    page.videos = [old];
+    const host = makeHost();
+    starterFor(host).start();
+    await advance(0);
+
+    old.hidden = true; // the page keeps the old element but shows a new one
+    const fresh = video();
+    page.videos = [old, fresh];
+    await advance(1600);
+    expect(host.session!.video).toBe(fresh);
+    expect(host.open).toHaveBeenCalledTimes(2);
+  });
+
+  it('a hidden player with nothing else to take keeps the session (a moment of hiding is not an end)', async () => {
+    const only = video();
+    page.videos = [only];
+    const host = makeHost();
+    starterFor(host).start();
+    await advance(0);
+    only.hidden = true;
+    await advance(5000);
+    expect(host.open).toHaveBeenCalledTimes(1);
+    expect(host.session!.video).toBe(only);
+  });
+
+  it('a video that begins to load (a new source) is looked at at once, not at the next timer', async () => {
+    const host = makeHost();
+    starterFor(host).start();
+    await advance(0);
+    expect(host.open).not.toHaveBeenCalled();
+
+    const incoming = video();
+    page.videos = [incoming];
+    const loading = new Event('loadstart');
+    Object.defineProperty(loading, 'target', { value: incoming });
+    vi.stubGlobal('HTMLVideoElement', class {});
+    const stub = (globalThis as unknown as { HTMLVideoElement: { prototype: object } })
+      .HTMLVideoElement;
+    Object.setPrototypeOf(incoming, stub.prototype);
+    events.dispatchEvent(loading);
+    await advance(300);
+    expect(host.open).toHaveBeenCalledTimes(1);
+  });
+
+  it('tells its owner when it ends, so a new one can be made later', async () => {
+    const host = makeHost();
+    const onStop = vi.fn();
+    const starter = starterFor(host, onStop);
+    starter.start();
+    starter.stop();
+    expect(onStop).toHaveBeenCalledTimes(1);
+    starter.stop(); // a second stop is nothing
+    expect(onStop).toHaveBeenCalledTimes(1);
   });
 
   it('stops looking after stop()', async () => {

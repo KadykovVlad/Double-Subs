@@ -162,9 +162,6 @@
 "auto_label": "$1 sitesinde kendiliğinden başlat",
 "auto_hint": "Bir dahaki sefere oynatıcı simgeye tıklamadan bulunur",
 "auto_denied": "Siteye erişim verilmedi, otomatik başlatma açılmadı.",
-"mirrors_label": "Sitelerimi başka adreslerde de tanı",
-"mirrors_hint": "Aynı adlı yansıma siteleri (örneğin lordfilm) ve IP adresli siteler. Tüm sitelere erişim yalnızca adresi listenle karşılaştırmak için gerekir.",
-"mirrors_denied": "Erişim verilmedi, yansıma siteleri açılmadı.",
 "watching_title": "İzlerken",
 "watch_show": "Çift altyazıyı göster",
 "watch_hover": "Kelimeleri üzerine gelince çevir",
@@ -273,5 +270,11 @@
 "welcome_allow": "Erişime izin ver",
 "welcome_allowed": "Erişime izin verildi",
 "welcome_signin_title": "2. Giriş yap",
-"welcome_done": "Hazır. Bir video açın ve Double Sub simgesine tıklayın."
+"welcome_done": "Hazır. Bir video açın ve Double Sub simgesine tıklayın.",
+"site_on_label": "$1 sitesinde çalış",
+"site_off_title": "Kapatılan siteler",
+"site_off_enable": "Aç",
+"everywhere_label": "Her sitede kendiliğinden başla",
+"everywhere_hint": "Altyazılar videosu olan her sayfada başlar. Tüm sitelere erişim gerekir; uzantı yalnızca videonun altyazılarını okur.",
+"everywhere_denied": "Tüm sitelere erişim verilmedi."
 }

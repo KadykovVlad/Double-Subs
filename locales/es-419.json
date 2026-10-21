@@ -162,9 +162,6 @@
 "auto_label": "Iniciar solo en $1",
 "auto_hint": "La próxima vez el reproductor se encontrará sin hacer clic en el ícono",
 "auto_denied": "No se concedió el acceso al sitio, el inicio automático no está activado.",
-"mirrors_label": "Reconocer mis sitios también en otras direcciones",
-"mirrors_hint": "Espejos con el mismo nombre (por ejemplo, lordfilm) y sitios por dirección IP. El acceso a todos los sitios solo sirve para comparar la dirección con tu lista.",
-"mirrors_denied": "No se concedió el acceso, los espejos no están activados.",
 "watching_title": "Mientras ves",
 "watch_show": "Mostrar subtítulos dobles",
 "watch_hover": "Traducir palabras al pasar el cursor",
@@ -273,5 +270,11 @@
 "welcome_allow": "Permitir acceso",
 "welcome_allowed": "Acceso permitido",
 "welcome_signin_title": "2. Acceder",
-"welcome_done": "Todo listo. Abre un video y haz clic en el ícono de Double Sub."
+"welcome_done": "Todo listo. Abre un video y haz clic en el ícono de Double Sub.",
+"site_on_label": "Funcionar en $1",
+"site_off_title": "Sitios desactivados",
+"site_off_enable": "Activar",
+"everywhere_label": "Iniciarse solo en cualquier sitio",
+"everywhere_hint": "Los subtítulos empiezan en cualquier página con video. Requiere acceso a todos los sitios; la extensión solo lee los subtítulos del video.",
+"everywhere_denied": "No se concedió el acceso a todos los sitios."
 }

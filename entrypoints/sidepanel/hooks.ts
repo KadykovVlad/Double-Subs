@@ -10,8 +10,10 @@ import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/hist
 import {
   loadDismissed,
   loadKnownSites,
+  loadExcludedSites,
   loadMirrorsMode,
   watchDismissed,
+  watchExcludedSites,
   watchKnownSites,
   watchMirrorsMode,
   type KnownSites,
@@ -89,6 +91,16 @@ export function useMirrorsMode(): boolean {
     return watchMirrorsMode(setOn);
   }, []);
   return on;
+}
+
+/** The hosts of the sites the user switched off. */
+export function useExcludedSites(): string[] {
+  const [hosts, setHosts] = useState<string[]>([]);
+  useEffect(() => {
+    void loadExcludedSites().then(setHosts);
+    return watchExcludedSites(setHosts);
+  }, []);
+  return hosts;
 }
 
 export function useDismissedOffers(): string[] {

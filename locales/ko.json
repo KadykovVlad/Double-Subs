@@ -162,9 +162,6 @@
 "auto_label": "$1에서 자동으로 시작",
 "auto_hint": "다음부터는 아이콘을 클릭하지 않아도 플레이어를 찾습니다",
 "auto_denied": "사이트 접근이 허용되지 않아 자동 시작을 켜지 못했습니다.",
-"mirrors_label": "다른 주소에서도 내 사이트 인식",
-"mirrors_hint": "이름이 같은 미러(예: lordfilm)와 IP 주소 사이트. 모든 사이트에 대한 접근은 주소를 내 목록과 비교하는 데만 사용됩니다.",
-"mirrors_denied": "접근이 허용되지 않아 미러를 켜지 못했습니다.",
 "watching_title": "시청 중",
 "watch_show": "이중 자막 표시",
 "watch_hover": "마우스를 올리면 단어 번역",
@@ -273,5 +270,11 @@
 "welcome_allow": "액세스 허용",
 "welcome_allowed": "액세스가 허용됨",
 "welcome_signin_title": "2. 로그인",
-"welcome_done": "준비가 끝났습니다. 동영상을 열고 Double Sub 아이콘을 클릭하세요."
+"welcome_done": "준비가 끝났습니다. 동영상을 열고 Double Sub 아이콘을 클릭하세요.",
+"site_on_label": "$1에서 작동",
+"site_off_title": "꺼 둔 사이트",
+"site_off_enable": "켜기",
+"everywhere_label": "모든 사이트에서 자동으로 시작",
+"everywhere_hint": "동영상이 있는 모든 페이지에서 자막이 시작됩니다. 모든 사이트에 대한 액세스가 필요하며, 확장 프로그램은 동영상 자막만 읽습니다.",
+"everywhere_denied": "모든 사이트에 대한 액세스가 허용되지 않았습니다."
 }

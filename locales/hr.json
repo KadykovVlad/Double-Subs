@@ -162,9 +162,6 @@
 "auto_label": "Pokreni sam na $1",
 "auto_hint": "Sljedeći put player će se pronaći bez klika na ikonu",
 "auto_denied": "Pristup stranici nije odobren, automatsko pokretanje nije uključeno.",
-"mirrors_label": "Prepoznaj moje stranice i na drugim adresama",
-"mirrors_hint": "Zrcala s istim imenom (na primjer lordfilm) i stranice s IP adresom. Pristup svim stranicama služi samo za usporedbu adrese s vašim popisom.",
-"mirrors_denied": "Pristup nije odobren, zrcala nisu uključena.",
 "watching_title": "Tijekom gledanja",
 "watch_show": "Prikaži dvostruke titlove",
 "watch_hover": "Prevedi riječi pri prelasku mišem",
@@ -273,5 +270,11 @@
 "welcome_allow": "Dopusti pristup",
 "welcome_allowed": "Pristup dopušten",
 "welcome_signin_title": "2. Prijava",
-"welcome_done": "Sve je spremno. Otvorite videozapis i kliknite ikonu Double Sub."
+"welcome_done": "Sve je spremno. Otvorite videozapis i kliknite ikonu Double Sub.",
+"site_on_label": "Radi na $1",
+"site_off_title": "Isključena web-mjesta",
+"site_off_enable": "Uključi",
+"everywhere_label": "Pokreni se sam na svakom web-mjestu",
+"everywhere_hint": "Titlovi se pokreću na svakoj stranici s videozapisom. Potreban je pristup svim web-mjestima; proširenje čita samo titlove videozapisa.",
+"everywhere_denied": "Pristup svim web-mjestima nije odobren."
 }

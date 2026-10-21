@@ -24,9 +24,9 @@
 - *Chrome's language model.* The first translation downloads Chrome's translation model; Chrome manages that download.
 - *Voices.* Words are read aloud with the voices of your system (`chrome.tts`). The extension picks a voice built into your system; if you choose an online voice yourself in the settings, Chrome may send the spoken word to that voice's provider.
 
-**Access to sites.** The extension reads a page only after you click its icon (the `activeTab` permission), on YouTube, and on sites where you ticked "start automatically". Access to another site (for example a player embedded from another domain) is requested separately, for that site only, and can be taken back with the "Remove" button in the extension.
+**Access to sites.** On the welcome page (and later with the switch "Start by itself on every site" in the settings) you can allow access to all sites. Then a small script runs in every page and every frame. It does not read the page: it only waits for a `<video>` to appear, and only when one does, the extension reads that video's subtitles. You can switch a site off with "Work on this site" in the panel; the script then does nothing there. If you do not allow access to all sites, the extension reads a page only after you click its icon (the `activeTab` permission), on YouTube, and on sites where you ticked "start automatically"; access to another site is requested separately, for that site only, and can be taken back with the "Remove" button.
 
-**Recognising your sites by name (optional).** If you switch on "recognise my sites on other addresses", the extension asks for access to all sites. It uses it for one thing only: to compare the address of a page with the list of sites you chose (so that a mirror of a site you use, like a new domain with the same name, starts by itself). On all other pages it does nothing and reads nothing. You can switch it off at any time, and the access is taken back.
+**Starting on every site (optional).** The switch "Start by itself on every site" asks for access to all sites, so that the subtitles begin on any page with a video without a click. The script it runs only waits for a video to appear (see above). You can switch it off at any time, and the access is taken back.
 
 **Your control.** Remove a site from the list, delete saved words, or uninstall the extension to delete all of its data.
 
@@ -55,7 +55,7 @@
 
 **Доступ к сайтам.** Расширение читает страницу только после клика по значку, на YouTube и на сайтах, где вы включили «Запускать автоматически». Доступ к другому сайту (например, плеер с другого домена) запрашивается отдельно и только для него; его можно отозвать кнопкой «Убрать».
 
-**Узнавание ваших сайтов по названию (по желанию).** Если вы включите «Узнавать мои сайты на других адресах», расширение попросит доступ ко всем сайтам. Он нужен только затем, чтобы сравнить адрес страницы со списком сайтов, который вы выбрали (чтобы зеркало знакомого сайта с тем же названием запускалось само). На остальных страницах расширение ничего не делает и ничего не читает. Выключить можно в любой момент, доступ при этом отзывается.
+**Запуск на любом сайте (по желанию).** На приветственной странице (и позже переключателем «Запускаться само на любом сайте» в настройках) можно разрешить доступ ко всем сайтам. Тогда на каждой странице и в каждом фрейме работает небольшой скрипт. Он не читает страницу: он только ждёт, когда на ней появится `<video>`, и лишь тогда расширение читает субтитры этого видео. Сайт можно отключить переключателем «Работать на этом сайте» в панели, после этого скрипт там ничего не делает. Выключить можно в любой момент, доступ при этом отзывается.
 
 **Ваш контроль.** Уберите сайт из списка, удалите сохранённые слова или само расширение — данные удалятся.
 

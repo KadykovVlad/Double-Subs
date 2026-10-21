@@ -162,9 +162,6 @@
 "auto_label": "Anza mwenyewe kwenye $1",
 "auto_hint": "Wakati ujao kicheza kitapatikana bila kubofya aikoni",
 "auto_denied": "Ufikiaji wa tovuti haukutolewa, kuanza kiotomatiki hakukuwashwa.",
-"mirrors_label": "Tambua tovuti zangu kwenye anwani nyingine pia",
-"mirrors_hint": "Vioo vyenye jina lilelile (kwa mfano lordfilm) na tovuti za anwani ya IP. Ufikiaji wa tovuti zote unatumika tu kulinganisha anwani na orodha yako.",
-"mirrors_denied": "Ufikiaji haukutolewa, vioo havikuwashwa.",
 "watching_title": "Wakati wa kutazama",
 "watch_show": "Onyesha manukuu mawili",
 "watch_hover": "Tafsiri maneno kwa kuelekeza kielekezi",
@@ -273,5 +270,11 @@
 "welcome_allow": "Ruhusu ufikiaji",
 "welcome_allowed": "Ufikiaji umeruhusiwa",
 "welcome_signin_title": "2. Ingia",
-"welcome_done": "Tayari. Fungua video na ubofye aikoni ya Double Sub."
+"welcome_done": "Tayari. Fungua video na ubofye aikoni ya Double Sub.",
+"site_on_label": "Fanya kazi kwenye $1",
+"site_off_title": "Tovuti zilizozimwa",
+"site_off_enable": "Washa",
+"everywhere_label": "Anza yenyewe kwenye kila tovuti",
+"everywhere_hint": "Manukuu huanza kwenye ukurasa wowote wenye video. Inahitaji ufikiaji wa tovuti zote; kiendelezi husoma tu manukuu ya video.",
+"everywhere_denied": "Ufikiaji wa tovuti zote haukutolewa."
 }

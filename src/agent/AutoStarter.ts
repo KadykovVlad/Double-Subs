@@ -1,6 +1,11 @@
 import { AUTO_EVENT } from '../lib/auto-event';
-import { chooseAutoPlayer, loadKnownSites, watchKnownSites } from '../lib/known-sites';
-import { hostsOf, matchKnownHost } from '../lib/site-match';
+import {
+  chooseAutoPlayer,
+  frameAddresses,
+  isSiteExcluded,
+  loadKnownSites,
+  watchExcludedSites,
+} from '../lib/known-sites';
 import { isExtensionAlive } from './host';
 import { isShown } from './PageScanner';
 import type { VideoSession } from './VideoSession';
@@ -22,12 +27,15 @@ const BURST_DELAYS_MS = [150, 700, 2000, 5000];
 /** After a failed start the next try waits, so a broken player is not hammered. */
 const RETRY_AFTER_FAILURE_MS = 10_000;
 const DOM_QUIET_MS = 400;
+/** Media events do not bubble, but a capture listener on the window hears the ones of the plain DOM. */
+const MEDIA_EVENTS = ['loadstart', 'loadedmetadata', 'emptied'] as const;
 
 /**
- * Finds the player by itself on a site the user already has, and starts the subtitles at once. It
- * looks again on every sign that something is about to appear:
+ * Finds the player by itself on a page where the extension may work, and starts the subtitles at once.
+ * It looks again on every sign that something is about to appear:
  * - a click on the page (the play button that loads the player);
- * - a change of the page: a new video or iframe, or another address (the next episode);
+ * - a change of the page: a new or replaced video or iframe, or another address (the next episode);
+ * - a video that begins to load (a new source) or to play;
  * - a timer, as the safety net.
  */
 export class AutoStarter {
@@ -36,14 +44,19 @@ export class AutoStarter {
   private domTimer: ReturnType<typeof setTimeout> | undefined;
   private observer: MutationObserver | null = null;
   private stopWatchingSites: (() => void) | null = null;
+  /** The videos and iframes of the last look at the page: a replaced one shows as a difference. */
+  private seen = new Set<Element>();
   private busy = false;
   private ticks = 0;
   private retryAt = 0;
   private href = location.href;
-  private videoCount = 0;
   private running = false;
 
-  constructor(private readonly host: AutoHost) {}
+  /** `onStop`: the starter ended (by itself or by the owner), so the owner can make a new one later. */
+  constructor(
+    private readonly host: AutoHost,
+    private readonly onStop?: () => void,
+  ) {}
 
   start(): void {
     if (this.running) return;
@@ -52,6 +65,8 @@ export class AutoStarter {
     window.addEventListener('click', this.onClick, true);
     // A video started to play (the next one of a feed, scrolled to): look at once. Media events do not bubble.
     window.addEventListener('play', this.onPlay, true);
+    // A new source or a new video element starts to load: the next episode, a player made again.
+    for (const name of MEDIA_EVENTS) window.addEventListener(name, this.onMedia, true);
     window.addEventListener('popstate', this.onNavigate);
     window.addEventListener('hashchange', this.onNavigate);
     (window as unknown as { navigation?: EventTarget }).navigation?.addEventListener(
@@ -60,9 +75,11 @@ export class AutoStarter {
     );
     this.observer = new MutationObserver(this.onDomChange);
     this.observer.observe(document, { childList: true, subtree: true });
-    // The user took this site off the list: stop starting by itself (what is on screen stays until the page changes).
-    this.stopWatchingSites = watchKnownSites((sites) => {
-      if (!matchKnownHost(location.hostname, hostsOf(Object.keys(sites)))) this.stop();
+    // The user switched this site off: the subtitles go and nothing starts by itself any more.
+    this.stopWatchingSites = watchExcludedSites((excluded) => {
+      if (!isSiteExcluded(excluded, frameAddresses())) return;
+      this.host.closeSession();
+      this.stop();
     });
     void this.tick();
   }
@@ -75,6 +92,7 @@ export class AutoStarter {
     clearTimeout(this.domTimer);
     window.removeEventListener('click', this.onClick, true);
     window.removeEventListener('play', this.onPlay, true);
+    for (const name of MEDIA_EVENTS) window.removeEventListener(name, this.onMedia, true);
     window.removeEventListener('popstate', this.onNavigate);
     window.removeEventListener('hashchange', this.onNavigate);
     (window as unknown as { navigation?: EventTarget }).navigation?.removeEventListener(
@@ -85,6 +103,7 @@ export class AutoStarter {
     this.observer = null;
     this.stopWatchingSites?.();
     this.stopWatchingSites = null;
+    this.onStop?.();
   }
 
   /** Starts when the page announces that it is a known site (the agent was there before the probe). */
@@ -102,6 +121,11 @@ export class AutoStarter {
       void this.tick();
   };
 
+  private readonly onMedia = (event: Event) => {
+    if (event.target instanceof HTMLVideoElement && event.target !== this.host.session?.video)
+      this.burst(); // its size and its place settle a moment later
+  };
+
   private readonly onNavigate = () => {
     if (location.href === this.href) return;
     this.href = location.href;
@@ -115,11 +139,13 @@ export class AutoStarter {
     if (this.domTimer !== undefined) return;
     this.domTimer = setTimeout(() => {
       this.domTimer = undefined;
-      const count =
-        document.getElementsByTagName('video').length +
-        document.getElementsByTagName('iframe').length;
-      if (count !== this.videoCount) {
-        this.videoCount = count;
+      // The set of videos and iframes, not only its size: one taken away and one put in is a change.
+      const now: Element[] = [
+        ...document.getElementsByTagName('video'),
+        ...document.getElementsByTagName('iframe'),
+      ];
+      if (now.length !== this.seen.size || now.some((element) => !this.seen.has(element))) {
+        this.seen = new Set(now);
         void this.tick();
       }
     }, DOM_QUIET_MS);
@@ -149,11 +175,13 @@ export class AutoStarter {
     this.busy = true;
     try {
       const session = this.host.session;
-      if (session?.video.isConnected && !session.leftBehind) return this.waitForSubtitles(session);
+      // A player we hold that is gone from the screen (hidden, with a new one beside it) is not kept.
+      if (session?.video.isConnected && !session.leftBehind && isShown(session.video))
+        return this.waitForSubtitles(session);
       if (Date.now() < this.retryAt) return;
       // Walking the whole page is costly: do it often only when a <video> is plainly there, otherwise
-      // (shadow DOM players) every few ticks.
-      if (document.getElementsByTagName('video').length === 0 && this.ticks % 4 !== 0) return;
+      // (shadow DOM players) every other tick.
+      if (document.getElementsByTagName('video').length === 0 && this.ticks % 2 !== 0) return;
 
       const videos = this.host.videos();
       const candidates = videos.map((video, index) => {

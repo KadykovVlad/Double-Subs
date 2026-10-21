@@ -96,6 +96,8 @@ export class VideoSession {
   private stopFollowing: Array<() => void> = [];
   private watcher: PlayerWatcher | null = null;
   private loading = false;
+  /** The player changed (a new source, tracks) while a look at it was running: look again when it is over. */
+  private changedWhileLoading = false;
   /** Counts the looks: a look that a newer one has overtaken (another video) is thrown away. */
   private generation = 0;
   private giveUpTimer: ReturnType<typeof setTimeout> | undefined;
@@ -146,11 +148,10 @@ export class VideoSession {
 
   /** Reads the subtitles, shows them, and starts following changes of the player. */
   async open(): Promise<VideoReport> {
-    // On YouTube a switch to another video during the first look must not be missed.
-    if (this.youtube) this.follow();
-    const report = await this.load(false);
-    if (!this.youtube) this.follow();
-    return report;
+    // A switch to another video (or another source) during the first look must not be missed, and
+    // a first look that fails must not leave the player unwatched: following begins before it.
+    this.follow();
+    return this.load(false);
   }
 
   /** Looks at the same player again (its tracks may have appeared or changed). `quiet`: the chip says nothing unless there is news. */
@@ -206,6 +207,7 @@ export class VideoSession {
   private async load(quiet: boolean): Promise<VideoReport> {
     const generation = ++this.generation;
     this.loading = true;
+    const factsBefore = readPlayerFacts(this.video);
     try {
       await this.deps.data.ready; // the language of the texts (track labels, notes) is known from here on
       this.syncNativeCaptions();
@@ -216,7 +218,7 @@ export class VideoSession {
       // YouTube switched to another video meanwhile: these lines are of the old one, the newer look shows its own.
       if (generation !== this.generation) return inspection.report;
       this.pair = pair;
-      this.watcher?.markSeen();
+      this.watcher?.markSeen(factsBefore);
       this.announce(inspection, quiet);
       await this.show(inspection);
       if (this.youtube && missesLines(inspection.report)) {
@@ -230,7 +232,16 @@ export class VideoSession {
       this.readyWhileLoading = false;
       return inspection.report;
     } finally {
-      if (generation === this.generation) this.loading = false;
+      if (generation === this.generation) {
+        this.loading = false;
+        // The player changed while it was being read: read it again now, the lines are of the old state.
+        if (this.changedWhileLoading && !this.closed) {
+          this.changedWhileLoading = false;
+          void this.load(true)
+            .then(() => this.deps.panel.selected())
+            .catch(() => {});
+        }
+      }
     }
   }
 
@@ -443,7 +454,11 @@ export class VideoSession {
     // A single-page site may load the next episode into the same <video>, an ad may come before the
     // film, tracks may be added late: look again whenever the player changes.
     const watcher = new PlayerWatcher(this.video, () => {
-      if (this.loading || !this.video.isConnected) return;
+      if (!this.video.isConnected) return;
+      if (this.loading) {
+        this.changedWhileLoading = true;
+        return;
+      }
       void this.load(true)
         .then(() => this.deps.panel.selected())
         .catch(() => {});

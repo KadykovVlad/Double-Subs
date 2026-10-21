@@ -135,3 +135,29 @@ describe('originsToOffer', () => {
     ).toEqual(['https://lordfilm7.cc']);
   });
 });
+
+import { excludedHostOf, isSiteExcluded } from '../src/lib/known-sites';
+
+describe('sites switched off', () => {
+  it('keeps a site by its host, without "www." and without the port or the path', () => {
+    expect(excludedHostOf('https://www.Example.com:8080/watch?v=1')).toBe('example.com');
+    expect(excludedHostOf('https://ga.lordfilm5.pro')).toBe('ga.lordfilm5.pro');
+    expect(excludedHostOf('chrome://extensions')).toBeNull();
+    expect(excludedHostOf(undefined)).toBeNull();
+  });
+
+  it('a frame is off when its own address or the page above it is on the list', () => {
+    const excluded = ['site.example'];
+    expect(isSiteExcluded(excluded, ['https://player.cdn.example/embed/1'])).toBe(false);
+    // The player's frame is from another site, but the page that holds it was switched off.
+    expect(
+      isSiteExcluded(excluded, ['https://player.cdn.example/embed/1', 'https://www.site.example']),
+    ).toBe(true);
+    expect(isSiteExcluded(excluded, ['https://site.example/series/2'])).toBe(true);
+  });
+
+  it('an empty list or addresses that are not web pages switch nothing off', () => {
+    expect(isSiteExcluded([], ['https://site.example/'])).toBe(false);
+    expect(isSiteExcluded(['site.example'], ['about:blank', '', undefined])).toBe(false);
+  });
+});

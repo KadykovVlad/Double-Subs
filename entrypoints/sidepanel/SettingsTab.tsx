@@ -2,6 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { signOut } from '../../src/lib/account';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
+import { setSiteExcluded } from '../../src/lib/known-sites';
 import {
   BAR_OPACITY,
   BAR_WIDTH,
@@ -38,7 +39,14 @@ import {
   type Diagnostics,
 } from '../../src/panel/controller';
 import { forgetSite, MirrorsSwitch } from './NowTab';
-import { useAccount, useEntitlements, useHistory, useKnownSites, useSettings } from './hooks';
+import {
+  useAccount,
+  useEntitlements,
+  useExcludedSites,
+  useHistory,
+  useKnownSites,
+  useSettings,
+} from './hooks';
 import { Button, Card, ColorRow, Icons, RangeRow, SectionTitle, SelectRow, SwitchRow } from './ui';
 import { t } from '../../src/lib/i18n';
 
@@ -235,6 +243,8 @@ export function SettingsTab({
         )}
         <MirrorsSwitch />
       </Card>
+
+      <SwitchedOffSites />
 
       <SectionTitle>{t('set_history')}</SectionTitle>
       <Card>
@@ -459,6 +469,36 @@ function AccountCard() {
         <Button variant="secondary" size="sm" testid="sign-out" onClick={() => void signOut()}>
           {t('account_sign_out')}
         </Button>
+      </Card>
+    </>
+  );
+}
+
+/** The sites the user switched off, each with a button to turn it on again; nothing is shown while there are none. */
+function SwitchedOffSites() {
+  const excluded = useExcludedSites();
+  if (excluded.length === 0) return null;
+  return (
+    <>
+      <SectionTitle>{t('site_off_title')}</SectionTitle>
+      <Card>
+        <ul class="list">
+          {excluded.map((host) => (
+            <li key={host}>
+              <span class="grow" data-testid="switched-off-site">
+                {host}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                testid="include-site"
+                onClick={() => void setSiteExcluded(host, false)}
+              >
+                {t('site_off_enable')}
+              </Button>
+            </li>
+          ))}
+        </ul>
       </Card>
     </>
   );

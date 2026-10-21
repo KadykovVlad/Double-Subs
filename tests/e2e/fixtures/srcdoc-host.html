@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>A player in a frame made by a script (srcdoc)</title>
+<div id="stage"></div>
+<script>
+  window.mountFrame = function () {
+    const frame = document.createElement('iframe');
+    frame.id = 'player';
+    frame.width = '640';
+    frame.height = '360';
+    frame.srcdoc =
+      '<video crossorigin="anonymous" src="clip.webm" width="480" height="270">' +
+      '<track kind="subtitles" label="English" srclang="en" src="en-full.vtt"></video>';
+    document.getElementById('stage').append(frame);
+  };
+</script>

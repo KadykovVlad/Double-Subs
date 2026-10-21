@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>A player that is made again: the old element stays in the page, hidden, a new one is shown</title>
+<div id="stage">
+  <video id="old" crossorigin="anonymous" src="clip.webm" width="480" height="270">
+    <track kind="subtitles" label="English" srclang="en" src="en-full.vtt" />
+  </video>
+</div>
+<script>
+  window.mountSecond = function () {
+    document.getElementById('old').style.display = 'none';
+    const video = document.createElement('video');
+    video.id = 'fresh';
+    video.setAttribute('crossorigin', 'anonymous');
+    video.setAttribute('width', '480');
+    video.setAttribute('height', '270');
+    video.src = 'clip.webm';
+    const track = document.createElement('track');
+    track.kind = 'subtitles';
+    track.label = 'English';
+    track.srclang = 'en';
+    track.src = 'en-slow.vtt';
+    video.append(track);
+    document.getElementById('stage').append(video);
+  };
+</script>

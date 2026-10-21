@@ -162,9 +162,6 @@
 "auto_label": "Käivita ise saidil $1",
 "auto_hint": "Järgmisel korral leitakse mängija ilma ikoonil klõpsamata",
 "auto_denied": "Juurdepääsu saidile ei antud, automaatset käivitamist ei lülitatud sisse.",
-"mirrors_label": "Tunne minu saite ära ka teistel aadressidel",
-"mirrors_hint": "Samanimelised peeglid (näiteks lordfilm) ja IP-aadressiga saidid. Juurdepääs kõigile saitidele on vaja ainult aadressi võrdlemiseks sinu loendiga.",
-"mirrors_denied": "Juurdepääsu ei antud, peegleid ei lülitatud sisse.",
 "watching_title": "Vaatamise ajal",
 "watch_show": "Näita topeltpealkirju",
 "watch_hover": "Tõlgi sõnad kursorit liigutades",
@@ -273,5 +270,11 @@
 "welcome_allow": "Luba juurdepääs",
 "welcome_allowed": "Juurdepääs lubatud",
 "welcome_signin_title": "2. Sisselogimine",
-"welcome_done": "Kõik on valmis. Avage video ja klõpsake Double Subi ikoonil."
+"welcome_done": "Kõik on valmis. Avage video ja klõpsake Double Subi ikoonil.",
+"site_on_label": "Tööta saidil $1",
+"site_off_title": "Välja lülitatud saidid",
+"site_off_enable": "Lülita sisse",
+"everywhere_label": "Käivitu ise igal saidil",
+"everywhere_hint": "Subtiitrid algavad igal videoga lehel. Vaja on juurdepääsu kõigile saitidele; laiendus loeb ainult video subtiitreid.",
+"everywhere_denied": "Juurdepääsu kõigile saitidele ei antud."
 }

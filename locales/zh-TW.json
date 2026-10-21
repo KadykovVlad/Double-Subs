@@ -162,9 +162,6 @@
 "auto_label": "在 $1 上自動啟動",
 "auto_hint": "下次不必點擊圖示就能找到播放器",
 "auto_denied": "未授予網站存取權限，自動啟動未開啟。",
-"mirrors_label": "在其他位址也辨識我的網站",
-"mirrors_hint": "同名鏡像站（例如 lordfilm）與 IP 位址網站。存取所有網站僅用於將位址與你的清單比對。",
-"mirrors_denied": "未授予存取權限，鏡像站未開啟。",
 "watching_title": "觀看時",
 "watch_show": "顯示雙語字幕",
 "watch_hover": "滑過即翻譯單字",
@@ -273,5 +270,11 @@
 "welcome_allow": "允許存取",
 "welcome_allowed": "已允許存取",
 "welcome_signin_title": "2. 登入",
-"welcome_done": "一切就緒。開啟影片，然後點選 Double Sub 圖示。"
+"welcome_done": "一切就緒。開啟影片，然後點選 Double Sub 圖示。",
+"site_on_label": "在 $1 上運作",
+"site_off_title": "已關閉的網站",
+"site_off_enable": "開啟",
+"everywhere_label": "在所有網站上自動啟動",
+"everywhere_hint": "字幕會在任何有影片的頁面上開始。需要存取所有網站；擴充功能只會讀取影片字幕。",
+"everywhere_denied": "未授予對所有網站的存取權限。"
 }

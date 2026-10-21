@@ -1,5 +1,11 @@
 import type { AgentRequest, FrameScan, PickedMessage } from '../lib/messages';
-import { rememberPickedPlayer } from '../lib/known-sites';
+import {
+  frameAddresses,
+  isSiteExcluded,
+  loadExcludedSites,
+  rememberPickedPlayer,
+  watchExcludedSites,
+} from '../lib/known-sites';
 import { startPicking } from '../lib/picker';
 import type { VideoReport } from '../lib/types';
 import { AutoStarter, type AutoHost } from './AutoStarter';
@@ -54,6 +60,11 @@ export class Agent implements AutoHost {
       if (account) {
         if (this.autoWanted) this.startAuto();
       } else this.stopEverything();
+    });
+
+    // The site was switched on again: the automatic start that was waiting goes on.
+    watchExcludedSites((excluded) => {
+      if (this.autoWanted && !isSiteExcluded(excluded, frameAddresses())) this.startAuto();
     });
 
     if (window.__doubleSubAuto) this.startAuto();
@@ -117,9 +128,15 @@ export class Agent implements AutoHost {
 
   private startAuto(): void {
     this.autoWanted = true;
-    void this.data.ready.then(() => {
+    void this.data.ready.then(async () => {
       if (this.auto || !this.data.signedIn()) return;
-      this.auto = new AutoStarter(this);
+      // A site the user switched off, and the frames of its pages, are left alone.
+      if (isSiteExcluded(await loadExcludedSites(), frameAddresses())) return;
+      if (this.auto) return;
+      // `onStop`: a starter that ended by itself (the site was switched off) can be made again later.
+      this.auto = new AutoStarter(this, () => {
+        this.auto = null;
+      });
       this.auto.start();
     });
   }

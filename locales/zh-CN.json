@@ -162,9 +162,6 @@
 "auto_label": "在 $1 上自动启动",
 "auto_hint": "下次无需点击图标即可找到播放器",
 "auto_denied": "未授予网站访问权限，自动启动未开启。",
-"mirrors_label": "在其他地址上也识别我的网站",
-"mirrors_hint": "同名镜像站（例如 lordfilm）和 IP 地址网站。访问所有网站仅用于将地址与你的列表比对。",
-"mirrors_denied": "未授予访问权限，镜像站未开启。",
 "watching_title": "观看时",
 "watch_show": "显示双语字幕",
 "watch_hover": "悬停翻译单词",
@@ -273,5 +270,11 @@
 "welcome_allow": "允许访问",
 "welcome_allowed": "已允许访问",
 "welcome_signin_title": "2. 登录",
-"welcome_done": "一切就绪。打开视频，然后点击 Double Sub 图标。"
+"welcome_done": "一切就绪。打开视频，然后点击 Double Sub 图标。",
+"site_on_label": "在 $1 上运行",
+"site_off_title": "已关闭的网站",
+"site_off_enable": "开启",
+"everywhere_label": "在所有网站上自动启动",
+"everywhere_hint": "字幕会在任何有视频的页面上开始。需要访问所有网站；扩展程序只读取视频字幕。",
+"everywhere_denied": "未授予对所有网站的访问权限。"
 }

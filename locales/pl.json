@@ -162,9 +162,6 @@
 "auto_label": "Uruchamiaj samodzielnie na $1",
 "auto_hint": "Następnym razem odtwarzacz zostanie znaleziony bez klikania ikony",
 "auto_denied": "Nie przyznano dostępu do strony, autostart nie został włączony.",
-"mirrors_label": "Rozpoznawaj moje strony także pod innymi adresami",
-"mirrors_hint": "Lustra o tej samej nazwie (na przykład lordfilm) i strony pod adresem IP. Dostęp do wszystkich stron służy tylko do porównania adresu z Twoją listą.",
-"mirrors_denied": "Nie przyznano dostępu, lustra nie zostały włączone.",
 "watching_title": "Podczas oglądania",
 "watch_show": "Pokazuj podwójne napisy",
 "watch_hover": "Tłumacz słowa po najechaniu",
@@ -273,5 +270,11 @@
 "welcome_allow": "Zezwól na dostęp",
 "welcome_allowed": "Dostęp zezwolony",
 "welcome_signin_title": "2. Logowanie",
-"welcome_done": "Gotowe. Otwórz film i kliknij ikonę Double Sub."
+"welcome_done": "Gotowe. Otwórz film i kliknij ikonę Double Sub.",
+"site_on_label": "Działaj na $1",
+"site_off_title": "Wyłączone witryny",
+"site_off_enable": "Włącz",
+"everywhere_label": "Uruchamiaj się samo na każdej witrynie",
+"everywhere_hint": "Napisy włączają się na każdej stronie z wideo. Wymaga dostępu do wszystkich witryn; rozszerzenie odczytuje tylko napisy do wideo.",
+"everywhere_denied": "Nie przyznano dostępu do wszystkich witryn."
 }

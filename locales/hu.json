@@ -162,9 +162,6 @@
 "auto_label": "Automatikus indítás itt: $1",
 "auto_hint": "Legközelebb a lejátszót az ikonra kattintás nélkül megtalálja",
 "auto_denied": "A webhelyhez nem lett megadva hozzáférés, az automatikus indítás nincs bekapcsolva.",
-"mirrors_label": "A webhelyeim felismerése más címeken is",
-"mirrors_hint": "Azonos nevű tüköroldalak (például lordfilm) és IP-című webhelyek. A minden webhelyhez való hozzáférés csak a cím és a listád összehasonlítására kell.",
-"mirrors_denied": "A hozzáférés nem lett megadva, a tüköroldalak nincsenek bekapcsolva.",
 "watching_title": "Nézés közben",
 "watch_show": "Dupla felirat megjelenítése",
 "watch_hover": "Szavak fordítása rámutatáskor",
@@ -273,5 +270,11 @@
 "welcome_allow": "Hozzáférés engedélyezése",
 "welcome_allowed": "Hozzáférés engedélyezve",
 "welcome_signin_title": "2. Bejelentkezés",
-"welcome_done": "Minden kész. Nyisson meg egy videót, és kattintson a Double Sub ikonra."
+"welcome_done": "Minden kész. Nyisson meg egy videót, és kattintson a Double Sub ikonra.",
+"site_on_label": "Működjön itt: $1",
+"site_off_title": "Kikapcsolt webhelyek",
+"site_off_enable": "Bekapcsolás",
+"everywhere_label": "Minden webhelyen induljon magától",
+"everywhere_hint": "A feliratok minden videót tartalmazó oldalon elindulnak. Hozzáférés kell az összes webhelyhez; a bővítmény csak a videó feliratait olvassa.",
+"everywhere_denied": "Az összes webhelyhez nem adtak hozzáférést."
 }

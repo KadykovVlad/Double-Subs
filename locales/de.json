@@ -162,9 +162,6 @@
 "auto_label": "Selbst starten auf $1",
 "auto_hint": "Beim nächsten Mal wird der Player ohne Klick auf das Symbol gefunden",
 "auto_denied": "Zugriff auf die Seite nicht erteilt, Autostart ist nicht eingeschaltet.",
-"mirrors_label": "Meine Seiten auch unter anderen Adressen erkennen",
-"mirrors_hint": "Spiegel mit demselben Namen (zum Beispiel lordfilm) und Seiten mit IP-Adresse. Der Zugriff auf alle Seiten dient nur dazu, die Adresse mit deiner Liste zu vergleichen.",
-"mirrors_denied": "Zugriff nicht erteilt, Spiegel sind nicht eingeschaltet.",
 "watching_title": "Beim Ansehen",
 "watch_show": "Doppelte Untertitel anzeigen",
 "watch_hover": "Wörter beim Darüberfahren übersetzen",
@@ -273,5 +270,11 @@
 "welcome_allow": "Zugriff erlauben",
 "welcome_allowed": "Zugriff erlaubt",
 "welcome_signin_title": "2. Anmelden",
-"welcome_done": "Alles bereit. Öffnen Sie ein Video und klicken Sie auf das Double-Sub-Symbol."
+"welcome_done": "Alles bereit. Öffnen Sie ein Video und klicken Sie auf das Double-Sub-Symbol.",
+"site_on_label": "Auf $1 aktiv",
+"site_off_title": "Ausgeschaltete Websites",
+"site_off_enable": "Einschalten",
+"everywhere_label": "Auf jeder Website von selbst starten",
+"everywhere_hint": "Die Untertitel starten auf jeder Seite mit einem Video. Dafür ist Zugriff auf alle Websites nötig; die Erweiterung liest nur die Untertitel des Videos.",
+"everywhere_denied": "Zugriff auf alle Websites wurde nicht erteilt."
 }

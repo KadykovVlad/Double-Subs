@@ -162,9 +162,6 @@
 "auto_label": "Paleisti pačiam: $1",
 "auto_hint": "Kitą kartą grotuvas bus rastas nespustelėjus piktogramos",
 "auto_denied": "Prieiga prie svetainės nesuteikta, automatinis paleidimas neįjungtas.",
-"mirrors_label": "Atpažinti mano svetaines ir kitais adresais",
-"mirrors_hint": "Tokio paties pavadinimo veidrodžiai (pavyzdžiui, lordfilm) ir svetainės su IP adresu. Prieiga prie visų svetainių reikalinga tik adresui palyginti su jūsų sąrašu.",
-"mirrors_denied": "Prieiga nesuteikta, veidrodžiai neįjungti.",
 "watching_title": "Žiūrint",
 "watch_show": "Rodyti dvigubus subtitrus",
 "watch_hover": "Versti žodžius užvedus žymeklį",
@@ -273,5 +270,11 @@
 "welcome_allow": "Leisti prieigą",
 "welcome_allowed": "Prieiga leista",
 "welcome_signin_title": "2. Prisijungimas",
-"welcome_done": "Viskas paruošta. Atidarykite vaizdo įrašą ir spustelėkite „Double Sub“ piktogramą."
+"welcome_done": "Viskas paruošta. Atidarykite vaizdo įrašą ir spustelėkite „Double Sub“ piktogramą.",
+"site_on_label": "Veikti svetainėje $1",
+"site_off_title": "Išjungtos svetainės",
+"site_off_enable": "Įjungti",
+"everywhere_label": "Pačiam pasileisti bet kurioje svetainėje",
+"everywhere_hint": "Subtitrai prasideda bet kuriame puslapyje su vaizdo įrašu. Reikia prieigos prie visų svetainių; plėtinys skaito tik vaizdo įrašo subtitrus.",
+"everywhere_denied": "Prieiga prie visų svetainių nebuvo suteikta."
 }

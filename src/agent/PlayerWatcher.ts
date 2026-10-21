@@ -36,9 +36,12 @@ export class PlayerWatcher {
     );
   }
 
-  /** The player was read just now: what it looked like then is the new point of comparison. */
-  markSeen(): void {
-    this.seen = readPlayerFacts(this.video);
+  /**
+   * The player was read: what it looked like when the reading began is the new point of comparison
+   * (a change during a long reading must still show up as a change).
+   */
+  markSeen(facts: PlayerFacts = readPlayerFacts(this.video)): void {
+    this.seen = facts;
   }
 
   /** Compares at once (for the owner's own timer, when no event tells of a change, e.g. cues added by a script). */

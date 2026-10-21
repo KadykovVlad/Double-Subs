@@ -162,9 +162,6 @@
 "auto_label": "Tự khởi động trên $1",
 "auto_hint": "Lần sau sẽ tìm thấy trình phát mà không cần nhấp vào biểu tượng",
 "auto_denied": "Chưa được cấp quyền truy cập trang web, chưa bật tự khởi động.",
-"mirrors_label": "Nhận ra trang của tôi ở cả địa chỉ khác",
-"mirrors_hint": "Trang gương cùng tên (ví dụ lordfilm) và trang theo địa chỉ IP. Quyền truy cập mọi trang chỉ dùng để so địa chỉ với danh sách của bạn.",
-"mirrors_denied": "Chưa được cấp quyền, chưa bật trang gương.",
 "watching_title": "Khi xem",
 "watch_show": "Hiện phụ đề kép",
 "watch_hover": "Dịch từ khi rê chuột",
@@ -273,5 +270,11 @@
 "welcome_allow": "Cho phép truy cập",
 "welcome_allowed": "Đã cho phép truy cập",
 "welcome_signin_title": "2. Đăng nhập",
-"welcome_done": "Đã sẵn sàng. Mở một video và nhấp vào biểu tượng Double Sub."
+"welcome_done": "Đã sẵn sàng. Mở một video và nhấp vào biểu tượng Double Sub.",
+"site_on_label": "Hoạt động trên $1",
+"site_off_title": "Trang web đã tắt",
+"site_off_enable": "Bật",
+"everywhere_label": "Tự khởi động trên mọi trang web",
+"everywhere_hint": "Phụ đề bắt đầu trên mọi trang có video. Cần quyền truy cập mọi trang web; tiện ích chỉ đọc phụ đề của video.",
+"everywhere_denied": "Chưa được cấp quyền truy cập mọi trang web."
 }

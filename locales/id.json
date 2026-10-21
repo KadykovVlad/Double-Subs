@@ -162,9 +162,6 @@
 "auto_label": "Mulai otomatis di $1",
 "auto_hint": "Lain kali pemutar ditemukan tanpa mengeklik ikon",
 "auto_denied": "Akses ke situs tidak diberikan, mulai otomatis tidak dinyalakan.",
-"mirrors_label": "Kenali situs saya di alamat lain juga",
-"mirrors_hint": "Situs cermin dengan nama sama (misalnya lordfilm) dan situs dengan alamat IP. Akses ke semua situs hanya dipakai untuk membandingkan alamat dengan daftar Anda.",
-"mirrors_denied": "Akses tidak diberikan, situs cermin tidak dinyalakan.",
 "watching_title": "Saat menonton",
 "watch_show": "Tampilkan subtitel ganda",
 "watch_hover": "Terjemahkan kata saat kursor diarahkan",
@@ -273,5 +270,11 @@
 "welcome_allow": "Izinkan akses",
 "welcome_allowed": "Akses diizinkan",
 "welcome_signin_title": "2. Masuk",
-"welcome_done": "Semua siap. Buka video dan klik ikon Double Sub."
+"welcome_done": "Semua siap. Buka video dan klik ikon Double Sub.",
+"site_on_label": "Aktif di $1",
+"site_off_title": "Situs yang dimatikan",
+"site_off_enable": "Aktifkan",
+"everywhere_label": "Mulai sendiri di setiap situs",
+"everywhere_hint": "Subtitle dimulai di halaman mana pun yang punya video. Perlu akses ke semua situs; ekstensi hanya membaca subtitle video.",
+"everywhere_denied": "Akses ke semua situs tidak diberikan."
 }

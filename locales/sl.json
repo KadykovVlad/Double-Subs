@@ -162,9 +162,6 @@
 "auto_label": "Zaženi samodejno na $1",
 "auto_hint": "Prihodnjič bo predvajalnik najden brez klika na ikono",
 "auto_denied": "Dostop do spletnega mesta ni bil odobren, samodejni zagon ni vklopljen.",
-"mirrors_label": "Prepoznaj moja spletna mesta tudi na drugih naslovih",
-"mirrors_hint": "Zrcala z istim imenom (na primer lordfilm) in mesta z naslovom IP. Dostop do vseh spletnih mest je potreben samo za primerjavo naslova z vašim seznamom.",
-"mirrors_denied": "Dostop ni bil odobren, zrcala niso vklopljena.",
 "watching_title": "Med gledanjem",
 "watch_show": "Prikaži dvojne podnapise",
 "watch_hover": "Prevedi besede ob premiku kazalca",
@@ -273,5 +270,11 @@
 "welcome_allow": "Dovoli dostop",
 "welcome_allowed": "Dostop dovoljen",
 "welcome_signin_title": "2. Prijava",
-"welcome_done": "Vse je pripravljeno. Odprite video in kliknite ikono Double Sub."
+"welcome_done": "Vse je pripravljeno. Odprite video in kliknite ikono Double Sub.",
+"site_on_label": "Deluj na $1",
+"site_off_title": "Izklopljena spletna mesta",
+"site_off_enable": "Vklopi",
+"everywhere_label": "Samodejno zaženi na vsakem spletnem mestu",
+"everywhere_hint": "Podnapisi se zaženejo na vsaki strani z videom. Potreben je dostop do vseh spletnih mest; razširitev bere samo podnapise videa.",
+"everywhere_denied": "Dostop do vseh spletnih mest ni bil odobren."
 }

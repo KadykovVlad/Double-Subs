@@ -162,9 +162,6 @@
 "auto_label": "Starta själv på $1",
 "auto_hint": "Nästa gång hittas spelaren utan att du klickar på ikonen",
 "auto_denied": "Åtkomst till webbplatsen beviljades inte, autostart är inte påslagen.",
-"mirrors_label": "Känn igen mina webbplatser även på andra adresser",
-"mirrors_hint": "Speglar med samma namn (till exempel lordfilm) och webbplatser med IP-adress. Åtkomst till alla webbplatser behövs bara för att jämföra adressen med din lista.",
-"mirrors_denied": "Åtkomst beviljades inte, speglar är inte påslagna.",
 "watching_title": "Under tittande",
 "watch_show": "Visa dubbla undertexter",
 "watch_hover": "Översätt ord när du pekar",
@@ -273,5 +270,11 @@
 "welcome_allow": "Tillåt åtkomst",
 "welcome_allowed": "Åtkomst tillåten",
 "welcome_signin_title": "2. Logga in",
-"welcome_done": "Klart. Öppna en video och klicka på Double Sub-ikonen."
+"welcome_done": "Klart. Öppna en video och klicka på Double Sub-ikonen.",
+"site_on_label": "Fungera på $1",
+"site_off_title": "Avstängda webbplatser",
+"site_off_enable": "Slå på",
+"everywhere_label": "Starta av sig själv på alla webbplatser",
+"everywhere_hint": "Undertexterna startar på alla sidor med video. Kräver åtkomst till alla webbplatser; tillägget läser bara videons undertexter.",
+"everywhere_denied": "Åtkomst till alla webbplatser gavs inte."
 }

@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>A page whose player is an iframe that reloads without the page reloading</title>
+<iframe id="player" src="iframe-player.html?ep=1" width="640" height="360"></iframe>
+<script>
+  // The next episode: the player frame gets a new address (a new document), the page stays.
+  window.nextEpisode = function (ep) {
+    document.getElementById('player').src = 'iframe-player.html?ep=' + ep;
+  };
+  // The same, by reloading the frame's document in place.
+  window.reloadPlayer = function () {
+    document.getElementById('player').contentWindow.location.reload();
+  };
+</script>

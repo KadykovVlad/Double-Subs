@@ -162,9 +162,6 @@
 "auto_label": "Avvia da solo su $1",
 "auto_hint": "La prossima volta il player verrà trovato senza fare clic sull’icona",
 "auto_denied": "Accesso al sito non concesso, l’avvio automatico non è attivo.",
-"mirrors_label": "Riconosci i miei siti anche ad altri indirizzi",
-"mirrors_hint": "Mirror con lo stesso nome (per esempio lordfilm) e siti con indirizzo IP. L’accesso a tutti i siti serve solo a confrontare l’indirizzo con il tuo elenco.",
-"mirrors_denied": "Accesso non concesso, i mirror non sono attivi.",
 "watching_title": "Durante la visione",
 "watch_show": "Mostra i sottotitoli doppi",
 "watch_hover": "Traduci le parole al passaggio del cursore",
@@ -273,5 +270,11 @@
 "welcome_allow": "Consenti l’accesso",
 "welcome_allowed": "Accesso consentito",
 "welcome_signin_title": "2. Accedi",
-"welcome_done": "Tutto pronto. Apri un video e fai clic sull’icona di Double Sub."
+"welcome_done": "Tutto pronto. Apri un video e fai clic sull’icona di Double Sub.",
+"site_on_label": "Attivo su $1",
+"site_off_title": "Siti disattivati",
+"site_off_enable": "Attiva",
+"everywhere_label": "Avvia da solo su ogni sito",
+"everywhere_hint": "I sottotitoli partono su qualsiasi pagina con un video. Richiede l’accesso a tutti i siti; l’estensione legge solo i sottotitoli del video.",
+"everywhere_denied": "L’accesso a tutti i siti non è stato concesso."
 }

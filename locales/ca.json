@@ -162,9 +162,6 @@
 "auto_label": "Inicia sol a $1",
 "auto_hint": "La propera vegada el reproductor es trobarà sense fer clic a la icona",
 "auto_denied": "No s’ha concedit l’accés al lloc, l’inici automàtic no s’ha activat.",
-"mirrors_label": "Reconeix els meus llocs també en altres adreces",
-"mirrors_hint": "Miralls amb el mateix nom (per exemple lordfilm) i llocs per adreça IP. L’accés a tots els llocs només serveix per comparar l’adreça amb la teva llista.",
-"mirrors_denied": "No s’ha concedit l’accés, els miralls no s’han activat.",
 "watching_title": "Mentre mires",
 "watch_show": "Mostra els subtítols dobles",
 "watch_hover": "Tradueix les paraules en passar el cursor",
@@ -273,5 +270,11 @@
 "welcome_allow": "Permet l’accés",
 "welcome_allowed": "Accés permès",
 "welcome_signin_title": "2. Inicia la sessió",
-"welcome_done": "Tot a punt. Obre un vídeo i fes clic a la icona de Double Sub."
+"welcome_done": "Tot a punt. Obre un vídeo i fes clic a la icona de Double Sub.",
+"site_on_label": "Funciona a $1",
+"site_off_title": "Llocs desactivats",
+"site_off_enable": "Activa",
+"everywhere_label": "Inicia’t sol a tots els llocs",
+"everywhere_hint": "Els subtítols comencen a qualsevol pàgina amb vídeo. Cal accés a tots els llocs; l’extensió només llegeix els subtítols del vídeo.",
+"everywhere_denied": "No s’ha concedit l’accés a tots els llocs."
 }

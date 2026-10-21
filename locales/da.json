@@ -162,9 +162,6 @@
 "auto_label": "Start selv på $1",
 "auto_hint": "Næste gang findes afspilleren uden at klikke på ikonet",
 "auto_denied": "Adgang til webstedet blev ikke givet, automatisk start er ikke slået til.",
-"mirrors_label": "Genkend mine websteder også på andre adresser",
-"mirrors_hint": "Spejle med samme navn (fx lordfilm) og websteder med IP-adresse. Adgang til alle websteder bruges kun til at sammenligne adressen med din liste.",
-"mirrors_denied": "Adgang blev ikke givet, spejle er ikke slået til.",
 "watching_title": "Under visning",
 "watch_show": "Vis dobbelte undertekster",
 "watch_hover": "Oversæt ord ved musehover",
@@ -273,5 +270,11 @@
 "welcome_allow": "Tillad adgang",
 "welcome_allowed": "Adgang tilladt",
 "welcome_signin_title": "2. Log ind",
-"welcome_done": "Klar. Åbn en video, og klik på Double Sub-ikonet."
+"welcome_done": "Klar. Åbn en video, og klik på Double Sub-ikonet.",
+"site_on_label": "Aktiv på $1",
+"site_off_title": "Slukkede websteder",
+"site_off_enable": "Slå til",
+"everywhere_label": "Start af sig selv på alle websteder",
+"everywhere_hint": "Underteksterne starter på alle sider med video. Kræver adgang til alle websteder; udvidelsen læser kun videoens undertekster.",
+"everywhere_denied": "Adgang til alle websteder blev ikke givet."
 }

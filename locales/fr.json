@@ -162,9 +162,6 @@
 "auto_label": "Démarrer seul sur $1",
 "auto_hint": "La prochaine fois, le lecteur sera trouvé sans cliquer sur l’icône",
 "auto_denied": "L’accès au site n’a pas été accordé, le démarrage automatique n’est pas activé.",
-"mirrors_label": "Reconnaître mes sites aussi à d’autres adresses",
-"mirrors_hint": "Les miroirs portant le même nom (par exemple lordfilm) et les sites par adresse IP. L’accès à tous les sites ne sert qu’à comparer l’adresse avec votre liste.",
-"mirrors_denied": "L’accès n’a pas été accordé, les miroirs ne sont pas activés.",
 "watching_title": "Pendant la lecture",
 "watch_show": "Afficher les sous-titres doubles",
 "watch_hover": "Traduire les mots au survol",
@@ -273,5 +270,11 @@
 "welcome_allow": "Autoriser l’accès",
 "welcome_allowed": "Accès autorisé",
 "welcome_signin_title": "2. Connexion",
-"welcome_done": "Tout est prêt. Ouvrez une vidéo et cliquez sur l’icône Double Sub."
+"welcome_done": "Tout est prêt. Ouvrez une vidéo et cliquez sur l’icône Double Sub.",
+"site_on_label": "Actif sur $1",
+"site_off_title": "Sites désactivés",
+"site_off_enable": "Activer",
+"everywhere_label": "Démarrer seul sur tous les sites",
+"everywhere_hint": "Les sous-titres démarrent sur toute page contenant une vidéo. Nécessite l’accès à tous les sites ; l’extension ne lit que les sous-titres de la vidéo.",
+"everywhere_denied": "L’accès à tous les sites n’a pas été accordé."
 }

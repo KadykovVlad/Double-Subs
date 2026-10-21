@@ -5,10 +5,12 @@ import {
   addKnownSite,
   addKnownSites,
   dismissOffer,
+  excludedHostOf,
   MIRRORS_PATTERN,
   originsToOffer,
   removeKnownSite,
   setMirrorsMode,
+  setSiteExcluded,
   YOUTUBE_ORIGIN,
 } from '../../src/lib/known-sites';
 import { originPattern } from '../../src/lib/scan';
@@ -25,7 +27,13 @@ import {
 import { pairOf, type Settings } from '../../src/lib/settings';
 import type { Role } from '../../src/lib/analysis';
 import { requestAccess, retryTranslation, type PopupState } from '../../src/panel/controller';
-import { useDismissedOffers, useKnownSites, useMirrorsMode, useSettings } from './hooks';
+import {
+  useDismissedOffers,
+  useExcludedSites,
+  useKnownSites,
+  useMirrorsMode,
+  useSettings,
+} from './hooks';
 import { Button, Card, Icons, Progress, SectionTitle, SelectRow, Spinner, SwitchRow } from './ui';
 import { nameOf, t, titleOf, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 
@@ -239,6 +247,7 @@ function StatusCard({ state, tabId, onGrant, onPick, onCancelPick, onRetry, onRe
             </details>
           </Card>
           <AutoStart origin={state.origin} />
+          <SiteSwitch address={state.pageUrl ?? state.origin} />
           <Button variant="secondary" block onClick={onPick}>
             {t('pick_other')}
           </Button>
@@ -388,6 +397,23 @@ function RememberOffer({ state }: { state: PopupState }) {
   );
 }
 
+/** "Work on this site": on unless the user switched the site off; nothing starts by itself on a switched-off site. */
+function SiteSwitch({ address }: { address: string }) {
+  const excluded = useExcludedSites();
+  const host = excludedHostOf(address);
+  if (!host) return null;
+  return (
+    <Card>
+      <SwitchRow
+        label={t('site_on_label', host)}
+        checked={!excluded.includes(host)}
+        testid="site-on"
+        onChange={(on) => void setSiteExcluded(host, !on)}
+      />
+    </Card>
+  );
+}
+
 /** "Start on this site by itself": needs access to the site, which only a click in the panel can ask for. */
 function AutoStart({ origin }: { origin: string }) {
   const sites = useKnownSites();
@@ -451,15 +477,15 @@ export function MirrorsSwitch() {
   return (
     <>
       <SwitchRow
-        label={t('mirrors_label')}
-        hint={t('mirrors_hint')}
+        label={t('everywhere_label')}
+        hint={t('everywhere_hint')}
         checked={on}
         testid="mirrors"
         onChange={onChange}
       />
       {denied && (
         <p class="muted" data-testid="mirrors-denied">
-          {t('mirrors_denied')}
+          {t('everywhere_denied')}
         </p>
       )}
     </>

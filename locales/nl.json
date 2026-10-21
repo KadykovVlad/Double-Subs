@@ -162,9 +162,6 @@
 "auto_label": "Zelf starten op $1",
 "auto_hint": "De volgende keer wordt de speler gevonden zonder op het pictogram te klikken",
 "auto_denied": "Toegang tot de site niet verleend, automatisch starten staat niet aan.",
-"mirrors_label": "Mijn sites ook op andere adressen herkennen",
-"mirrors_hint": "Spiegels met dezelfde naam (bijvoorbeeld lordfilm) en sites met een IP-adres. Toegang tot alle sites dient alleen om het adres met je lijst te vergelijken.",
-"mirrors_denied": "Toegang niet verleend, spiegels staan niet aan.",
 "watching_title": "Tijdens het kijken",
 "watch_show": "Dubbele ondertitels tonen",
 "watch_hover": "Woorden vertalen bij aanwijzen",
@@ -273,5 +270,11 @@
 "welcome_allow": "Toegang toestaan",
 "welcome_allowed": "Toegang toegestaan",
 "welcome_signin_title": "2. Inloggen",
-"welcome_done": "Klaar. Open een video en klik op het Double Sub-pictogram."
+"welcome_done": "Klaar. Open een video en klik op het Double Sub-pictogram.",
+"site_on_label": "Actief op $1",
+"site_off_title": "Uitgeschakelde sites",
+"site_off_enable": "Inschakelen",
+"everywhere_label": "Op elke site vanzelf starten",
+"everywhere_hint": "De ondertitels starten op elke pagina met een video. Vereist toegang tot alle sites; de extensie leest alleen de ondertitels van de video.",
+"everywhere_denied": "Toegang tot alle sites is niet verleend."
 }

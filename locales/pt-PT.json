@@ -162,9 +162,6 @@
 "auto_label": "Iniciar sozinho em $1",
 "auto_hint": "Da próxima vez o leitor será encontrado sem clicar no ícone",
 "auto_denied": "O acesso ao site não foi concedido, o início automático não foi ativado.",
-"mirrors_label": "Reconhecer os meus sites também noutros endereços",
-"mirrors_hint": "Espelhos com o mesmo nome (por exemplo, lordfilm) e sites por endereço IP. O acesso a todos os sites serve apenas para comparar o endereço com a tua lista.",
-"mirrors_denied": "O acesso não foi concedido, os espelhos não foram ativados.",
 "watching_title": "Durante a exibição",
 "watch_show": "Mostrar legendas duplas",
 "watch_hover": "Traduzir palavras ao passar o cursor",
@@ -273,5 +270,11 @@
 "welcome_allow": "Permitir acesso",
 "welcome_allowed": "Acesso permitido",
 "welcome_signin_title": "2. Iniciar sessão",
-"welcome_done": "Tudo pronto. Abra um vídeo e clique no ícone do Double Sub."
+"welcome_done": "Tudo pronto. Abra um vídeo e clique no ícone do Double Sub.",
+"site_on_label": "Funcionar em $1",
+"site_off_title": "Sites desativados",
+"site_off_enable": "Ativar",
+"everywhere_label": "Iniciar sozinho em qualquer site",
+"everywhere_hint": "As legendas começam em qualquer página com vídeo. Requer acesso a todos os sites; a extensão lê apenas as legendas do vídeo.",
+"everywhere_denied": "O acesso a todos os sites não foi concedido."
 }

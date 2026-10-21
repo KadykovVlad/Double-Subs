@@ -10,6 +10,9 @@ import { loadAccount } from '../lib/account';
 import { originPattern } from '../lib/scan';
 import { isTikTokPattern } from '../lib/tiktok';
 
+/** TikTok's address when the probe runs on all sites: the page-world script has to be there from the start. */
+export const TIKTOK_ALL_PATTERN = '*://*.tiktok.com/*';
+
 /** The one script that is registered for the sites the user chose: it only asks "is this a known site?". */
 export const PROBE_SCRIPT_ID = 'ds-auto-probe';
 /** TikTok's page-world script, from the very start of its pages, where TikTok is one of the user's sites. */
@@ -89,6 +92,8 @@ export class AutoScriptRegistry {
       matches,
       js: ['/auto-probe.js'],
       allFrames: true,
+      // Players are often in a frame made by a script (about:blank, srcdoc, blob:): it takes the address of its parent.
+      matchOriginAsFallback: true,
       runAt: 'document_idle' as const,
       persistAcrossSessions: true,
     };
@@ -99,7 +104,11 @@ export class AutoScriptRegistry {
 
   /** The TikTok script follows the TikTok sites among the user's (and the access given to them). */
   private async applyTikTok(matches: string[]): Promise<void> {
-    const tiktok = matches.filter(isTikTokPattern);
+    // On all sites the TikTok pages are covered by the one pattern of TikTok itself.
+    const everywhere = matches.includes(MIRRORS_PATTERN);
+    const tiktok = everywhere
+      ? [...new Set([...matches.filter(isTikTokPattern), TIKTOK_ALL_PATTERN])].sort()
+      : matches.filter(isTikTokPattern);
     const registered = (await browser.scripting.getRegisteredContentScripts()).find(
       (script) => script.id === TIKTOK_SCRIPT_ID,
     );

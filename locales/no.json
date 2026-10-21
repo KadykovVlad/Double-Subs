@@ -162,9 +162,6 @@
 "auto_label": "Start selv på $1",
 "auto_hint": "Neste gang blir spilleren funnet uten å klikke på ikonet",
 "auto_denied": "Tilgang til nettstedet ble ikke gitt, automatisk start er ikke slått på.",
-"mirrors_label": "Gjenkjenn nettstedene mine også på andre adresser",
-"mirrors_hint": "Speil med samme navn (for eksempel lordfilm) og nettsteder med IP-adresse. Tilgang til alle nettsteder brukes bare til å sammenligne adressen med listen din.",
-"mirrors_denied": "Tilgang ble ikke gitt, speil er ikke slått på.",
 "watching_title": "Under visning",
 "watch_show": "Vis doble undertekster",
 "watch_hover": "Oversett ord ved musepeker",
@@ -273,5 +270,11 @@
 "welcome_allow": "Gi tilgang",
 "welcome_allowed": "Tilgang gitt",
 "welcome_signin_title": "2. Logg inn",
-"welcome_done": "Alt er klart. Åpne en video og klikk på Double Sub-ikonet."
+"welcome_done": "Alt er klart. Åpne en video og klikk på Double Sub-ikonet.",
+"site_on_label": "Aktiv på $1",
+"site_off_title": "Avslåtte nettsteder",
+"site_off_enable": "Slå på",
+"everywhere_label": "Start av seg selv på alle nettsteder",
+"everywhere_hint": "Undertekstene starter på alle sider med video. Krever tilgang til alle nettsteder; utvidelsen leser bare undertekstene til videoen.",
+"everywhere_denied": "Tilgang til alle nettsteder ble ikke gitt."
 }

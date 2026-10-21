@@ -162,9 +162,6 @@
 "auto_label": "Spouštět samo na $1",
 "auto_hint": "Příště se přehrávač najde bez kliknutí na ikonu",
 "auto_denied": "Přístup k webu nebyl udělen, automatické spuštění není zapnuto.",
-"mirrors_label": "Rozpoznávat moje weby i na jiných adresách",
-"mirrors_hint": "Zrcadla se stejným názvem (například lordfilm) a weby s IP adresou. Přístup ke všem webům slouží jen k porovnání adresy s vaším seznamem.",
-"mirrors_denied": "Přístup nebyl udělen, zrcadla nejsou zapnuta.",
 "watching_title": "Při sledování",
 "watch_show": "Zobrazovat dvojité titulky",
 "watch_hover": "Překládat slova po najetí",
@@ -273,5 +270,11 @@
 "welcome_allow": "Povolit přístup",
 "welcome_allowed": "Přístup povolen",
 "welcome_signin_title": "2. Přihlášení",
-"welcome_done": "Hotovo. Otevřete video a klikněte na ikonu Double Sub."
+"welcome_done": "Hotovo. Otevřete video a klikněte na ikonu Double Sub.",
+"site_on_label": "Fungovat na $1",
+"site_off_title": "Vypnuté weby",
+"site_off_enable": "Zapnout",
+"everywhere_label": "Spouštět se samo na každém webu",
+"everywhere_hint": "Titulky se spustí na každé stránce s videem. Vyžaduje přístup ke všem webům; rozšíření čte jen titulky videa.",
+"everywhere_denied": "Přístup ke všem webům nebyl udělen."
 }

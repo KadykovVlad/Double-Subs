@@ -162,9 +162,6 @@
 "auto_label": "Start by itself on $1",
 "auto_hint": "Next time the player will be found without a click on the icon",
 "auto_denied": "Access to the site was not granted, automatic start is off.",
-"mirrors_label": "Recognize my sites at other addresses too",
-"mirrors_hint": "Mirrors with the same name (for example lordfilm) and sites by IP address. Access to all sites is needed only to compare the address with your list.",
-"mirrors_denied": "Access was not granted, mirrors are off.",
 "watching_title": "While watching",
 "watch_show": "Show dual subtitles",
 "watch_hover": "Translate words on hover",
@@ -273,5 +270,11 @@
 "welcome_allow": "Allow access",
 "welcome_allowed": "Access allowed",
 "welcome_signin_title": "2. Sign in",
-"welcome_done": "All set. Open a video and click the Double Sub icon."
+"welcome_done": "All set. Open a video and click the Double Sub icon.",
+"site_on_label": "Work on $1",
+"site_off_title": "Switched-off sites",
+"site_off_enable": "Turn on",
+"everywhere_label": "Start by itself on every site",
+"everywhere_hint": "The subtitles begin on any page with a video. Needs access to all sites; the extension reads only the video's subtitles.",
+"everywhere_denied": "Access to all sites was not given."
 }

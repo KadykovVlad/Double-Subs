@@ -231,7 +231,7 @@ async function openAt(url: string): Promise<Page> {
   return page;
 }
 
-test('a mirror of a known site is recognised by its name and the subtitles start by themselves', async () => {
+test('a mirror of a ticked site starts by itself with the switch for every site on', async () => {
   const known = await openAt(asHost('ga.lordfilm5.localhost', '/shadow-video.html'));
   const panel = await openPopupFor(session, known);
   await expect(panel.getByTestId('status')).toHaveText('Субтитры найдены');
@@ -249,18 +249,17 @@ test('a mirror of a known site is recognised by its name and the subtitles start
   );
 });
 
-test('a site with another name is left alone', async () => {
+test('with the switch for every site on, a site with another name starts by itself too', async () => {
   const known = await openAt(asHost('ga.lordfilm5.localhost', '/shadow-video.html'));
   const panel = await openPopupFor(session, known);
   await panel.getByTestId('auto-start').check();
   await panel.getByTestId('mirrors').check();
   await expect.poll(allMatches).toContain('http://*.localhost/*');
 
+  // Not a mirror of the ticked site and not ticked itself: with access to all sites it starts all the same.
   const other = await openAt(asHost('some-other-site.localhost', '/shadow-video.html'));
   await seek(other, 1.5);
-  await other.waitForTimeout(3000);
-  await expect(lines(other).host).toHaveCount(0);
-  await expect(other.locator('double-sub-notice')).toHaveCount(0);
+  await expect(lines(other).en).toHaveText('Hello, Dexter.');
 });
 
 test('without the mirrors switch only the exact address starts by itself', async () => {

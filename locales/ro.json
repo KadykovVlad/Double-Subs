@@ -162,9 +162,6 @@
 "auto_label": "Pornește singur pe $1",
 "auto_hint": "Data viitoare playerul va fi găsit fără clic pe pictogramă",
 "auto_denied": "Accesul la site nu a fost acordat, pornirea automată nu este activată.",
-"mirrors_label": "Recunoaște site-urile mele și la alte adrese",
-"mirrors_hint": "Oglinzi cu același nume (de exemplu lordfilm) și site-uri după adresa IP. Accesul la toate site-urile servește doar la compararea adresei cu lista ta.",
-"mirrors_denied": "Accesul nu a fost acordat, oglinzile nu sunt activate.",
 "watching_title": "În timpul vizionării",
 "watch_show": "Afișează subtitrări duble",
 "watch_hover": "Traduce cuvintele la trecerea cursorului",
@@ -273,5 +270,11 @@
 "welcome_allow": "Permite accesul",
 "welcome_allowed": "Acces permis",
 "welcome_signin_title": "2. Conectare",
-"welcome_done": "Gata. Deschide un videoclip și apasă pictograma Double Sub."
+"welcome_done": "Gata. Deschide un videoclip și apasă pictograma Double Sub.",
+"site_on_label": "Funcționează pe $1",
+"site_off_title": "Site-uri dezactivate",
+"site_off_enable": "Activează",
+"everywhere_label": "Pornește singur pe orice site",
+"everywhere_hint": "Subtitrările pornesc pe orice pagină cu video. Necesită acces la toate site-urile; extensia citește doar subtitrările videoclipului.",
+"everywhere_denied": "Accesul la toate site-urile nu a fost acordat."
 }

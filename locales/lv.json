@@ -162,9 +162,6 @@
 "auto_label": "Palaist pašam vietnē $1",
 "auto_hint": "Nākamreiz atskaņotājs tiks atrasts bez klikšķa uz ikonas",
 "auto_denied": "Piekļuve vietnei netika piešķirta, automātiskā palaišana nav ieslēgta.",
-"mirrors_label": "Atpazīt manas vietnes arī citās adresēs",
-"mirrors_hint": "Spoguļi ar tādu pašu nosaukumu (piemēram, lordfilm) un vietnes ar IP adresi. Piekļuve visām vietnēm vajadzīga tikai adreses salīdzināšanai ar jūsu sarakstu.",
-"mirrors_denied": "Piekļuve netika piešķirta, spoguļi nav ieslēgti.",
 "watching_title": "Skatīšanās laikā",
 "watch_show": "Rādīt dubulttitrus",
 "watch_hover": "Tulkot vārdus, novietojot kursoru",
@@ -273,5 +270,11 @@
 "welcome_allow": "Atļaut piekļuvi",
 "welcome_allowed": "Piekļuve atļauta",
 "welcome_signin_title": "2. Pieteikšanās",
-"welcome_done": "Viss gatavs. Atveriet video un noklikšķiniet uz Double Sub ikonas."
+"welcome_done": "Viss gatavs. Atveriet video un noklikšķiniet uz Double Sub ikonas.",
+"site_on_label": "Darboties vietnē $1",
+"site_off_title": "Izslēgtās vietnes",
+"site_off_enable": "Ieslēgt",
+"everywhere_label": "Startēt pašam jebkurā vietnē",
+"everywhere_hint": "Subtitri sākas jebkurā lapā ar video. Nepieciešama piekļuve visām vietnēm; paplašinājums lasa tikai video subtitrus.",
+"everywhere_denied": "Piekļuve visām vietnēm netika dota."
 }

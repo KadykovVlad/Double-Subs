@@ -134,6 +134,52 @@ export function chooseAutoPlayer(
   return big.reduce((best, c) => (c.width * c.height > best.width * best.height ? c : best)).index;
 }
 
+// ---------------------------------------------------------------- sites switched off
+
+const EXCLUDED_KEY = 'excludedSites';
+
+const plainHost = (hostname: string) => hostname.replace(/^www\./, '').toLowerCase();
+
+/** The host of an address or origin, the way the list of switched-off sites keeps it (no "www."); null if it is not a web address. */
+export function excludedHostOf(address: string | null | undefined): string | null {
+  const origin = webOrigin(address);
+  return origin ? plainHost(new URL(origin).hostname) : null;
+}
+
+/** The sites the user switched off ("Work on this site" is off): nothing starts there, in the page or in its frames. */
+export async function loadExcludedSites(): Promise<string[]> {
+  const stored = (await browser.storage.local.get(EXCLUDED_KEY))[EXCLUDED_KEY];
+  return Array.isArray(stored) ? stored.filter((h): h is string => typeof h === 'string') : [];
+}
+
+export async function setSiteExcluded(host: string, excluded: boolean): Promise<void> {
+  const list = (await loadExcludedSites()).filter((h) => h !== host);
+  await browser.storage.local.set({ [EXCLUDED_KEY]: excluded ? [...list, host].sort() : list });
+}
+
+export function watchExcludedSites(listener: (hosts: string[]) => void): () => void {
+  const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {
+    if (area === 'local' && EXCLUDED_KEY in changes) {
+      const value = changes[EXCLUDED_KEY]!.newValue;
+      listener(Array.isArray(value) ? (value as string[]) : []);
+    }
+  };
+  browser.storage.onChanged.addListener(onChanged);
+  return () => browser.storage.onChanged.removeListener(onChanged);
+}
+
+/** Is any of the addresses (the frame and the page that holds it) on the list of switched-off sites? */
+export function isSiteExcluded(excluded: string[], addresses: Array<string | null | undefined>) {
+  const hosts = addresses.map(excludedHostOf);
+  return hosts.some((host) => host !== null && excluded.includes(host));
+}
+
+/** The addresses that decide for the code running in a frame: the frame itself and every page above it. */
+export function frameAddresses(): string[] {
+  const ancestors = Array.from(globalThis.location?.ancestorOrigins ?? []);
+  return [globalThis.location?.href ?? '', ...ancestors];
+}
+
 // ---------------------------------------------------------------- offering to remember a site
 
 const DISMISSED_KEY = 'rememberDismissed';
