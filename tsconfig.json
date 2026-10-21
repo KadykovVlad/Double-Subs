@@ -7,5 +7,5 @@
     "noUncheckedIndexedAccess": true
   },
   // The server (Cloudflare Worker) has its own tsconfig and types; the rest is the .wxt default.
-  "exclude": ["node_modules", ".output", "server"]
+  "exclude": ["node_modules", ".output", "extension", "server"]
 }

@@ -20,10 +20,13 @@ cd "/Users/vladkadykov/Desktop/My project/Double sub" && source ~/.nvm/nvm.sh &&
 npm run test:all      # tsc + eslint + vitest + сборка e2e + Playwright (около 1 мин)
 npm run test:e2e      # только e2e (собирает в .output-e2e, VITE_DS_E2E=1)
 npm run build         # обычная сборка в .output/chrome-mv3 (её грузить в chrome://extensions)
+npm run build:branch  # то же, но кладёт сборку в extension/ (папка коммитится в рабочих ветках, см. ниже)
 npm run fixtures      # тестовые страницы http://localhost:4100 для ручной проверки в Chrome
 ```
 
 Папка `.output` скрыта в Finder: Cmd+Shift+. или Cmd+Shift+G и вставить путь.
+
+**Папка `extension/` в рабочих ветках.** Чтобы проверять ветку без сборки у себя, готовая сборка лежит в `extension/` и коммитится вместе с кодом (`npm run build:branch` перед каждым пушем, где менялся код расширения). Проверяющий подтягивает ветку и в `chrome://extensions` нажимает «Загрузить распакованное» на `extension/` (дальше после каждого `git pull` достаточно кнопки обновления). ID расширения везде `kbipbdkmdaghooihkcmdjhfmeoimgnbm` (ключ в манифесте обычной сборки). В сборке нет dev-переключателя Pro: план берётся с сервера. Перед слиянием в `main` папку убрать: `git rm -r extension`.
 
 ## Устройство (карта файлов)
 
