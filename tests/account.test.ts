@@ -7,6 +7,7 @@ import {
   loadAccount,
   normalizeAccount,
   refreshPlan,
+  requestSignIn,
   signIn,
   signOut,
 } from '../src/lib/account';
@@ -257,5 +258,35 @@ describe('plan', () => {
     await refreshPlan();
     expect(calls).toEqual([]);
     expect((await loadEntitlements()).plan).toBe('pro');
+  });
+});
+
+describe('sign-in asked of the background', () => {
+  const sends = (answer: unknown) =>
+    vi.stubGlobal('browser', {
+      ...(globalThis as unknown as { browser: object }).browser,
+      runtime: {
+        sendMessage: async () => {
+          if (answer instanceof Error) throw answer;
+          return answer;
+        },
+      },
+    });
+
+  it('is done when the background says so', async () => {
+    sends({ ok: true });
+    await expect(requestSignIn()).resolves.toBeUndefined();
+  });
+
+  it('passes the reason when it failed', async () => {
+    sends({ ok: false, code: 'network' });
+    await expect(requestSignIn()).rejects.toMatchObject({ code: 'network' });
+    sends({ ok: false });
+    await expect(requestSignIn()).rejects.toMatchObject({ code: 'server' });
+  });
+
+  it('is no error when the window that asked closed on the way: the background finishes alone', async () => {
+    sends(new Error('The message port closed before a response was received.'));
+    await expect(requestSignIn()).resolves.toBeUndefined();
   });
 });

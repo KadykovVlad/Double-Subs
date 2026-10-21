@@ -17,7 +17,7 @@ import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
 import { refreshPlan } from '../../src/lib/account';
 import { useAccount, useEntitlements, useSavedWords } from './hooks';
-import { SignInForm } from './SignIn';
+import { Onboarding } from './Onboarding';
 import { hasFeature } from '../../src/lib/entitlements';
 import { Icons, Logo } from './ui';
 import { t, textDirection, uiLanguage, type MessageKey } from '../../src/lib/i18n';
@@ -72,13 +72,7 @@ export function App() {
   if (account === null)
     return (
       <Shell language={language}>
-        <div class="content" id="panel">
-          <section class="card gate" data-testid="gate">
-            <h2>{t('gate_title')}</h2>
-            <p class="small">{t('gate_text')}</p>
-            <SignInForm />
-          </section>
-        </div>
+        <Onboarding />
       </Shell>
     );
   return <SignedInApp language={language} />;

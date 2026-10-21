@@ -67,6 +67,15 @@ export interface StartAgentMessage {
   type: 'start-agent';
 }
 
+/**
+ * A window of the extension (the small one under the icon, the panel) → background: sign in with Google.
+ * The sign-in runs in the background, because the small window closes as soon as Google's window takes
+ * the focus, and a sign-in that lived in it would die with it.
+ */
+export interface SignInMessage {
+  type: 'sign-in';
+}
+
 /** The agent on TikTok found no page-world script (the site is not registered yet): inject it now. */
 export interface InjectTikTokMainMessage {
   type: 'inject-tiktok-main';

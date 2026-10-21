@@ -66,6 +66,8 @@ export async function launchWithExtension(
         chrome.storage.local.set({
           uiLanguage: stored.language,
           entitlements: { plan: stored.plan, proUntil: null },
+          // The banner that asks for access to all sites is not in the way of the tests that are not about it.
+          accessBannerDismissed: true,
           // A signed-in user whose server does not exist (nothing listens at port 9): the account stays
           // as it is, because a server that cannot be reached never ends a session.
           ...(stored.signedIn

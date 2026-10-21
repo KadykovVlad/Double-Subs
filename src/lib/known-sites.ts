@@ -34,6 +34,36 @@ export async function loadMirrorsMode(): Promise<boolean> {
 
 export const setMirrorsMode = (on: boolean) => browser.storage.local.set({ [MIRRORS_KEY]: on });
 
+/**
+ * Asks Chrome for access to all sites and, when it is given, switches "start by itself on every site"
+ * on. Call it as the first thing a click does: Chrome wants the user gesture.
+ */
+export function requestAllSites(): Promise<boolean> {
+  return browser.permissions.request({ origins: [ALL_SITES_PATTERN] }).then(async (granted) => {
+    if (granted) await setMirrorsMode(true);
+    return granted;
+  });
+}
+
+const ACCESS_DISMISSED_KEY = 'accessBannerDismissed';
+
+/** The user pressed "Not now" on the banner that asks for access to all sites. */
+export async function loadAccessDismissed(): Promise<boolean> {
+  return (await browser.storage.local.get(ACCESS_DISMISSED_KEY))[ACCESS_DISMISSED_KEY] === true;
+}
+
+export const setAccessDismissed = (dismissed: boolean) =>
+  browser.storage.local.set({ [ACCESS_DISMISSED_KEY]: dismissed });
+
+export function watchAccessDismissed(listener: (dismissed: boolean) => void): () => void {
+  const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {
+    if (area === 'local' && ACCESS_DISMISSED_KEY in changes)
+      listener(changes[ACCESS_DISMISSED_KEY]!.newValue === true);
+  };
+  browser.storage.onChanged.addListener(onChanged);
+  return () => browser.storage.onChanged.removeListener(onChanged);
+}
+
 export function watchMirrorsMode(listener: (on: boolean) => void): () => void {
   const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {
     if (area === 'local' && MIRRORS_KEY in changes)

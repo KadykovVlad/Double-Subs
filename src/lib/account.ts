@@ -1,5 +1,6 @@
 import { apiBase, GOOGLE_CLIENT_ID } from './account-config';
 import { FREE_PLAN, normalizeEntitlements, saveEntitlements } from './entitlements';
+import type { SignInMessage } from './messages';
 
 /** A signed-in browser: the tokens of the server (never Google's), and whose they are. */
 export interface Account {
@@ -175,6 +176,17 @@ export async function signIn(): Promise<Account> {
   await saveAccount(account);
   await saveEntitlements(entitlements);
   return account;
+}
+
+/**
+ * Signs in by asking the background to do it (see SignInMessage). If the window that asked closes on
+ * the way, the sign-in still ends in the background and the account shows up in the storage.
+ */
+export async function requestSignIn(): Promise<void> {
+  const answer = (await browser.runtime
+    .sendMessage({ type: 'sign-in' } satisfies SignInMessage)
+    .catch(() => undefined)) as { ok: boolean; code?: AccountErrorCode } | undefined;
+  if (answer && !answer.ok) throw new AccountError(answer.code ?? 'server');
 }
 
 /** Ends the session on the server (if it can be reached) and on this device; the plan is free again. */

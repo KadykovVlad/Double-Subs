@@ -10,8 +10,11 @@ import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/hist
 import {
   loadDismissed,
   loadKnownSites,
+  ALL_SITES_PATTERN,
+  loadAccessDismissed,
   loadExcludedSites,
   loadMirrorsMode,
+  watchAccessDismissed,
   watchDismissed,
   watchExcludedSites,
   watchKnownSites,
@@ -91,6 +94,34 @@ export function useMirrorsMode(): boolean {
     return watchMirrorsMode(setOn);
   }, []);
   return on;
+}
+
+/** Is the extension allowed to start by itself on every site: the switch is on and Chrome holds the access. */
+export function useAllSitesAllowed(): boolean | undefined {
+  const mirrors = useMirrorsMode();
+  const [granted, setGranted] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
+    const check = () =>
+      void browser.permissions.contains({ origins: [ALL_SITES_PATTERN] }).then(setGranted);
+    check();
+    browser.permissions.onAdded.addListener(check);
+    browser.permissions.onRemoved.addListener(check);
+    return () => {
+      browser.permissions.onAdded.removeListener(check);
+      browser.permissions.onRemoved.removeListener(check);
+    };
+  }, []);
+  return granted === undefined ? undefined : mirrors && granted;
+}
+
+/** The user pressed "Not now" on the banner that asks for access to all sites. */
+export function useAccessDismissed(): boolean {
+  const [dismissed, setDismissed] = useState(true); // hidden until the stored answer is known
+  useEffect(() => {
+    void loadAccessDismissed().then(setDismissed);
+    return watchAccessDismissed(setDismissed);
+  }, []);
+  return dismissed;
 }
 
 /** The hosts of the sites the user switched off. */

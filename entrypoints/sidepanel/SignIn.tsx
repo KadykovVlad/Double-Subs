@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { AccountError, signIn } from '../../src/lib/account';
+import { AccountError, requestSignIn } from '../../src/lib/account';
 import { t } from '../../src/lib/i18n';
 import { Button } from './ui';
 
@@ -12,7 +12,7 @@ export function SignInForm() {
     setBusy(true);
     setError(null);
     try {
-      await signIn();
+      await requestSignIn();
     } catch (failure) {
       const code = failure instanceof AccountError ? failure.code : 'server';
       // Closing the Google window is the user's choice, not an error.
