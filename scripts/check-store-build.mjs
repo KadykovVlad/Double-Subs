@@ -29,6 +29,10 @@ for (const file of ['translator-lab.html', 'translator-frame.html']) {
   if (existsSync(join(dir, file))) problems.push(`prototype page ${file} is in the store build`);
 }
 if (!manifest.minimum_chrome_version) problems.push('no minimum_chrome_version');
+// Chrome asks for the access to all sites itself, when the extension is added, only for a required permission.
+if (!manifest.host_permissions?.includes('*://*/*'))
+  problems.push('the access to all sites must be a required host permission');
+if (manifest.optional_host_permissions) problems.push('optional_host_permissions must not exist');
 
 const walk = (path) =>
   statSync(path).isDirectory() ? readdirSync(path).flatMap((n) => walk(join(path, n))) : [path];
@@ -38,6 +42,7 @@ for (const file of walk(dir).filter((f) => f.endsWith('.js'))) {
     'e2eSpoken',
     'e2eApi',
     'e2e-google-token',
+    'e2eSignInDelayMs',
     'data-layouts',
     'layouts =',
     'VITE_DS_E2E',

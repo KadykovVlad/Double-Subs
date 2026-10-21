@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'preact/hooks';
-import { loadAccount, watchAccount, type Account } from '../../src/lib/account';
+import {
+  loadAccount,
+  loadSignInState,
+  watchAccount,
+  watchSignInState,
+  type Account,
+  type SignInState,
+} from '../../src/lib/account';
 import {
   FREE_PLAN,
   loadEntitlements,
@@ -10,6 +17,7 @@ import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/hist
 import {
   loadDismissed,
   loadKnownSites,
+  accessGranted,
   ALL_SITES_PATTERN,
   loadAccessDismissed,
   loadExcludedSites,
@@ -96,7 +104,7 @@ export function useMirrorsMode(): boolean {
   return on;
 }
 
-/** Is the extension allowed to start by itself on every site: the switch is on and Chrome holds the access. */
+/** Does the extension hold the access to all sites (the permission Chrome asks for when it is added)? */
 export function useAllSitesAllowed(): boolean | undefined {
   const mirrors = useMirrorsMode();
   const [granted, setGranted] = useState<boolean | undefined>(undefined);
@@ -111,7 +119,17 @@ export function useAllSitesAllowed(): boolean | undefined {
       browser.permissions.onRemoved.removeListener(check);
     };
   }, []);
-  return granted === undefined ? undefined : mirrors && granted;
+  return granted === undefined ? undefined : accessGranted(granted, mirrors);
+}
+
+/** How the sign-in stands: running, failed (and why), or nothing; kept by the background, so a window opened later sees it too. */
+export function useSignInState(): SignInState {
+  const [state, setState] = useState<SignInState>(null);
+  useEffect(() => {
+    void loadSignInState().then(setState);
+    return watchSignInState(setState);
+  }, []);
+  return state;
 }
 
 /** The user pressed "Not now" on the banner that asks for access to all sites. */

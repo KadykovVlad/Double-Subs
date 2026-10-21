@@ -102,17 +102,31 @@ export function idTokenFromRedirect(redirectedTo: string, nonce: string): string
 
 const randomNonce = () => crypto.randomUUID().replace(/-/g, '');
 
+/** What Chrome says when launchWebAuthFlow does not give an address back, told apart. */
+export function webAuthFailure(error: unknown): AccountError {
+  const text = String((error as { message?: unknown } | null)?.message ?? error);
+  if (/did not approve|cancel|closed|denied/i.test(text)) return new AccountError('cancelled');
+  if (/could not be loaded|network|err_/i.test(text)) return new AccountError('network');
+  return new AccountError('server');
+}
+
 async function googleIdToken(): Promise<string> {
   const nonce = randomNonce();
-  if (import.meta.env.VITE_DS_E2E) return `e2e-google-token.${nonce}`; // the test build has no Google
+  if (import.meta.env.VITE_DS_E2E) {
+    // The test build has no Google; a delay can be asked for, to test what a slow account choice does.
+    const { e2eSignInDelayMs } = await browser.storage.local.get('e2eSignInDelayMs');
+    if (typeof e2eSignInDelayMs === 'number')
+      await new Promise((resolve) => setTimeout(resolve, e2eSignInDelayMs));
+    return `e2e-google-token.${nonce}`;
+  }
   let redirectedTo: string | undefined;
   try {
     redirectedTo = await browser.identity.launchWebAuthFlow({
       url: googleAuthUrl(browser.identity.getRedirectURL(), nonce),
       interactive: true,
     });
-  } catch {
-    throw new AccountError('cancelled');
+  } catch (error) {
+    throw webAuthFailure(error);
   }
   if (!redirectedTo) throw new AccountError('cancelled');
   return idTokenFromRedirect(redirectedTo, nonce);
@@ -176,6 +190,74 @@ export async function signIn(): Promise<Account> {
   await saveAccount(account);
   await saveEntitlements(entitlements);
   return account;
+}
+
+// ---------------------------------------------------------------- one sign-in at a time
+
+/** Where the progress of a sign-in is kept, so every window of the extension can show it. */
+export const SIGN_IN_STATE_KEY = 'signInState';
+
+export type SignInState = { running: true } | { error: AccountErrorCode } | null;
+
+export function normalizeSignInState(value: unknown): SignInState {
+  if (typeof value !== 'object' || value === null) return null;
+  const { running, error } = value as { running?: unknown; error?: unknown };
+  if (running === true) return { running: true };
+  if (typeof error === 'string') return { error: error as AccountErrorCode };
+  return null;
+}
+
+async function setSignInState(state: SignInState): Promise<void> {
+  if (state) await browser.storage.local.set({ [SIGN_IN_STATE_KEY]: state });
+  else await browser.storage.local.remove(SIGN_IN_STATE_KEY);
+}
+
+export function watchSignInState(listener: (state: SignInState) => void): () => void {
+  const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {
+    if (area === 'local' && SIGN_IN_STATE_KEY in changes)
+      listener(normalizeSignInState(changes[SIGN_IN_STATE_KEY]!.newValue));
+  };
+  browser.storage.onChanged.addListener(onChanged);
+  return () => browser.storage.onChanged.removeListener(onChanged);
+}
+
+export async function loadSignInState(): Promise<SignInState> {
+  return normalizeSignInState(
+    (await browser.storage.local.get(SIGN_IN_STATE_KEY))[SIGN_IN_STATE_KEY],
+  );
+}
+
+/** A running sign-in dies with the background that ran it: whatever "running" is left from before is stale. */
+export const clearStaleSignIn = () => setSignInState(null);
+
+/** The background is kept awake with a harmless call while the user picks an account (it sleeps after ~30 s of nothing). */
+export const KEEP_AWAKE_EVERY_MS = 20_000;
+
+let signInRun: Promise<Account> | null = null;
+
+/**
+ * Signs in, once: a second request while one is running joins it instead of opening a second Google
+ * window. The progress (running, or the reason it failed) is kept in the storage for every window.
+ */
+export function signInOnce(): Promise<Account> {
+  signInRun ??= (async () => {
+    await setSignInState({ running: true });
+    const awake = setInterval(() => void browser.runtime.getPlatformInfo(), KEEP_AWAKE_EVERY_MS);
+    try {
+      const account = await signIn();
+      await setSignInState(null);
+      return account;
+    } catch (error) {
+      const code = error instanceof AccountError ? error.code : 'server';
+      // Closing Google's window is the user's choice, not a failure to show.
+      await setSignInState(code === 'cancelled' ? null : { error: code });
+      throw error;
+    } finally {
+      clearInterval(awake);
+      signInRun = null;
+    }
+  })();
+  return signInRun;
 }
 
 /**

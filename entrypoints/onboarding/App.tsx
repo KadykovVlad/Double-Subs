@@ -7,10 +7,17 @@ import { Logo } from '../sidepanel/ui';
 
 const CLOSE_AFTER_MS = 1500;
 
+/** Closes the small window we are in; a tab of a normal window (when the page is opened by hand) is left alone. */
+async function closeThisWindow(): Promise<void> {
+  const current = await browser.windows.getCurrent().catch(() => null);
+  if (current?.type === 'popup' && current.id !== undefined)
+    await browser.windows.remove(current.id);
+}
+
 /**
- * The small window under the icon. It opens by itself after the installation (and on a click on the
- * icon while something is left to do): the language, access to the sites, the sign-in. When all of
- * that is answered it says so and closes; the icon then opens the side panel.
+ * The small window. It opens by itself after the installation (and on a click on the icon while
+ * something is left to do): the language, the sign-in and, if it was taken away, the access to the
+ * sites. When all of that is answered it says so and closes; the icon then opens the side panel.
  */
 export function App() {
   const [language, setLanguage] = useState(uiLanguage());
@@ -25,7 +32,7 @@ export function App() {
 
   useEffect(() => {
     if (!done) return;
-    const timer = setTimeout(() => window.close(), CLOSE_AFTER_MS);
+    const timer = setTimeout(() => void closeThisWindow(), CLOSE_AFTER_MS);
     return () => clearTimeout(timer);
   }, [done]);
 

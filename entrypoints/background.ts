@@ -1,6 +1,14 @@
 import { AgentLauncher } from '../src/background/AgentLauncher';
-import { AccountError, loadAccount, signIn } from '../src/lib/account';
-import { ALL_SITES_PATTERN, loadAccessDismissed, loadMirrorsMode } from '../src/lib/known-sites';
+import { AccountError, clearStaleSignIn, loadAccount, signInOnce } from '../src/lib/account';
+import {
+  accessGranted,
+  addsAllSites,
+  ALL_SITES_PATTERN,
+  loadAccessDismissed,
+  loadMirrorsMode,
+  setMirrorsMode,
+} from '../src/lib/known-sites';
+import { openOnboardingWindow } from '../src/background/OnboardingWindow';
 import { AutoScriptRegistry } from '../src/background/AutoScriptRegistry';
 import type { LookupWordMessage } from '../src/lib/dictionary-messages';
 import { DictionaryService } from '../src/background/DictionaryService';
@@ -46,20 +54,19 @@ export default defineBackground(() => {
     .seedYouTube()
     .then(() => registry.sync())
     .catch(() => {});
-  // While something is left to do (sign in, answer the question about the sites) the icon wears a
-  // mark and a click on it opens the small onboarding window; when it is done a click opens the side
-  // panel. Chrome lets an extension open its small window by itself, but not the side panel.
+  // While something is left to do (sign in, the access to the sites if it was taken away) the icon wears
+  // a mark and a click on it opens the small onboarding window; when it is done a click opens the side
+  // panel. Chrome lets an extension open a window by itself, but not the side panel.
   const syncOnboarding = async (): Promise<boolean> => {
-    const [account, everywhere, dismissed, granted] = await Promise.all([
+    const [account, everywhere, dismissed, held] = await Promise.all([
       loadAccount(),
       loadMirrorsMode(),
       loadAccessDismissed(),
       browser.permissions.contains({ origins: [ALL_SITES_PATTERN] }),
     ]);
-    const todo = !account || (!(everywhere && granted) && !dismissed);
+    const todo = !account || (!accessGranted(held, everywhere) && !dismissed);
     await browser.action.setBadgeText({ text: todo ? '!' : '' });
     if (todo) await browser.action.setBadgeBackgroundColor({ color: '#4a68f5' });
-    await browser.action.setPopup({ popup: todo ? 'onboarding.html' : '' });
     await browser.sidePanel?.setPanelBehavior({ openPanelOnActionClick: !todo });
     return todo;
   };
@@ -68,18 +75,28 @@ export default defineBackground(() => {
       // Whatever went wrong, the side panel must stay reachable.
       void browser.sidePanel?.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
     });
+  void browser.action.setPopup({ popup: '' }).catch(() => {}); // an earlier version used a drop-down
+  void clearStaleSignIn().catch(() => {}); // a sign-in cannot be running in a background that has just started
   keepOnboardingInStep();
 
   browser.runtime.onInstalled.addListener((details) => {
     void registry.sync();
-    // A new user is met by the small window under the icon; if Chrome refuses (no window in focus), the mark is there.
+    // A new user is met by the small window; if Chrome refuses, the mark on the icon is there.
     if (details.reason === 'install' && !import.meta.env.VITE_DS_E2E)
       void syncOnboarding()
         .then(async (todo) => {
-          if (todo) await browser.action.openPopup();
+          if (todo) await openOnboardingWindow();
         })
         .catch(() => {});
     else keepOnboardingInStep();
+  });
+  // A click on the icon while something is left to do: the small window (the panel does not open then).
+  browser.action.onClicked.addListener(() => {
+    void syncOnboarding()
+      .then(async (todo) => {
+        if (todo) await openOnboardingWindow();
+      })
+      .catch(() => {});
   });
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local') return;
@@ -89,7 +106,9 @@ export default defineBackground(() => {
     if ('account' in changes || 'mirrorsMode' in changes || 'accessBannerDismissed' in changes)
       keepOnboardingInStep();
   });
-  browser.permissions.onAdded.addListener(() => {
+  browser.permissions.onAdded.addListener((added) => {
+    // The access was given in a window that may have closed meanwhile: the switch is turned on here.
+    if (addsAllSites(added)) void setMirrorsMode(true);
     void registry.sync();
     keepOnboardingInStep();
   });
@@ -110,7 +129,7 @@ export default defineBackground(() => {
         return false;
       }
       case 'sign-in':
-        void signIn()
+        void signInOnce()
           .then(() => sendResponse({ ok: true }))
           .catch((error: unknown) =>
             sendResponse({

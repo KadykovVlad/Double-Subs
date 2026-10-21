@@ -267,7 +267,6 @@
 "welcome_access_title": "1. 存取網站",
 "welcome_access_text": "為了讓字幕在您觀看影片的網站上自動啟動，請允許存取網頁。擴充功能只會讀取影片字幕。",
 "welcome_allow": "允許存取",
-"welcome_allowed": "已允許存取",
 "welcome_signin_title": "2. 登入",
 "welcome_done": "一切就緒。開啟影片，然後點選 Double Sub 圖示。",
 "site_on_label": "在 $1 上運作",
