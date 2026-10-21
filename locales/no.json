@@ -264,5 +264,14 @@
 "account_plan_free": "Gratisplan",
 "account_plan_pro": "Pro-plan",
 "account_error": "Innlogging mislyktes. Prøv igjen.",
-"account_error_network": "Får ikke kontakt med serveren. Prøv igjen senere."
+"account_error_network": "Får ikke kontakt med serveren. Prøv igjen senere.",
+"gate_title": "Logg inn for å starte",
+"gate_text": "Double Sub fungerer etter at du har logget inn med Google-kontoen din.",
+"welcome_title": "Velkommen til Double Sub",
+"welcome_access_title": "1. Tilgang til nettsteder",
+"welcome_access_text": "Gi tilgang til sidene slik at undertekstene starter av seg selv på nettstedene der du ser video. Utvidelsen leser bare undertekstene til videoen.",
+"welcome_allow": "Gi tilgang",
+"welcome_allowed": "Tilgang gitt",
+"welcome_signin_title": "2. Logg inn",
+"welcome_done": "Alt er klart. Åpne en video og klikk på Double Sub-ikonet."
 }

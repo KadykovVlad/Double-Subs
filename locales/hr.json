@@ -264,5 +264,14 @@
 "account_plan_free": "Besplatni paket",
 "account_plan_pro": "Paket Pro",
 "account_error": "Prijava nije uspjela. Pokušajte ponovno.",
-"account_error_network": "Poslužitelj nije dostupan. Pokušajte kasnije."
+"account_error_network": "Poslužitelj nije dostupan. Pokušajte kasnije.",
+"gate_title": "Prijavite se za početak",
+"gate_text": "Double Sub radi nakon prijave Google računom.",
+"welcome_title": "Dobro došli u Double Sub",
+"welcome_access_title": "1. Pristup web-mjestima",
+"welcome_access_text": "Kako bi se titlovi sami pokretali na web-mjestima na kojima gledate videozapise, dopustite pristup stranicama. Proširenje čita samo titlove videozapisa.",
+"welcome_allow": "Dopusti pristup",
+"welcome_allowed": "Pristup dopušten",
+"welcome_signin_title": "2. Prijava",
+"welcome_done": "Sve je spremno. Otvorite videozapis i kliknite ikonu Double Sub."
 }

@@ -31,11 +31,13 @@ export async function launchWithExtension(
     headless?: boolean;
     language?: string;
     plan?: 'free' | 'pro';
+    /** Somebody is signed in (the extension works for signed-in users only). */
+    signedIn?: boolean;
   } = {},
   extraArgs: string[] = [],
 ): Promise<ExtensionSession> {
   // The tests run on the Pro plan (words, saving) unless a test asks for the free one.
-  const { language = 'ru', plan = 'pro', ...launchOptions } = options;
+  const { language = 'ru', plan = 'pro', signedIn = true, ...launchOptions } = options;
   const userDataDir = await mkdtemp(join(tmpdir(), 'double-sub-e2e-'));
   const context = await chromium.launchPersistentContext(userDataDir, {
     channel: 'chromium',
@@ -64,8 +66,21 @@ export async function launchWithExtension(
         chrome.storage.local.set({
           uiLanguage: stored.language,
           entitlements: { plan: stored.plan, proUntil: null },
+          // A signed-in user whose server does not exist (nothing listens at port 9): the account stays
+          // as it is, because a server that cannot be reached never ends a session.
+          ...(stored.signedIn
+            ? {
+                account: {
+                  email: 'e2e@example.com',
+                  accessToken: 'e2e-access',
+                  refreshToken: 'e2e-refresh',
+                  expiresAt: Date.now() + 24 * 3_600_000,
+                },
+                e2eApi: 'http://localhost:9',
+              }
+            : {}),
         }),
-      { language: { code: language, messages }, plan },
+      { language: { code: language, messages }, plan, signedIn },
     );
   await seed();
   return {

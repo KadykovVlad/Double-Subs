@@ -264,5 +264,14 @@
 "account_plan_free": "Plano gratuito",
 "account_plan_pro": "Plano Pro",
 "account_error": "Falha ao entrar. Tente novamente.",
-"account_error_network": "Não foi possível conectar ao servidor. Tente novamente mais tarde."
+"account_error_network": "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
+"gate_title": "Entre para começar",
+"gate_text": "O Double Sub funciona depois que você entra com sua conta do Google.",
+"welcome_title": "Boas-vindas ao Double Sub",
+"welcome_access_title": "1. Acesso aos sites",
+"welcome_access_text": "Para que as legendas iniciem sozinhas nos sites em que você assiste a vídeos, permita o acesso às páginas. A extensão lê apenas as legendas do vídeo.",
+"welcome_allow": "Permitir acesso",
+"welcome_allowed": "Acesso permitido",
+"welcome_signin_title": "2. Entrar",
+"welcome_done": "Tudo pronto. Abra um vídeo e clique no ícone do Double Sub."
 }

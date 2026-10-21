@@ -264,5 +264,14 @@
 "account_plan_free": "طرح رایگان",
 "account_plan_pro": "طرح Pro",
 "account_error": "ورود ناموفق بود. دوباره امتحان کنید.",
-"account_error_network": "اتصال به سرور برقرار نشد. بعداً دوباره امتحان کنید."
+"account_error_network": "اتصال به سرور برقرار نشد. بعداً دوباره امتحان کنید.",
+"gate_title": "برای شروع وارد شوید",
+"gate_text": "Double Sub پس از ورود با حساب Google کار می‌کند.",
+"welcome_title": "به Double Sub خوش آمدید",
+"welcome_access_title": "۱. دسترسی به سایت‌ها",
+"welcome_access_text": "برای اینکه زیرنویس‌ها در سایت‌هایی که ویدیو تماشا می‌کنید خودکار شروع شوند، دسترسی به صفحه‌ها را مجاز کنید. افزونه فقط زیرنویس ویدیو را می‌خواند.",
+"welcome_allow": "مجاز کردن دسترسی",
+"welcome_allowed": "دسترسی مجاز شد",
+"welcome_signin_title": "۲. ورود",
+"welcome_done": "همه‌چیز آماده است. ویدیویی باز کنید و روی نماد Double Sub کلیک کنید."
 }

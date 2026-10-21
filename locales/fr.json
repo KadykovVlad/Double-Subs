@@ -264,5 +264,14 @@
 "account_plan_free": "Forfait gratuit",
 "account_plan_pro": "Forfait Pro",
 "account_error": "Échec de la connexion. Réessayez.",
-"account_error_network": "Serveur injoignable. Réessayez plus tard."
+"account_error_network": "Serveur injoignable. Réessayez plus tard.",
+"gate_title": "Connectez-vous pour commencer",
+"gate_text": "Double Sub fonctionne une fois connecté avec votre compte Google.",
+"welcome_title": "Bienvenue dans Double Sub",
+"welcome_access_title": "1. Accès aux sites",
+"welcome_access_text": "Pour que les sous-titres démarrent d’eux-mêmes sur les sites où vous regardez des vidéos, autorisez l’accès aux pages. L’extension ne lit que les sous-titres de la vidéo.",
+"welcome_allow": "Autoriser l’accès",
+"welcome_allowed": "Accès autorisé",
+"welcome_signin_title": "2. Connexion",
+"welcome_done": "Tout est prêt. Ouvrez une vidéo et cliquez sur l’icône Double Sub."
 }

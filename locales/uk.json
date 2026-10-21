@@ -264,5 +264,14 @@
 "account_plan_free": "Безкоштовний план",
 "account_plan_pro": "План Pro",
 "account_error": "Не вдалося увійти. Спробуйте ще раз.",
-"account_error_network": "Немає зв’язку із сервером. Спробуйте пізніше."
+"account_error_network": "Немає зв’язку із сервером. Спробуйте пізніше.",
+"gate_title": "Увійдіть, щоб почати",
+"gate_text": "Double Sub працює після входу через обліковий запис Google.",
+"welcome_title": "Ласкаво просимо до Double Sub",
+"welcome_access_title": "1. Доступ до сайтів",
+"welcome_access_text": "Щоб субтитри запускалися самі на сайтах, де ви дивитеся відео, дозвольте доступ до сторінок. Розширення читає лише субтитри відео.",
+"welcome_allow": "Дозволити доступ",
+"welcome_allowed": "Доступ дозволено",
+"welcome_signin_title": "2. Вхід",
+"welcome_done": "Усе готово. Відкрийте відео й натисніть значок Double Sub."
 }

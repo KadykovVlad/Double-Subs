@@ -700,3 +700,37 @@ a.page-url:hover {
   font-size: 15px;
   font-weight: 650;
 }
+
+/* ---------------------------------------------------------------- the gate before the sign-in, and the welcome page */
+.gate {
+  display: grid;
+  gap: 10px;
+  text-align: center;
+}
+.gate h2 {
+  margin: 0;
+  font-size: 16px;
+}
+.welcome {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+.welcome h1 {
+  margin: 12px 0 20px;
+  font-size: 22px;
+}
+.welcome .step {
+  margin-bottom: 14px;
+}
+.welcome .step h2 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+.welcome .step p {
+  margin: 0 0 10px;
+}
+.welcome .done {
+  color: var(--ok);
+  font-weight: 600;
+}

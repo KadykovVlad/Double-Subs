@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { SelectedMessage } from '../../src/lib/messages';
 import type { StatusMessage } from '../../src/lib/translation-messages';
@@ -15,7 +16,8 @@ import { NowTab } from './NowTab';
 import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
 import { refreshPlan } from '../../src/lib/account';
-import { useEntitlements, useSavedWords } from './hooks';
+import { useAccount, useEntitlements, useSavedWords } from './hooks';
+import { SignInForm } from './SignIn';
 import { hasFeature } from '../../src/lib/entitlements';
 import { Icons, Logo } from './ui';
 import { t, textDirection, uiLanguage, type MessageKey } from '../../src/lib/i18n';
@@ -58,10 +60,44 @@ function LanguagePicker({ code }: { code: string }) {
   );
 }
 
+/** The panel shows its work only to a signed-in user; before that nothing reads or touches the page. */
 export function App() {
   const [language, setLanguage] = useState(uiLanguage());
   document.documentElement.lang = language;
   document.documentElement.dir = textDirection();
+  useEffect(() => watchUiLanguage(setLanguage), []);
+  const account = useAccount();
+
+  if (account === undefined) return <Shell language={language} />; // the account is being read
+  if (account === null)
+    return (
+      <Shell language={language}>
+        <div class="content" id="panel">
+          <section class="card gate" data-testid="gate">
+            <h2>{t('gate_title')}</h2>
+            <p class="small">{t('gate_text')}</p>
+            <SignInForm />
+          </section>
+        </div>
+      </Shell>
+    );
+  return <SignedInApp language={language} />;
+}
+
+function Shell({ language, children }: { language: string; children?: ComponentChildren }) {
+  return (
+    <div class="shell">
+      <header class="header">
+        <Logo />
+        <span class="brand">Double Sub</span>
+        <LanguagePicker code={language} />
+      </header>
+      {children}
+    </div>
+  );
+}
+
+function SignedInApp({ language }: { language: string }) {
   const [chosenTab, setTab] = useState<TabId>('now');
   const [tabId, setTabId] = useState<number | null>(null);
   const [state, setState] = useState<PopupState>({
@@ -128,7 +164,6 @@ export function App() {
     browser.runtime.onMessage.addListener(onMessage);
     // A payment or a change on the server shows up when the panel opens; offline is no problem.
     void refreshPlan().catch(() => {});
-    const stopLanguage = watchUiLanguage(setLanguage);
 
     const follow = (id: number) => {
       current.current = id;
@@ -163,7 +198,6 @@ export function App() {
 
     return () => {
       clearTimeout(timer);
-      stopLanguage();
       browser.runtime.onMessage.removeListener(onMessage);
       browser.tabs.onActivated.removeListener(onActivated);
       browser.tabs.onUpdated.removeListener(onUpdated);

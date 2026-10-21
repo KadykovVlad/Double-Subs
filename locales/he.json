@@ -264,5 +264,14 @@
 "account_plan_free": "תוכנית חינמית",
 "account_plan_pro": "תוכנית Pro",
 "account_error": "ההתחברות נכשלה. נסו שוב.",
-"account_error_network": "לא ניתן להתחבר לשרת. נסו שוב מאוחר יותר."
+"account_error_network": "לא ניתן להתחבר לשרת. נסו שוב מאוחר יותר.",
+"gate_title": "התחברו כדי להתחיל",
+"gate_text": "Double Sub פועל לאחר התחברות עם חשבון Google.",
+"welcome_title": "ברוכים הבאים ל-Double Sub",
+"welcome_access_title": "1. גישה לאתרים",
+"welcome_access_text": "כדי שהכתוביות יתחילו מעצמן באתרים שבהם אתם צופים בסרטונים, אשרו גישה לדפים. התוסף קורא רק את כתוביות הסרטון.",
+"welcome_allow": "אישור גישה",
+"welcome_allowed": "הגישה אושרה",
+"welcome_signin_title": "2. התחברות",
+"welcome_done": "הכול מוכן. פתחו סרטון ולחצו על הסמל של Double Sub."
 }

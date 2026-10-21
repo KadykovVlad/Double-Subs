@@ -12,10 +12,10 @@
 - Translated lines and single words are cached in the extension's own storage on your computer.
 - Your settings, the list of sites you switched automatic start on, the words you saved (with their repetition schedule) and the list of videos you watched with Double Sub (page address, title, the place where you stopped) are kept in `chrome.storage.local`. They are not uploaded anywhere. The history can be switched off and cleared in the settings.
 
-**Account (optional).** You can sign in with Google in the settings. Everything above works without it. When you sign in:
+**Account (required).** The extension works after you sign in with Google; before that it does nothing on any page. On the first start a welcome page asks for access to the sites and for the sign-in, each with a click. When you sign in:
 - Google gives the extension an ID token for your Google account (we ask only for `openid`, `email` and `profile`). The extension sends it to our server (a Cloudflare Worker with a database), which checks it with Google's public keys.
 - The server stores the Google account identifier, your e-mail address, your plan (free or Pro) and the sign-in sessions of your browsers (only a hash of the renewal token). Nothing else is uploaded in this version: your words, history and settings stay on your computer. The sign-in sessions use tokens kept in `chrome.storage.local`.
-- "Sign out" in the settings ends the session on the server and removes the tokens from the browser. Deleting the account with the data stored for it on the server will be offered in the settings before synchronisation of words and history is switched on.
+- "Sign out" in the settings ends the session on the server and removes the tokens from the browser; the extension then stops working until the next sign-in. Deleting the account with the data stored for it on the server will be offered in the settings before synchronisation of words and history is switched on.
 
 **What we do not do.** We have no analytics. We do not collect, sell or share personal data, browsing history, page content or the videos you watch. We do not use remote code.
 
@@ -42,10 +42,10 @@
 - переводы кэшируются в хранилище расширения на вашем компьютере;
 - настройки, список сайтов с автозапуском, сохранённые слова (с графиком повторения) и история просмотра (адрес страницы, название, место остановки) лежат в `chrome.storage.local` и никуда не передаются. Историю можно выключить и очистить в настройках.
 
-**Аккаунт (по желанию).** В настройках можно войти через Google. Всё перечисленное выше работает и без входа. При входе:
+**Аккаунт (обязателен).** Расширение работает после входа через Google; до этого оно ничего не делает ни на одной странице. При первом запуске приветственная страница по клику просит доступ к сайтам и вход. При входе:
 - Google выдаёт расширению ID-токен вашего аккаунта (запрашиваем только `openid`, `email` и `profile`). Расширение отправляет его на наш сервер (Cloudflare Worker с базой данных), который проверяет его по открытым ключам Google;
 - сервер хранит идентификатор аккаунта Google, ваш адрес электронной почты, тариф (бесплатный или Pro) и сеансы входа ваших браузеров (от токена обновления хранится только хэш). Больше в этой версии ничего не загружается: слова, история и настройки остаются на вашем компьютере. Токены сеанса лежат в `chrome.storage.local`;
-- «Выйти» в настройках завершает сеанс на сервере и удаляет токены из браузера. Удаление аккаунта вместе с данными на сервере появится в настройках до включения синхронизации слов и истории.
+- «Выйти» в настройках завершает сеанс на сервере и удаляет токены из браузера; после этого расширение не работает до следующего входа. Удаление аккаунта вместе с данными на сервере появится в настройках до включения синхронизации слов и истории.
 
 **Чего мы не делаем.** У нас нет аналитики. Мы не собираем, не продаём и не передаём личные данные, историю, содержимое страниц и то, что вы смотрите. Удалённый код не используется.
 

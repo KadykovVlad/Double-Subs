@@ -1,5 +1,6 @@
 import type { InjectTikTokMainMessage, StartAgentMessage } from '../lib/messages';
 import { isTikTokHost } from '../lib/tiktok';
+import { loadAccount } from '../lib/account';
 import { loadKnownSites } from '../lib/known-sites';
 import { hostsOf, matchKnownHost } from '../lib/site-match';
 
@@ -18,6 +19,7 @@ export class AgentLauncher {
       !sender.url
     )
       return;
+    if (!(await loadAccount())) return; // the extension works for signed-in users only
 
     const sites = await loadKnownSites();
     if (!matchKnownHost(new URL(sender.url).hostname, hostsOf(Object.keys(sites)))) return;
@@ -42,6 +44,7 @@ export class AgentLauncher {
     if (message.type !== 'inject-tiktok-main' || tabId === undefined || frameId === undefined)
       return;
     if (!sender.url || !isTikTokHost(new URL(sender.url).hostname)) return;
+    if (!(await loadAccount())) return;
     await browser.scripting
       .executeScript({
         target: { tabId, frameIds: [frameId] },

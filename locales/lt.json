@@ -264,5 +264,14 @@
 "account_plan_free": "Nemokamas planas",
 "account_plan_pro": "„Pro“ planas",
 "account_error": "Prisijungti nepavyko. Bandykite dar kartą.",
-"account_error_network": "Nepavyksta pasiekti serverio. Bandykite vėliau."
+"account_error_network": "Nepavyksta pasiekti serverio. Bandykite vėliau.",
+"gate_title": "Prisijunkite, kad pradėtumėte",
+"gate_text": "„Double Sub“ veikia prisijungus „Google“ paskyra.",
+"welcome_title": "Sveiki atvykę į „Double Sub“",
+"welcome_access_title": "1. Prieiga prie svetainių",
+"welcome_access_text": "Kad subtitrai patys įsijungtų svetainėse, kuriose žiūrite vaizdo įrašus, leiskite prieigą prie puslapių. Plėtinys skaito tik vaizdo įrašo subtitrus.",
+"welcome_allow": "Leisti prieigą",
+"welcome_allowed": "Prieiga leista",
+"welcome_signin_title": "2. Prisijungimas",
+"welcome_done": "Viskas paruošta. Atidarykite vaizdo įrašą ir spustelėkite „Double Sub“ piktogramą."
 }

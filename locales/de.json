@@ -264,5 +264,14 @@
 "account_plan_free": "Kostenloser Tarif",
 "account_plan_pro": "Pro-Tarif",
 "account_error": "Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
-"account_error_network": "Server nicht erreichbar. Bitte später erneut versuchen."
+"account_error_network": "Server nicht erreichbar. Bitte später erneut versuchen.",
+"gate_title": "Zum Starten anmelden",
+"gate_text": "Double Sub funktioniert nach der Anmeldung mit Ihrem Google-Konto.",
+"welcome_title": "Willkommen bei Double Sub",
+"welcome_access_title": "1. Zugriff auf Websites",
+"welcome_access_text": "Damit die Untertitel auf den Websites, auf denen Sie Videos ansehen, von selbst starten, erlauben Sie den Zugriff auf die Seiten. Die Erweiterung liest nur die Untertitel des Videos.",
+"welcome_allow": "Zugriff erlauben",
+"welcome_allowed": "Zugriff erlaubt",
+"welcome_signin_title": "2. Anmelden",
+"welcome_done": "Alles bereit. Öffnen Sie ein Video und klicken Sie auf das Double-Sub-Symbol."
 }

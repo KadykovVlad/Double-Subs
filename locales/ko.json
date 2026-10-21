@@ -264,5 +264,14 @@
 "account_plan_free": "무료 요금제",
 "account_plan_pro": "Pro 요금제",
 "account_error": "로그인하지 못했습니다. 다시 시도해 주세요.",
-"account_error_network": "서버에 연결할 수 없습니다. 나중에 다시 시도해 주세요."
+"account_error_network": "서버에 연결할 수 없습니다. 나중에 다시 시도해 주세요.",
+"gate_title": "시작하려면 로그인하세요",
+"gate_text": "Double Sub는 Google 계정으로 로그인한 후 사용할 수 있습니다.",
+"welcome_title": "Double Sub에 오신 것을 환영합니다",
+"welcome_access_title": "1. 사이트 액세스",
+"welcome_access_text": "동영상을 시청하는 사이트에서 자막이 자동으로 시작되도록 페이지에 대한 액세스를 허용하세요. 확장 프로그램은 동영상 자막만 읽습니다.",
+"welcome_allow": "액세스 허용",
+"welcome_allowed": "액세스가 허용됨",
+"welcome_signin_title": "2. 로그인",
+"welcome_done": "준비가 끝났습니다. 동영상을 열고 Double Sub 아이콘을 클릭하세요."
 }

@@ -1,4 +1,5 @@
 import { AgentLauncher } from '../src/background/AgentLauncher';
+import { loadAccount } from '../src/lib/account';
 import { AutoScriptRegistry } from '../src/background/AutoScriptRegistry';
 import type { LookupWordMessage } from '../src/lib/dictionary-messages';
 import { DictionaryService } from '../src/background/DictionaryService';
@@ -43,9 +44,18 @@ export default defineBackground(() => {
     .seedYouTube()
     .then(() => registry.sync())
     .catch(() => {});
-  browser.runtime.onInstalled.addListener(() => void registry.sync());
+  browser.runtime.onInstalled.addListener((details) => {
+    void registry.sync();
+    // A new user starts at the welcome page: access to the sites and the sign-in, with a click each.
+    if (details.reason === 'install' && !import.meta.env.VITE_DS_E2E)
+      void browser.tabs.create({ url: browser.runtime.getURL('/welcome.html') });
+  });
   browser.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && ('knownSites' in changes || 'mirrorsMode' in changes))
+    // 'account': the registration of the automatic start follows the sign-in and the sign-out.
+    if (
+      area === 'local' &&
+      ('knownSites' in changes || 'mirrorsMode' in changes || 'account' in changes)
+    )
       void registry.sync();
   });
   browser.permissions.onAdded.addListener(() => void registry.sync());
@@ -63,7 +73,7 @@ export default defineBackground(() => {
         return false;
       }
       case 'speak':
-        speech.speak(message);
+        void loadAccount().then((account) => account && speech.speak(message));
         return false;
       case 'start-agent':
         void launcher.launch(message, sender);
@@ -72,7 +82,9 @@ export default defineBackground(() => {
         void launcher.injectTikTokMain(message, sender);
         return false;
       case 'lookup-word':
-        void dictionary.lookup(message).then(sendResponse);
+        void loadAccount()
+          .then((account) => (account ? dictionary.lookup(message) : null))
+          .then(sendResponse);
         return true; // async response
       case 'translation':
         void translation.relay(message).then(sendResponse);

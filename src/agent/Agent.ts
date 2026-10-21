@@ -33,6 +33,8 @@ export class Agent implements AutoHost {
   );
   private readonly panel = new PanelLink();
   private auto: AutoStarter | null = null;
+  /** The page asked for the automatic start (before or without anybody being signed in). */
+  private autoWanted = false;
   private stopPick: (() => void) | null = null;
   private watchTimer: ReturnType<typeof setInterval> | undefined;
 
@@ -44,6 +46,14 @@ export class Agent implements AutoHost {
     window.addEventListener('pagehide', () => {
       this.session?.recordHistory();
       this.closeSession();
+    });
+
+    // The extension works for signed-in users only: a sign-out ends everything on this page at once,
+    // a sign-in starts the automatic start that was waiting.
+    this.data.onAccount((account) => {
+      if (account) {
+        if (this.autoWanted) this.startAuto();
+      } else this.stopEverything();
     });
 
     if (window.__doubleSubAuto) this.startAuto();
@@ -72,6 +82,8 @@ export class Agent implements AutoHost {
   }
 
   async open(video: HTMLVideoElement, quiet: boolean): Promise<void> {
+    await this.data.ready;
+    if (!this.data.signedIn()) return;
     await this.select(video, quiet);
     this.panel.selected();
   }
@@ -104,9 +116,21 @@ export class Agent implements AutoHost {
   }
 
   private startAuto(): void {
-    if (this.auto) return;
-    this.auto = new AutoStarter(this);
-    this.auto.start();
+    this.autoWanted = true;
+    void this.data.ready.then(() => {
+      if (this.auto || !this.data.signedIn()) return;
+      this.auto = new AutoStarter(this);
+      this.auto.start();
+    });
+  }
+
+  /** Nobody is signed in any more: no automatic start, no picking, no subtitles on this page. */
+  private stopEverything(): void {
+    this.auto?.stop();
+    this.auto = null;
+    this.endPicking();
+    this.closeSession();
+    this.panel.status();
   }
 
   /** Lets go of a video the page has removed (another episode in a single-page site). */
@@ -161,15 +185,24 @@ export class Agent implements AutoHost {
 
   /** Returns true when the answer comes later. */
   private handle(message: AgentRequest, respond: (response: unknown) => void): boolean {
+    // Signed-in users only: an agent left on a page after a sign-out answers nobody.
+    void this.data.ready.then(() => {
+      if (this.data.signedIn() || message.type === 'stopPick') this.dispatch(message, respond);
+      else respond(null);
+    });
+    return true;
+  }
+
+  private dispatch(message: AgentRequest, respond: (response: unknown) => void): void {
     switch (message.type) {
       case 'scan':
         respond(this.scan());
-        return false;
+        return;
       case 'select': {
         const video = this.scanner.videos[message.index];
         if (!video) {
           respond(null);
-          return false;
+          return;
         }
         void this.select(video)
           .then((report) => {
@@ -177,29 +210,28 @@ export class Agent implements AutoHost {
             respond(report);
           })
           .catch(() => respond(null));
-        return true;
+        return;
       }
       case 'startPick':
         this.startPicking();
         respond({ ok: true });
-        return false;
+        return;
       case 'stopPick':
         this.endPicking();
         respond({ ok: true });
-        return false;
+        return;
       case 'retryTranslation':
         this.session?.retryTranslation();
         respond({ ok: true });
-        return false;
+        return;
       case 'probeTranslator':
         if (!__DS_PROTOTYPES__) {
           respond(null);
-          return false;
+          return;
         }
         void new TranslatorProbeService().run().then(respond);
-        return true;
+        return;
     }
-    return false;
   }
 
   private scan(): FrameScan {

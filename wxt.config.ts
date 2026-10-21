@@ -18,6 +18,7 @@ const PRODUCT_ENTRYPOINTS = [
   'youtube',
   'youtube-main',
   'tiktok-main',
+  'welcome',
 ];
 
 // A fixed key gives the unpacked extension the same ID on every machine (dev, build, e2e):

@@ -264,5 +264,14 @@
 "account_plan_free": "Plan bezpłatny",
 "account_plan_pro": "Plan Pro",
 "account_error": "Nie udało się zalogować. Spróbuj ponownie.",
-"account_error_network": "Brak połączenia z serwerem. Spróbuj ponownie później."
+"account_error_network": "Brak połączenia z serwerem. Spróbuj ponownie później.",
+"gate_title": "Zaloguj się, aby zacząć",
+"gate_text": "Double Sub działa po zalogowaniu się kontem Google.",
+"welcome_title": "Witamy w Double Sub",
+"welcome_access_title": "1. Dostęp do witryn",
+"welcome_access_text": "Aby napisy uruchamiały się same w witrynach, w których oglądasz filmy, zezwól na dostęp do stron. Rozszerzenie odczytuje tylko napisy do wideo.",
+"welcome_allow": "Zezwól na dostęp",
+"welcome_allowed": "Dostęp zezwolony",
+"welcome_signin_title": "2. Logowanie",
+"welcome_done": "Gotowe. Otwórz film i kliknij ikonę Double Sub."
 }

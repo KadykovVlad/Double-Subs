@@ -264,5 +264,14 @@
 "account_plan_free": "Pla gratuït",
 "account_plan_pro": "Pla Pro",
 "account_error": "No s’ha pogut iniciar la sessió. Torna-ho a provar.",
-"account_error_network": "No es pot connectar amb el servidor. Torna-ho a provar més tard."
+"account_error_network": "No es pot connectar amb el servidor. Torna-ho a provar més tard.",
+"gate_title": "Inicia la sessió per començar",
+"gate_text": "Double Sub funciona un cop has iniciat la sessió amb el teu compte de Google.",
+"welcome_title": "Et donem la benvinguda a Double Sub",
+"welcome_access_title": "1. Accés als llocs",
+"welcome_access_text": "Perquè els subtítols s’iniciïn sols als llocs on mires vídeos, permet l’accés a les pàgines. L’extensió només llegeix els subtítols del vídeo.",
+"welcome_allow": "Permet l’accés",
+"welcome_allowed": "Accés permès",
+"welcome_signin_title": "2. Inicia la sessió",
+"welcome_done": "Tot a punt. Obre un vídeo i fes clic a la icona de Double Sub."
 }

@@ -264,5 +264,14 @@
 "account_plan_free": "Paket gratis",
 "account_plan_pro": "Paket Pro",
 "account_error": "Gagal masuk. Coba lagi.",
-"account_error_network": "Tidak dapat terhubung ke server. Coba lagi nanti."
+"account_error_network": "Tidak dapat terhubung ke server. Coba lagi nanti.",
+"gate_title": "Masuk untuk memulai",
+"gate_text": "Double Sub berfungsi setelah Anda masuk dengan akun Google.",
+"welcome_title": "Selamat datang di Double Sub",
+"welcome_access_title": "1. Akses ke situs",
+"welcome_access_text": "Agar subtitle mulai sendiri di situs tempat Anda menonton video, izinkan akses ke halaman. Ekstensi hanya membaca subtitle video.",
+"welcome_allow": "Izinkan akses",
+"welcome_allowed": "Akses diizinkan",
+"welcome_signin_title": "2. Masuk",
+"welcome_done": "Semua siap. Buka video dan klik ikon Double Sub."
 }

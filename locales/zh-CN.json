@@ -264,5 +264,14 @@
 "account_plan_free": "免费版",
 "account_plan_pro": "Pro 版",
 "account_error": "登录失败，请重试。",
-"account_error_network": "无法连接到服务器，请稍后重试。"
+"account_error_network": "无法连接到服务器，请稍后重试。",
+"gate_title": "登录后开始使用",
+"gate_text": "使用 Google 账号登录后，Double Sub 才能使用。",
+"welcome_title": "欢迎使用 Double Sub",
+"welcome_access_title": "1. 访问网站",
+"welcome_access_text": "为了让字幕在您观看视频的网站上自动启动，请允许访问网页。扩展程序只读取视频字幕。",
+"welcome_allow": "允许访问",
+"welcome_allowed": "已允许访问",
+"welcome_signin_title": "2. 登录",
+"welcome_done": "一切就绪。打开视频，然后点击 Double Sub 图标。"
 }

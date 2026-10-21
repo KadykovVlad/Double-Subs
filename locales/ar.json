@@ -264,5 +264,14 @@
 "account_plan_free": "الخطة المجانية",
 "account_plan_pro": "خطة Pro",
 "account_error": "فشل تسجيل الدخول. حاول مرة أخرى.",
-"account_error_network": "تعذّر الاتصال بالخادم. حاول مرة أخرى لاحقًا."
+"account_error_network": "تعذّر الاتصال بالخادم. حاول مرة أخرى لاحقًا.",
+"gate_title": "سجّل الدخول للبدء",
+"gate_text": "يعمل Double Sub بعد تسجيل الدخول بحساب Google.",
+"welcome_title": "مرحبًا بك في Double Sub",
+"welcome_access_title": "1. الوصول إلى المواقع",
+"welcome_access_text": "لكي تبدأ الترجمات تلقائيًا في المواقع التي تشاهد فيها الفيديو، اسمح بالوصول إلى الصفحات. يقرأ الامتداد ترجمات الفيديو فقط.",
+"welcome_allow": "السماح بالوصول",
+"welcome_allowed": "تم السماح بالوصول",
+"welcome_signin_title": "2. تسجيل الدخول",
+"welcome_done": "كل شيء جاهز. افتح فيديو وانقر على أيقونة Double Sub."
 }

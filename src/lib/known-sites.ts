@@ -24,6 +24,8 @@ export const YOUTUBE_ORIGIN = 'https://www.youtube.com';
  * The test build uses the sub-domains of localhost, which Chrome resolves to this computer.
  */
 export const MIRRORS_PATTERN = import.meta.env?.VITE_DS_E2E ? 'http://*.localhost/*' : '*://*/*';
+/** What the welcome screen asks for: every site (the test build cannot, so it keeps the localhost pattern above). */
+export const ALL_SITES_PATTERN = MIRRORS_PATTERN;
 const MIRRORS_KEY = 'mirrorsMode';
 
 export async function loadMirrorsMode(): Promise<boolean> {

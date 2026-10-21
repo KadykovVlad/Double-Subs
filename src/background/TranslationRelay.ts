@@ -1,3 +1,4 @@
+import { loadAccount } from '../lib/account';
 import { ensureOffscreen } from '../lib/offscreen';
 import type { OffscreenRequest } from '../lib/offscreen-messages';
 import {
@@ -13,6 +14,7 @@ import {
 export class TranslationRelay {
   async relay(envelope: TranslationEnvelope): Promise<TranslationReply<unknown>> {
     if (!isValidTranslationRequest(envelope.request)) return { ok: false, code: 'failed' };
+    if (!(await loadAccount())) return { ok: false, code: 'failed' }; // signed-in users only
     try {
       await ensureOffscreen();
       // Test build only: the stand-in translator mode lives in storage, which offscreen cannot read.

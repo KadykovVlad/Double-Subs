@@ -14,6 +14,7 @@ for (const file of [
   'auto-probe.js',
   'background.js',
   'offscreen.html',
+  'welcome.html',
 ]) {
   if (!existsSync(join(dir, file))) problems.push(`missing ${file}`);
 }

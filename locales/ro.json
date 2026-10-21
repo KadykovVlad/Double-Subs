@@ -264,5 +264,14 @@
 "account_plan_free": "Plan gratuit",
 "account_plan_pro": "Plan Pro",
 "account_error": "Conectarea a eșuat. Încearcă din nou.",
-"account_error_network": "Serverul nu poate fi contactat. Încearcă mai târziu."
+"account_error_network": "Serverul nu poate fi contactat. Încearcă mai târziu.",
+"gate_title": "Conectează-te ca să începi",
+"gate_text": "Double Sub funcționează după ce te conectezi cu contul Google.",
+"welcome_title": "Bun venit la Double Sub",
+"welcome_access_title": "1. Acces la site-uri",
+"welcome_access_text": "Pentru ca subtitrările să pornească singure pe site-urile pe care vezi videoclipuri, permite accesul la pagini. Extensia citește doar subtitrările videoclipului.",
+"welcome_allow": "Permite accesul",
+"welcome_allowed": "Acces permis",
+"welcome_signin_title": "2. Conectare",
+"welcome_done": "Gata. Deschide un videoclip și apasă pictograma Double Sub."
 }

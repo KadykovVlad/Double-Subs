@@ -6,6 +6,7 @@ import {
   YOUTUBE_ORIGIN,
   type KnownSites,
 } from '../lib/known-sites';
+import { loadAccount } from '../lib/account';
 import { originPattern } from '../lib/scan';
 import { isTikTokPattern } from '../lib/tiktok';
 
@@ -64,7 +65,11 @@ export class AutoScriptRegistry {
     for (const pattern of patterns) {
       if (await browser.permissions.contains({ origins: [pattern] })) granted.add(pattern);
     }
-    const matches = desiredMatches(sites, mirrorsOn, (pattern) => granted.has(pattern));
+    // Nobody is signed in: the extension does nothing on the user's sites (the registration is taken off).
+    const signedIn = (await loadAccount()) !== null;
+    const matches = signedIn
+      ? desiredMatches(sites, mirrorsOn, (pattern) => granted.has(pattern))
+      : [];
     await this.applyTikTok(matches);
 
     const registered = await browser.scripting.getRegisteredContentScripts();

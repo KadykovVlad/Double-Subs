@@ -264,5 +264,14 @@
 "account_plan_free": "Ücretsiz plan",
 "account_plan_pro": "Pro plan",
 "account_error": "Giriş başarısız oldu. Tekrar deneyin.",
-"account_error_network": "Sunucuya ulaşılamıyor. Daha sonra tekrar deneyin."
+"account_error_network": "Sunucuya ulaşılamıyor. Daha sonra tekrar deneyin.",
+"gate_title": "Başlamak için giriş yapın",
+"gate_text": "Double Sub, Google hesabınızla giriş yaptıktan sonra çalışır.",
+"welcome_title": "Double Sub’a hoş geldiniz",
+"welcome_access_title": "1. Sitelere erişim",
+"welcome_access_text": "Altyazıların video izlediğiniz sitelerde kendiliğinden başlaması için sayfalara erişime izin verin. Uzantı yalnızca videonun altyazılarını okur.",
+"welcome_allow": "Erişime izin ver",
+"welcome_allowed": "Erişime izin verildi",
+"welcome_signin_title": "2. Giriş yap",
+"welcome_done": "Hazır. Bir video açın ve Double Sub simgesine tıklayın."
 }

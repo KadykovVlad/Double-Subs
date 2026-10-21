@@ -264,5 +264,14 @@
 "account_plan_free": "Libreng plano",
 "account_plan_pro": "Pro na plano",
 "account_error": "Hindi nakapag-sign in. Subukan ulit.",
-"account_error_network": "Hindi maabot ang server. Subukan ulit mamaya."
+"account_error_network": "Hindi maabot ang server. Subukan ulit mamaya.",
+"gate_title": "Mag-sign in para magsimula",
+"gate_text": "Gumagana ang Double Sub pagkatapos mong mag-sign in gamit ang iyong Google account.",
+"welcome_title": "Maligayang pagdating sa Double Sub",
+"welcome_access_title": "1. Access sa mga site",
+"welcome_access_text": "Para kusang magsimula ang mga subtitle sa mga site kung saan ka nanonood ng video, payagan ang access sa mga page. Ang extension ay nagbabasa lang ng mga subtitle ng video.",
+"welcome_allow": "Payagan ang access",
+"welcome_allowed": "Pinayagan ang access",
+"welcome_signin_title": "2. Mag-sign in",
+"welcome_done": "Handa na. Magbukas ng video at i-click ang icon ng Double Sub."
 }

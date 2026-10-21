@@ -264,5 +264,14 @@
 "account_plan_free": "Mpango wa bure",
 "account_plan_pro": "Mpango wa Pro",
 "account_error": "Imeshindwa kuingia. Jaribu tena.",
-"account_error_network": "Imeshindwa kufikia seva. Jaribu tena baadaye."
+"account_error_network": "Imeshindwa kufikia seva. Jaribu tena baadaye.",
+"gate_title": "Ingia ili uanze",
+"gate_text": "Double Sub hufanya kazi baada ya kuingia kwa akaunti yako ya Google.",
+"welcome_title": "Karibu kwenye Double Sub",
+"welcome_access_title": "1. Ufikiaji wa tovuti",
+"welcome_access_text": "Ili manukuu yaanze yenyewe kwenye tovuti unazotazama video, ruhusu ufikiaji wa kurasa. Kiendelezi husoma tu manukuu ya video.",
+"welcome_allow": "Ruhusu ufikiaji",
+"welcome_allowed": "Ufikiaji umeruhusiwa",
+"welcome_signin_title": "2. Ingia",
+"welcome_done": "Tayari. Fungua video na ubofye aikoni ya Double Sub."
 }

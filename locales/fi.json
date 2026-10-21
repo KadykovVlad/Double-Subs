@@ -264,5 +264,14 @@
 "account_plan_free": "Ilmainen paketti",
 "account_plan_pro": "Pro-paketti",
 "account_error": "Kirjautuminen epäonnistui. Yritä uudelleen.",
-"account_error_network": "Palvelimeen ei saada yhteyttä. Yritä myöhemmin uudelleen."
+"account_error_network": "Palvelimeen ei saada yhteyttä. Yritä myöhemmin uudelleen.",
+"gate_title": "Kirjaudu sisään aloittaaksesi",
+"gate_text": "Double Sub toimii, kun olet kirjautunut Google-tililläsi.",
+"welcome_title": "Tervetuloa Double Subiin",
+"welcome_access_title": "1. Pääsy sivustoihin",
+"welcome_access_text": "Jotta tekstitykset käynnistyvät itsestään sivustoilla, joilla katsot videoita, salli pääsy sivuille. Laajennus lukee vain videon tekstitykset.",
+"welcome_allow": "Salli pääsy",
+"welcome_allowed": "Pääsy sallittu",
+"welcome_signin_title": "2. Kirjautuminen",
+"welcome_done": "Valmista. Avaa video ja napsauta Double Sub -kuvaketta."
 }

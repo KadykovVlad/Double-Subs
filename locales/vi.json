@@ -264,5 +264,14 @@
 "account_plan_free": "Gói miễn phí",
 "account_plan_pro": "Gói Pro",
 "account_error": "Đăng nhập không thành công. Hãy thử lại.",
-"account_error_network": "Không thể kết nối với máy chủ. Hãy thử lại sau."
+"account_error_network": "Không thể kết nối với máy chủ. Hãy thử lại sau.",
+"gate_title": "Đăng nhập để bắt đầu",
+"gate_text": "Double Sub hoạt động sau khi bạn đăng nhập bằng tài khoản Google.",
+"welcome_title": "Chào mừng bạn đến với Double Sub",
+"welcome_access_title": "1. Quyền truy cập trang web",
+"welcome_access_text": "Để phụ đề tự khởi động trên các trang web bạn xem video, hãy cho phép truy cập vào các trang. Tiện ích chỉ đọc phụ đề của video.",
+"welcome_allow": "Cho phép truy cập",
+"welcome_allowed": "Đã cho phép truy cập",
+"welcome_signin_title": "2. Đăng nhập",
+"welcome_done": "Đã sẵn sàng. Mở một video và nhấp vào biểu tượng Double Sub."
 }

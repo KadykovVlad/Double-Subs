@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { AccountError, signIn, signOut } from '../../src/lib/account';
+import { signOut } from '../../src/lib/account';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
 import {
@@ -438,56 +438,27 @@ function DiagnosticsView({ tabId, diagnostics }: { tabId: number; diagnostics: D
   );
 }
 
-/** Sign in with Google, or who is signed in and on which plan. */
+/** Who is signed in and on which plan; the sign-in itself is the gate before the panel (App). */
 function AccountCard() {
   const account = useAccount();
   const entitlements = useEntitlements();
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const enter = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      await signIn();
-    } catch (failure) {
-      const code = failure instanceof AccountError ? failure.code : 'server';
-      // Closing the Google window is the user's choice, not an error.
-      if (code !== 'cancelled')
-        setError(t(code === 'network' ? 'account_error_network' : 'account_error'));
-    } finally {
-      setBusy(false);
-    }
-  };
+  if (!account) return null;
 
   return (
     <>
       <SectionTitle>{t('account_title')}</SectionTitle>
       <Card>
-        {account ? (
-          <>
-            <div class="row" data-testid="account-email">
-              <span class="grow label">{t('account_signed_in', account.email)}</span>
-            </div>
-            <div class="row" data-testid="account-plan">
-              <span class="grow hint">
-                {t(isPro(entitlements) ? 'account_plan_pro' : 'account_plan_free')}
-              </span>
-            </div>
-            <Button variant="secondary" size="sm" testid="sign-out" onClick={() => void signOut()}>
-              {t('account_sign_out')}
-            </Button>
-          </>
-        ) : (
-          <Button block testid="sign-in" disabled={busy} onClick={() => void enter()}>
-            {t(busy ? 'account_signing_in' : 'account_sign_in')}
-          </Button>
-        )}
-        {error && (
-          <p class="small" role="alert" data-testid="account-error">
-            {error}
-          </p>
-        )}
+        <div class="row" data-testid="account-email">
+          <span class="grow label">{t('account_signed_in', account.email)}</span>
+        </div>
+        <div class="row" data-testid="account-plan">
+          <span class="grow hint">
+            {t(isPro(entitlements) ? 'account_plan_pro' : 'account_plan_free')}
+          </span>
+        </div>
+        <Button variant="secondary" size="sm" testid="sign-out" onClick={() => void signOut()}>
+          {t('account_sign_out')}
+        </Button>
       </Card>
     </>
   );

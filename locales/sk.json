@@ -264,5 +264,14 @@
 "account_plan_free": "Bezplatný plán",
 "account_plan_pro": "Plán Pro",
 "account_error": "Prihlásenie zlyhalo. Skúste to znova.",
-"account_error_network": "Server nie je dostupný. Skúste to neskôr."
+"account_error_network": "Server nie je dostupný. Skúste to neskôr.",
+"gate_title": "Na začatie sa prihláste",
+"gate_text": "Double Sub funguje po prihlásení účtom Google.",
+"welcome_title": "Vitajte v Double Sub",
+"welcome_access_title": "1. Prístup k webom",
+"welcome_access_text": "Aby sa titulky spúšťali sami na weboch, kde pozeráte videá, povoľte prístup ku stránkam. Rozšírenie číta len titulky videa.",
+"welcome_allow": "Povoliť prístup",
+"welcome_allowed": "Prístup povolený",
+"welcome_signin_title": "2. Prihlásenie",
+"welcome_done": "Hotovo. Otvorte video a kliknite na ikonu Double Sub."
 }

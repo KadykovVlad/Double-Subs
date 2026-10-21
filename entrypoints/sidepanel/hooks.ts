@@ -53,9 +53,9 @@ export function useSavedWords(): SavedWord[] {
   return words;
 }
 
-/** Who is signed in (null: nobody); the sign-in in any part of the extension shows up here. */
-export function useAccount(): Account | null {
-  const [account, setAccount] = useState<Account | null>(null);
+/** Who is signed in (null: nobody, undefined: not read yet); the sign-in in any part of the extension shows up here. */
+export function useAccount(): Account | null | undefined {
+  const [account, setAccount] = useState<Account | null | undefined>(undefined);
   useEffect(() => {
     void loadAccount().then(setAccount);
     return watchAccount(setAccount);

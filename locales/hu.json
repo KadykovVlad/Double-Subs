@@ -264,5 +264,14 @@
 "account_plan_free": "Ingyenes csomag",
 "account_plan_pro": "Pro csomag",
 "account_error": "A bejelentkezés sikertelen. Próbálja újra.",
-"account_error_network": "A szerver nem érhető el. Próbálja újra később."
+"account_error_network": "A szerver nem érhető el. Próbálja újra később.",
+"gate_title": "Jelentkezzen be a kezdéshez",
+"gate_text": "A Double Sub a Google-fiókkal való bejelentkezés után működik.",
+"welcome_title": "Üdvözli a Double Sub",
+"welcome_access_title": "1. Hozzáférés a webhelyekhez",
+"welcome_access_text": "Hogy a feliratok maguktól elinduljanak azokon a webhelyeken, ahol videókat néz, engedélyezze az oldalak elérését. A bővítmény csak a videó feliratait olvassa.",
+"welcome_allow": "Hozzáférés engedélyezése",
+"welcome_allowed": "Hozzáférés engedélyezve",
+"welcome_signin_title": "2. Bejelentkezés",
+"welcome_done": "Minden kész. Nyisson meg egy videót, és kattintson a Double Sub ikonra."
 }

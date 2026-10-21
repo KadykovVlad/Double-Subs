@@ -264,5 +264,14 @@
 "account_plan_free": "Tasuta pakett",
 "account_plan_pro": "Pro pakett",
 "account_error": "Sisselogimine ebaõnnestus. Proovige uuesti.",
-"account_error_network": "Serveriga ei saa ühendust. Proovige hiljem uuesti."
+"account_error_network": "Serveriga ei saa ühendust. Proovige hiljem uuesti.",
+"gate_title": "Alustamiseks logige sisse",
+"gate_text": "Double Sub töötab pärast Google’i kontoga sisselogimist.",
+"welcome_title": "Tere tulemast Double Subi",
+"welcome_access_title": "1. Juurdepääs saitidele",
+"welcome_access_text": "Et subtiitrid käivituksid ise saitidel, kus videoid vaatate, lubage juurdepääs lehtedele. Laiendus loeb ainult video subtiitreid.",
+"welcome_allow": "Luba juurdepääs",
+"welcome_allowed": "Juurdepääs lubatud",
+"welcome_signin_title": "2. Sisselogimine",
+"welcome_done": "Kõik on valmis. Avage video ja klõpsake Double Subi ikoonil."
 }

@@ -1,3 +1,4 @@
+import { loadAccount } from '../src/lib/account';
 import { loadKnownSites } from '../src/lib/known-sites';
 import type { StartAgentMessage } from '../src/lib/messages';
 import { hostsOf, matchKnownHost } from '../src/lib/site-match';
@@ -8,6 +9,7 @@ import { hostsOf, matchKnownHost } from '../src/lib/site-match';
  */
 export default defineUnlistedScript(async () => {
   try {
+    if (!(await loadAccount())) return; // the extension works for signed-in users only
     const sites = await loadKnownSites();
     if (!matchKnownHost(location.hostname, hostsOf(Object.keys(sites)))) return;
     await browser.runtime.sendMessage({ type: 'start-agent' } satisfies StartAgentMessage);

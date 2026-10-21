@@ -264,5 +264,14 @@
 "account_plan_free": "Plan gratuito",
 "account_plan_pro": "Plan Pro",
 "account_error": "No se pudo acceder. Vuelve a intentarlo.",
-"account_error_network": "No se puede conectar con el servidor. Inténtalo más tarde."
+"account_error_network": "No se puede conectar con el servidor. Inténtalo más tarde.",
+"gate_title": "Accede para comenzar",
+"gate_text": "Double Sub funciona después de acceder con tu cuenta de Google.",
+"welcome_title": "Te damos la bienvenida a Double Sub",
+"welcome_access_title": "1. Acceso a los sitios",
+"welcome_access_text": "Para que los subtítulos se inicien solos en los sitios donde ves videos, permite el acceso a las páginas. La extensión solo lee los subtítulos del video.",
+"welcome_allow": "Permitir acceso",
+"welcome_allowed": "Acceso permitido",
+"welcome_signin_title": "2. Acceder",
+"welcome_done": "Todo listo. Abre un video y haz clic en el ícono de Double Sub."
 }
