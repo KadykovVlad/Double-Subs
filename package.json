@@ -7,7 +7,6 @@
   "scripts": {
     "dev": "wxt",
     "build": "wxt build",
-    "build:branch": "node scripts/build-branch.mjs",
     "zip": "wxt zip",
     "compile": "tsc --noEmit",
     "lint": "eslint .",
