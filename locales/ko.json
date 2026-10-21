@@ -267,6 +267,7 @@
 "welcome_access_title": "1. 사이트 액세스",
 "welcome_access_text": "동영상을 시청하는 사이트에서 자막이 자동으로 시작되도록 페이지에 대한 액세스를 허용하세요. 확장 프로그램은 동영상 자막만 읽습니다.",
 "welcome_allow": "액세스 허용",
+"welcome_allowed": "액세스가 허용됨",
 "welcome_signin_title": "2. 로그인",
 "welcome_done": "준비가 끝났습니다. 동영상을 열고 Double Sub 아이콘을 클릭하세요.",
 "site_on_label": "$1에서 작동",

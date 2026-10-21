@@ -6,19 +6,24 @@ import { useAccessDismissed, useAccount, useAllSitesAllowed } from './hooks';
 import { SignInForm } from './SignIn';
 import { Button } from './ui';
 
-/**
- * The button that asks for access to all sites (Chrome's own question). The answer is taken care of
- * in the background (it turns the automatic start on when the access is given), because this window
- * may be gone by then.
- */
+/** The button that asks for access to all sites (one question of Chrome), or the word that it was given. */
 function AllowAccess() {
+  const allowed = useAllSitesAllowed();
   const dismissed = useAccessDismissed();
   const [denied, setDenied] = useState(false);
+
+  if (allowed)
+    return (
+      <span class="done" data-testid="access-allowed">
+        {t('welcome_allowed')}
+      </span>
+    );
   return (
     <>
       <Button
         block
         testid="allow-access"
+        disabled={allowed === undefined}
         // The request is the first thing the click does: Chrome wants the user gesture.
         onClick={() => void requestAllSites().then((granted) => setDenied(!granted))}
       >
@@ -67,22 +72,18 @@ function LanguageChoice() {
 /** What the panel shows before anybody is signed in: the language, access to the sites, the sign-in. */
 export function Onboarding() {
   const account = useAccount();
-  // The step is there only when the access is missing: given when the extension was added, it is not asked about.
-  const missing = useAllSitesAllowed() === false;
   return (
     <div class="content" id="panel">
       <section class="card gate" data-testid="gate">
         <h2>{t('welcome_title')}</h2>
         <LanguageChoice />
-        {missing && (
-          <div class="step">
-            <h3>{t('welcome_access_title')}</h3>
-            <p class="small">{t('welcome_access_text')}</p>
-            <AllowAccess />
-          </div>
-        )}
         <div class="step">
-          <h3>{t(missing ? 'welcome_signin_title' : 'account_title')}</h3>
+          <h3>{t('welcome_access_title')}</h3>
+          <p class="small">{t('welcome_access_text')}</p>
+          <AllowAccess />
+        </div>
+        <div class="step">
+          <h3>{t('welcome_signin_title')}</h3>
           {account ? (
             <span class="done" data-testid="account-email">
               {t('account_signed_in', account.email)}

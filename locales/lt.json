@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Prieiga prie svetainių",
 "welcome_access_text": "Kad subtitrai patys įsijungtų svetainėse, kuriose žiūrite vaizdo įrašus, leiskite prieigą prie puslapių. Plėtinys skaito tik vaizdo įrašo subtitrus.",
 "welcome_allow": "Leisti prieigą",
+"welcome_allowed": "Prieiga leista",
 "welcome_signin_title": "2. Prisijungimas",
 "welcome_done": "Viskas paruošta. Atidarykite vaizdo įrašą ir spustelėkite „Double Sub“ piktogramą.",
 "site_on_label": "Veikti svetainėje $1",

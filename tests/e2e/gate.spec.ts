@@ -128,9 +128,9 @@ test('before the sign-in the panel is one card: language, access to the sites, s
   await expect(panel.getByTestId('allow-access')).toBeVisible();
   await expect(panel.getByTestId('sign-in')).toBeVisible();
 
-  // The access is one click (the test build holds it already, so Chrome asks nothing); once given, the step is gone.
+  // The access is one click (the test build holds it already, so Chrome asks nothing) and is remembered.
   await panel.getByTestId('allow-access').click();
-  await expect(panel.getByTestId('allow-access')).toHaveCount(0);
+  await expect(panel.getByTestId('access-allowed')).toBeVisible();
   const mirrors = await session.worker.evaluate(
     async () => (await chrome.storage.local.get('mirrorsMode')).mirrorsMode,
   );
@@ -150,10 +150,9 @@ test('the language of the card can be chosen before signing in', async () => {
 });
 
 /** The small window under the icon, opened as a page (Playwright cannot click the toolbar icon). */
-async function openOnboarding(options: { keepAnswers?: boolean } = {}): Promise<Page> {
+async function openOnboarding(): Promise<Page> {
   // The sites question is open (the tests are seeded with it answered).
-  if (!options.keepAnswers)
-    await session.worker.evaluate(() => chrome.storage.local.set({ accessBannerDismissed: false }));
+  await session.worker.evaluate(() => chrome.storage.local.set({ accessBannerDismissed: false }));
   const page = await session.context.newPage();
   await page.goto(`chrome-extension://${session.extensionId}/onboarding.html`);
   return page;
@@ -167,7 +166,7 @@ test('the small window: language, access to the sites and the sign-in in one car
   await expect(window.getByTestId('onboarding-done')).toHaveCount(0);
 
   await window.getByTestId('allow-access').click(); // the test build holds the access, so Chrome asks nothing
-  await expect(window.getByTestId('allow-access')).toHaveCount(0); // given: nothing more to ask about it
+  await expect(window.getByTestId('access-allowed')).toBeVisible();
   await expect(window.getByTestId('onboarding-done')).toHaveCount(0); // not signed in yet
 
   await window.getByTestId('sign-in').click();
@@ -184,7 +183,7 @@ test('"Not now" answers the question about the sites; the sign-in alone then fin
   await expect(window.getByTestId('onboarding-done')).toBeVisible();
 });
 
-test('the icon carries a mark and the panel stays shut while there is something to do', async () => {
+test('the icon opens the small window while there is something to do, the side panel when it is done', async () => {
   const state = () =>
     session.worker.evaluate(async () => ({
       badge: await chrome.action.getBadgeText({}),
@@ -193,67 +192,21 @@ test('the icon carries a mark and the panel stays shut while there is something 
     }));
   const fresh = async () => {
     const now = await state();
-    return { ...now, popup: now.popup.replace(/^chrome-extension:\/\/[^/]+\/?/, '') };
+    return { ...now, popup: now.popup.replace(/^chrome-extension:\/\/[^/]+\//, '') };
   };
 
-  // Nobody is signed in: the mark; a click opens the small window (the background does that), not the panel.
-  await expect.poll(fresh).toEqual({ badge: '!', popup: '', panelOnClick: false });
+  // Nobody is signed in: the mark, the small window.
+  await expect.poll(fresh).toEqual({ badge: '!', popup: 'onboarding.html', panelOnClick: false });
 
   // Signed in, and the question about the sites was answered ("not now" is the seed): nothing left.
   await signInDirectly();
   await expect.poll(fresh).toEqual({ badge: '', popup: '', panelOnClick: true });
 
-  // Signed in, but the access was not answered yet: the mark again.
+  // Signed in, but the sites were not answered yet: the small window again.
   await session.worker.evaluate(() => chrome.storage.local.set({ accessBannerDismissed: false }));
-  await expect.poll(fresh).toEqual({ badge: '!', popup: '', panelOnClick: false });
+  await expect.poll(fresh).toEqual({ badge: '!', popup: 'onboarding.html', panelOnClick: false });
 
-  // The access is there: done.
+  // The user allowed all sites: done.
   await session.worker.evaluate(() => chrome.storage.local.set({ mirrorsMode: true }));
   await expect.poll(fresh).toEqual({ badge: '', popup: '', panelOnClick: true });
-});
-
-test('the step about the sites is not in the small window when the access is there', async () => {
-  await session.worker.evaluate(() => chrome.storage.local.set({ mirrorsMode: true }));
-  const window = await openOnboarding();
-  await expect(window.getByTestId('sign-in')).toBeVisible();
-  await expect(window.getByTestId('allow-access')).toHaveCount(0);
-  await expect(window.getByTestId('dismiss-access')).toHaveCount(0);
-
-  await window.getByTestId('sign-in').click();
-  await expect(window.getByTestId('onboarding-done')).toBeVisible(); // signed in, access there: all done
-});
-
-test('a sign-in that takes a while: a second click opens nothing more, and another window shows it is running', async () => {
-  await session.worker.evaluate(() => chrome.storage.local.set({ e2eSignInDelayMs: 1500 }));
-  const first = await openOnboarding();
-  await first.getByTestId('dismiss-access').click();
-
-  await first.getByTestId('sign-in').click();
-  await expect(first.getByTestId('sign-in')).toBeDisabled();
-  await expect(first.getByTestId('sign-in')).toHaveText('Вход…');
-
-  // Another window opened meanwhile (the small one closed and was opened again) sees the same.
-  const second = await openOnboarding({ keepAnswers: true });
-  await expect(second.getByTestId('sign-in')).toBeDisabled();
-  await expect(second.getByTestId('sign-in')).toHaveText('Вход…');
-
-  await expect(first.getByTestId('onboarding-done')).toBeVisible({ timeout: 10_000 });
-  await expect(second.getByTestId('onboarding-done')).toBeVisible();
-  expect(api.requests.filter((r) => r.path === '/auth/google')).toHaveLength(1);
-});
-
-test('a failed sign-in is still shown when the window is opened again, and the button works again', async () => {
-  api.failSignIn = true;
-  const first = await openOnboarding();
-  await first.getByTestId('sign-in').click();
-  await expect(first.getByTestId('account-error')).toBeVisible();
-  await first.close();
-
-  const again = await openOnboarding({ keepAnswers: true });
-  await expect(again.getByTestId('account-error')).toBeVisible(); // kept by the background
-  api.failSignIn = false;
-  await again.getByTestId('sign-in').click();
-  await expect(again.getByTestId('account-error')).toHaveCount(0);
-  await expect(again.getByTestId('account-email')).toBeVisible();
-  await expect.poll(() => api.requests.some((r) => r.path === '/me')).toBe(true);
 });

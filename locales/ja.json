@@ -267,6 +267,7 @@
 "welcome_access_title": "1. サイトへのアクセス",
 "welcome_access_text": "動画を視聴するサイトで字幕が自動的に開始されるように、ページへのアクセスを許可してください。拡張機能が読み取るのは動画の字幕だけです。",
 "welcome_allow": "アクセスを許可",
+"welcome_allowed": "アクセスを許可しました",
 "welcome_signin_title": "2. ログイン",
 "welcome_done": "準備完了です。動画を開いて Double Sub のアイコンをクリックしてください。",
 "site_on_label": "$1 で動作する",

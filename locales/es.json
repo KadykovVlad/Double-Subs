@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Acceso a los sitios",
 "welcome_access_text": "Para que los subtítulos se inicien solos en los sitios donde ves vídeos, permite el acceso a las páginas. La extensión solo lee los subtítulos del vídeo.",
 "welcome_allow": "Permitir acceso",
+"welcome_allowed": "Acceso permitido",
 "welcome_signin_title": "2. Iniciar sesión",
 "welcome_done": "Todo listo. Abre un vídeo y haz clic en el icono de Double Sub.",
 "site_on_label": "Funcionar en $1",

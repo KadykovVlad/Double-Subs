@@ -2,19 +2,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   AccountError,
   authedCall,
-  clearStaleSignIn,
   googleAuthUrl,
   idTokenFromRedirect,
-  KEEP_AWAKE_EVERY_MS,
   loadAccount,
   normalizeAccount,
-  normalizeSignInState,
   refreshPlan,
   requestSignIn,
   signIn,
-  signInOnce,
   signOut,
-  webAuthFailure,
 } from '../src/lib/account';
 import { GOOGLE_CLIENT_ID } from '../src/lib/account-config';
 import { FREE_PLAN, loadEntitlements, saveEntitlements } from '../src/lib/entitlements';
@@ -293,111 +288,5 @@ describe('sign-in asked of the background', () => {
   it('is no error when the window that asked closed on the way: the background finishes alone', async () => {
     sends(new Error('The message port closed before a response was received.'));
     await expect(requestSignIn()).resolves.toBeUndefined();
-  });
-});
-
-describe('one sign-in at a time', () => {
-  const stateOf = () => store.signInState;
-
-  beforeEach(() => {
-    (browser as unknown as { runtime: object }).runtime = {
-      getPlatformInfo: vi.fn(async () => ({})),
-    };
-    handler = (path) =>
-      path === '/auth/google'
-        ? reply(tokens(1))
-        : reply({ email: 'learner@example.com', plan: 'free', proUntil: null });
-  });
-
-  it('a second request while one is running joins it: Google opens its window once', async () => {
-    let opened = 0;
-    let release!: () => void;
-    const gate = new Promise<void>((resolve) => (release = resolve));
-    (browser.identity.launchWebAuthFlow as unknown) = async ({ url }: { url: string }) => {
-      opened++;
-      await gate;
-      return redirect(idToken(new URL(url).searchParams.get('nonce')!));
-    };
-    const first = signInOnce();
-    const second = signInOnce();
-    expect(second).toBe(first);
-    await Promise.resolve();
-    expect(stateOf()).toEqual({ running: true });
-    release();
-    await Promise.all([first, second]);
-    expect(opened).toBe(1);
-    expect(stateOf()).toBeUndefined(); // done: nothing is kept
-    expect(await loadAccount()).not.toBeNull();
-  });
-
-  it('a failure is kept for any window to show, and the next attempt starts clean', async () => {
-    handler = () => reply({ error: 'bad_google_token' }, 401);
-    await expect(signInOnce()).rejects.toMatchObject({ code: 'server' });
-    expect(stateOf()).toEqual({ error: 'server' });
-
-    handler = (path) =>
-      path === '/auth/google'
-        ? reply(tokens(1))
-        : reply({ email: 'learner@example.com', plan: 'free', proUntil: null });
-    await signInOnce();
-    expect(stateOf()).toBeUndefined();
-  });
-
-  it('a closed Google window is no failure: nothing is kept', async () => {
-    (browser.identity.launchWebAuthFlow as unknown) = async () => {
-      throw new Error('The user did not approve access.');
-    };
-    await expect(signInOnce()).rejects.toMatchObject({ code: 'cancelled' });
-    expect(stateOf()).toBeUndefined();
-  });
-
-  it('keeps the background awake while the user picks an account, and stops when it is over', async () => {
-    vi.useFakeTimers();
-    try {
-      let release!: () => void;
-      const gate = new Promise<void>((resolve) => (release = resolve));
-      (browser.identity.launchWebAuthFlow as unknown) = async ({ url }: { url: string }) => {
-        await gate;
-        return redirect(idToken(new URL(url).searchParams.get('nonce')!));
-      };
-      const awake = (browser.runtime as unknown as { getPlatformInfo: ReturnType<typeof vi.fn> })
-        .getPlatformInfo;
-      const run = signInOnce();
-      await vi.advanceTimersByTimeAsync(KEEP_AWAKE_EVERY_MS * 3 + 100);
-      expect(awake).toHaveBeenCalledTimes(3);
-      release();
-      await vi.advanceTimersByTimeAsync(10);
-      await run;
-      awake.mockClear();
-      await vi.advanceTimersByTimeAsync(KEEP_AWAKE_EVERY_MS * 3);
-      expect(awake).not.toHaveBeenCalled();
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
-  it('a "running" left from a background that died is cleared when the next one starts', async () => {
-    store.signInState = { running: true };
-    await clearStaleSignIn();
-    expect(stateOf()).toBeUndefined();
-  });
-});
-
-describe('what Chrome says when the Google window gives nothing', () => {
-  it.each([
-    ['The user did not approve access.', 'cancelled'],
-    ['The window was closed', 'cancelled'],
-    ['Authorization page could not be loaded.', 'network'],
-    ['net::ERR_NAME_NOT_RESOLVED', 'network'],
-    ['Something else went wrong', 'server'],
-  ])('%s → %s', (message, code) => {
-    expect(webAuthFailure(new Error(message)).code).toBe(code);
-  });
-
-  it('reads the stored progress and ignores damaged values', () => {
-    expect(normalizeSignInState({ running: true })).toEqual({ running: true });
-    expect(normalizeSignInState({ error: 'network' })).toEqual({ error: 'network' });
-    for (const bad of [null, 'x', {}, { running: false }])
-      expect(normalizeSignInState(bad)).toBeNull();
   });
 });

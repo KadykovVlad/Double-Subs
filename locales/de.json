@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Zugriff auf Websites",
 "welcome_access_text": "Damit die Untertitel auf den Websites, auf denen Sie Videos ansehen, von selbst starten, erlauben Sie den Zugriff auf die Seiten. Die Erweiterung liest nur die Untertitel des Videos.",
 "welcome_allow": "Zugriff erlauben",
+"welcome_allowed": "Zugriff erlaubt",
 "welcome_signin_title": "2. Anmelden",
 "welcome_done": "Alles bereit. Öffnen Sie ein Video und klicken Sie auf das Double-Sub-Symbol.",
 "site_on_label": "Auf $1 aktiv",

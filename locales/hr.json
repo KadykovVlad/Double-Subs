@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Pristup web-mjestima",
 "welcome_access_text": "Kako bi se titlovi sami pokretali na web-mjestima na kojima gledate videozapise, dopustite pristup stranicama. Proširenje čita samo titlove videozapisa.",
 "welcome_allow": "Dopusti pristup",
+"welcome_allowed": "Pristup dopušten",
 "welcome_signin_title": "2. Prijava",
 "welcome_done": "Sve je spremno. Otvorite videozapis i kliknite ikonu Double Sub.",
 "site_on_label": "Radi na $1",

@@ -267,6 +267,7 @@
 "welcome_access_title": "1. גישה לאתרים",
 "welcome_access_text": "כדי שהכתוביות יתחילו מעצמן באתרים שבהם אתם צופים בסרטונים, אשרו גישה לדפים. התוסף קורא רק את כתוביות הסרטון.",
 "welcome_allow": "אישור גישה",
+"welcome_allowed": "הגישה אושרה",
 "welcome_signin_title": "2. התחברות",
 "welcome_done": "הכול מוכן. פתחו סרטון ולחצו על הסמל של Double Sub.",
 "site_on_label": "לפעול ב-$1",

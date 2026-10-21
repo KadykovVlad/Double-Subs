@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Adgang til websteder",
 "welcome_access_text": "Tillad adgang til siderne, så undertekster starter af sig selv på de websteder, hvor du ser video. Udvidelsen læser kun videoens undertekster.",
 "welcome_allow": "Tillad adgang",
+"welcome_allowed": "Adgang tilladt",
 "welcome_signin_title": "2. Log ind",
 "welcome_done": "Klar. Åbn en video, og klik på Double Sub-ikonet.",
 "site_on_label": "Aktiv på $1",

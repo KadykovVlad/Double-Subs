@@ -267,6 +267,7 @@
 "welcome_access_title": "1. 访问网站",
 "welcome_access_text": "为了让字幕在您观看视频的网站上自动启动，请允许访问网页。扩展程序只读取视频字幕。",
 "welcome_allow": "允许访问",
+"welcome_allowed": "已允许访问",
 "welcome_signin_title": "2. 登录",
 "welcome_done": "一切就绪。打开视频，然后点击 Double Sub 图标。",
 "site_on_label": "在 $1 上运行",

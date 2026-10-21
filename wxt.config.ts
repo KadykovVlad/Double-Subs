@@ -60,16 +60,15 @@ export default defineConfig({
     // tts: the system voices that say a word aloud on hover.
     // identity: the Google sign-in window (launchWebAuthFlow) of the account.
     permissions: ['storage', 'activeTab', 'scripting', 'offscreen', 'tts', 'sidePanel', 'identity'],
-    // No popup: a click on the icon opens the side panel, or the small onboarding window while that is not done (see the background).
+    // No popup: a click on the icon opens the side panel (see the background).
     action: { default_title: '__MSG_extName__' },
-    // Access to all sites is a required permission: Chrome itself asks for it, in its own window in the
-    // middle of the screen, when the extension is added from the store, and the extension starts by
-    // itself on any page with a video. (The test build keeps the narrow access it always had and
-    // asks for the rest the old way, because the tests cannot answer Chrome's question.)
-    host_permissions: E2E
-      ? ['*://*.youtube.com/*', 'http://localhost/*', 'http://*.localhost/*']
-      : ['*://*/*'],
-    ...(E2E ? { optional_host_permissions: ['*://*/*'] } : {}),
+    // Permanent access only to YouTube (stage 5).
+    host_permissions: [
+      '*://*.youtube.com/*',
+      ...(E2E ? ['http://localhost/*', 'http://*.localhost/*'] : []),
+    ],
+    // A player embedded from another site: access to its origin is requested from the popup.
+    optional_host_permissions: ['*://*/*'],
     // Stage 4 prototype: the agent embeds this page with allow="translator" to test the API in page frames.
     ...(prototypes
       ? {

@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Acesso aos sites",
 "welcome_access_text": "Para que as legendas arranquem sozinhas nos sites onde vê vídeos, permita o acesso às páginas. A extensão lê apenas as legendas do vídeo.",
 "welcome_allow": "Permitir acesso",
+"welcome_allowed": "Acesso permitido",
 "welcome_signin_title": "2. Iniciar sessão",
 "welcome_done": "Tudo pronto. Abra um vídeo e clique no ícone do Double Sub.",
 "site_on_label": "Funcionar em $1",

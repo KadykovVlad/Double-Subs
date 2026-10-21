@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Přístup k webům",
 "welcome_access_text": "Aby se titulky spouštěly samy na webech, kde sledujete videa, povolte přístup ke stránkám. Rozšíření čte jen titulky videa.",
 "welcome_allow": "Povolit přístup",
+"welcome_allowed": "Přístup povolen",
 "welcome_signin_title": "2. Přihlášení",
 "welcome_done": "Hotovo. Otevřete video a klikněte na ikonu Double Sub.",
 "site_on_label": "Fungovat na $1",

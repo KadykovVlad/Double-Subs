@@ -267,6 +267,7 @@
 "welcome_access_title": "1. ወደ ድር ጣቢያዎች መድረስ",
 "welcome_access_text": "ቪዲዮ በሚመለከቱባቸው ድር ጣቢያዎች ላይ ንዑስ ርዕሶች በራሳቸው እንዲጀምሩ ወደ ገጾች መድረስን ይፍቀዱ። ቅጥያው የቪዲዮውን ንዑስ ርዕሶች ብቻ ያነባል።",
 "welcome_allow": "መድረስን ፍቀድ",
+"welcome_allowed": "መድረስ ተፈቅዷል",
 "welcome_signin_title": "2. ይግቡ",
 "welcome_done": "ሁሉም ዝግጁ ነው። ቪዲዮ ይክፈቱ እና የDouble Sub አዶውን ጠቅ ያድርጉ።",
 "site_on_label": "በ$1 ላይ ሥራ",

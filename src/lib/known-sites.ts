@@ -28,33 +28,8 @@ export const MIRRORS_PATTERN = import.meta.env?.VITE_DS_E2E ? 'http://*.localhos
 export const ALL_SITES_PATTERN = MIRRORS_PATTERN;
 const MIRRORS_KEY = 'mirrorsMode';
 
-/**
- * "Start by itself on every site": on from the start (the access is given when the extension is
- * added) until the user switches it off. The test build starts with it off, as it holds only a
- * narrow access.
- */
-const EVERYWHERE_BY_DEFAULT = !import.meta.env?.VITE_DS_E2E;
-
-export const readMirrorsMode = (stored: unknown): boolean =>
-  typeof stored === 'boolean' ? stored : EVERYWHERE_BY_DEFAULT;
-
 export async function loadMirrorsMode(): Promise<boolean> {
-  return readMirrorsMode((await browser.storage.local.get(MIRRORS_KEY))[MIRRORS_KEY]);
-}
-
-/**
- * Is the access to all sites there? In the real build that is the permission alone. The test build
- * holds the localhost access from its manifest all the time, so it also needs the switch to be on,
- * which is how the tests tell "not allowed yet" from "allowed".
- */
-export const accessGranted = (held: boolean, everywhereOn: boolean): boolean =>
-  import.meta.env?.VITE_DS_E2E ? held && everywhereOn : held;
-
-/** Did Chrome just give the access to all sites? (`permissions.onAdded` tells what was added.) */
-export function addsAllSites(added: { origins?: string[] }): boolean {
-  return (added.origins ?? []).some(
-    (origin) => origin === ALL_SITES_PATTERN || origin === '<all_urls>' || origin === '*://*/*',
-  );
+  return (await browser.storage.local.get(MIRRORS_KEY))[MIRRORS_KEY] === true;
 }
 
 export const setMirrorsMode = (on: boolean) => browser.storage.local.set({ [MIRRORS_KEY]: on });
@@ -92,7 +67,7 @@ export function watchAccessDismissed(listener: (dismissed: boolean) => void): ()
 export function watchMirrorsMode(listener: (on: boolean) => void): () => void {
   const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {
     if (area === 'local' && MIRRORS_KEY in changes)
-      listener(readMirrorsMode(changes[MIRRORS_KEY]!.newValue));
+      listener(changes[MIRRORS_KEY]!.newValue === true);
   };
   browser.storage.onChanged.addListener(onChanged);
   return () => browser.storage.onChanged.removeListener(onChanged);

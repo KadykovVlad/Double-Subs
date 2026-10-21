@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Toegang tot sites",
 "welcome_access_text": "Geef toegang tot de pagina’s zodat de ondertitels vanzelf starten op de sites waar je video’s bekijkt. De extensie leest alleen de ondertitels van de video.",
 "welcome_allow": "Toegang toestaan",
+"welcome_allowed": "Toegang toegestaan",
 "welcome_signin_title": "2. Inloggen",
 "welcome_done": "Klaar. Open een video en klik op het Double Sub-pictogram.",
 "site_on_label": "Actief op $1",

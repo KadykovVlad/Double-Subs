@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Hozzáférés a webhelyekhez",
 "welcome_access_text": "Hogy a feliratok maguktól elinduljanak azokon a webhelyeken, ahol videókat néz, engedélyezze az oldalak elérését. A bővítmény csak a videó feliratait olvassa.",
 "welcome_allow": "Hozzáférés engedélyezése",
+"welcome_allowed": "Hozzáférés engedélyezve",
 "welcome_signin_title": "2. Bejelentkezés",
 "welcome_done": "Minden kész. Nyisson meg egy videót, és kattintson a Double Sub ikonra.",
 "site_on_label": "Működjön itt: $1",

@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Accesso ai siti",
 "welcome_access_text": "Perché i sottotitoli si avviino da soli sui siti in cui guardi i video, consenti l’accesso alle pagine. L’estensione legge solo i sottotitoli del video.",
 "welcome_allow": "Consenti l’accesso",
+"welcome_allowed": "Accesso consentito",
 "welcome_signin_title": "2. Accedi",
 "welcome_done": "Tutto pronto. Apri un video e fai clic sull’icona di Double Sub.",
 "site_on_label": "Attivo su $1",

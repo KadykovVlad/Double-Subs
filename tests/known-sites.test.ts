@@ -161,26 +161,3 @@ describe('sites switched off', () => {
     expect(isSiteExcluded(['site.example'], ['about:blank', '', undefined])).toBe(false);
   });
 });
-
-import { accessGranted, addsAllSites, readMirrorsMode } from '../src/lib/known-sites';
-
-describe('the access to all sites', () => {
-  it('the permission alone is the access (the real build)', () => {
-    // In the test run the build flag is off, so this is the real rule.
-    expect(accessGranted(true, false)).toBe(true);
-    expect(accessGranted(false, true)).toBe(false);
-  });
-
-  it('turns the automatic start on when Chrome adds the access to all sites, and only then', () => {
-    expect(addsAllSites({ origins: ['*://*/*'] })).toBe(true);
-    expect(addsAllSites({ origins: ['<all_urls>'] })).toBe(true);
-    expect(addsAllSites({ origins: ['https://one.example/*'] })).toBe(false);
-    expect(addsAllSites({})).toBe(false);
-  });
-
-  it('the automatic start is on until the user switches it off', () => {
-    expect(readMirrorsMode(undefined)).toBe(true);
-    expect(readMirrorsMode(true)).toBe(true);
-    expect(readMirrorsMode(false)).toBe(false);
-  });
-});

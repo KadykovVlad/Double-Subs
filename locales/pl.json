@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Dostęp do witryn",
 "welcome_access_text": "Aby napisy uruchamiały się same w witrynach, w których oglądasz filmy, zezwól na dostęp do stron. Rozszerzenie odczytuje tylko napisy do wideo.",
 "welcome_allow": "Zezwól na dostęp",
+"welcome_allowed": "Dostęp zezwolony",
 "welcome_signin_title": "2. Logowanie",
 "welcome_done": "Gotowe. Otwórz film i kliknij ikonę Double Sub.",
 "site_on_label": "Działaj na $1",

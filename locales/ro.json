@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Acces la site-uri",
 "welcome_access_text": "Pentru ca subtitrările să pornească singure pe site-urile pe care vezi videoclipuri, permite accesul la pagini. Extensia citește doar subtitrările videoclipului.",
 "welcome_allow": "Permite accesul",
+"welcome_allowed": "Acces permis",
 "welcome_signin_title": "2. Conectare",
 "welcome_done": "Gata. Deschide un videoclip și apasă pictograma Double Sub.",
 "site_on_label": "Funcționează pe $1",

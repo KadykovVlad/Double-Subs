@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Åtkomst till webbplatser",
 "welcome_access_text": "Tillåt åtkomst till sidorna så att undertexterna startar av sig själva på de webbplatser där du tittar på video. Tillägget läser bara videons undertexter.",
 "welcome_allow": "Tillåt åtkomst",
+"welcome_allowed": "Åtkomst tillåten",
 "welcome_signin_title": "2. Logga in",
 "welcome_done": "Klart. Öppna en video och klicka på Double Sub-ikonen.",
 "site_on_label": "Fungera på $1",

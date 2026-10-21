@@ -267,6 +267,7 @@
 "welcome_access_title": "1. Tilgang til nettsteder",
 "welcome_access_text": "Gi tilgang til sidene slik at undertekstene starter av seg selv på nettstedene der du ser video. Utvidelsen leser bare undertekstene til videoen.",
 "welcome_allow": "Gi tilgang",
+"welcome_allowed": "Tilgang gitt",
 "welcome_signin_title": "2. Logg inn",
 "welcome_done": "Alt er klart. Åpne en video og klikk på Double Sub-ikonet.",
 "site_on_label": "Aktiv på $1",
