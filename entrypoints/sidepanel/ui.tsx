@@ -91,7 +91,13 @@ export const Icons = {
 export function Logo() {
   return (
     <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
-      <rect width="32" height="32" rx="9" fill="var(--accent)" />
+      <defs>
+        <linearGradient id="ds-logo" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#6366f1" />
+          <stop offset="1" stop-color="#8b5cf6" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="9" fill="url(#ds-logo)" />
       <rect x="7" y="10.5" width="18" height="3.4" rx="1.7" fill="#fff" />
       <rect x="7" y="17.5" width="11.5" height="3.4" rx="1.7" fill="#fff" opacity="0.7" />
     </svg>

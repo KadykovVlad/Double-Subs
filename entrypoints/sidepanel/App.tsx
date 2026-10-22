@@ -18,7 +18,7 @@ import { WordsTab, dueWords } from './WordsTab';
 import { refreshPlan } from '../../src/lib/account';
 import { useAccount, useEntitlements, useSavedWords } from './hooks';
 import { Onboarding } from './Onboarding';
-import { hasFeature } from '../../src/lib/entitlements';
+import { hasFeature, isPro } from '../../src/lib/entitlements';
 import { Icons, Logo } from './ui';
 import { t, textDirection, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 import {
@@ -101,7 +101,9 @@ function SignedInApp({ language }: { language: string }) {
     pageUrl: null,
   });
   const words = useSavedWords();
-  const showWords = hasFeature(useEntitlements(), 'words');
+  const entitlements = useEntitlements();
+  const showWords = hasFeature(entitlements, 'words');
+  const pro = isPro(entitlements);
   const dueCount = dueWords(words).length;
   // The words belong to the Pro plan: without it there is no tab (a plan that ends on the tab sends the user back).
   const tabs = TABS.filter((item) => item.id !== 'words' || showWords);
@@ -217,6 +219,7 @@ function SignedInApp({ language }: { language: string }) {
       <header class="header">
         <Logo />
         <span class="brand">Double Sub</span>
+        {pro && <span class="pro-badge">PRO</span>}
         <span class="site" title={site}>
           {site}
         </span>
