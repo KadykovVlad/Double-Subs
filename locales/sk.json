@@ -275,5 +275,20 @@
 "site_off_enable": "Zapnúť",
 "everywhere_label": "Spúšťať sa samo na každom webe",
 "everywhere_hint": "Titulky sa spustia na každej stránke s videom. Vyžaduje prístup ku všetkým webom; rozšírenie číta len titulky videa.",
-"everywhere_denied": "Prístup ku všetkým webom nebol udelený."
+"everywhere_denied": "Prístup ku všetkým webom nebol udelený.",
+"history_search": "Hľadať v histórii…",
+"history_all_sites": "Všetky weby",
+"day_today": "Dnes",
+"day_yesterday": "Včera",
+"nothing_found": "Nič sa nenašlo",
+"words_search": "Hľadať slová…",
+"words_filter_all": "Všetky slová",
+"words_filter_due": "Na opakovanie",
+"words_filter_fav": "Obľúbené",
+"words_status_all": "Všetky stavy",
+"status_new": "Nové",
+"status_review": "Opakuje sa",
+"status_learned": "Naučené",
+"favorite_add": "Pridať do obľúbených",
+"favorite_remove": "Odobrať z obľúbených"
 }

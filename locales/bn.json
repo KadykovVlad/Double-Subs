@@ -275,5 +275,20 @@
 "site_off_enable": "চালু করুন",
 "everywhere_label": "প্রতিটি সাইটে নিজে থেকে শুরু হোক",
 "everywhere_hint": "ভিডিও আছে এমন যেকোনো পেজে সাবটাইটেল শুরু হয়। সব সাইটে অ্যাক্সেস দরকার; এক্সটেনশন শুধু ভিডিওর সাবটাইটেল পড়ে।",
-"everywhere_denied": "সব সাইটে অ্যাক্সেস দেওয়া হয়নি।"
+"everywhere_denied": "সব সাইটে অ্যাক্সেস দেওয়া হয়নি।",
+"history_search": "ইতিহাসে খুঁজুন…",
+"history_all_sites": "সব সাইট",
+"day_today": "আজ",
+"day_yesterday": "গতকাল",
+"nothing_found": "কিছু পাওয়া যায়নি",
+"words_search": "শব্দ খুঁজুন…",
+"words_filter_all": "সব শব্দ",
+"words_filter_due": "পুনরাবৃত্তির জন্য",
+"words_filter_fav": "প্রিয়",
+"words_status_all": "সব অবস্থা",
+"status_new": "নতুন",
+"status_review": "পুনরাবৃত্তিতে",
+"status_learned": "শেখা হয়েছে",
+"favorite_add": "প্রিয়তে যোগ করুন",
+"favorite_remove": "প্রিয় থেকে সরান"
 }

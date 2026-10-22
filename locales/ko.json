@@ -275,5 +275,20 @@
 "site_off_enable": "켜기",
 "everywhere_label": "모든 사이트에서 자동으로 시작",
 "everywhere_hint": "동영상이 있는 모든 페이지에서 자막이 시작됩니다. 모든 사이트에 대한 액세스가 필요하며, 확장 프로그램은 동영상 자막만 읽습니다.",
-"everywhere_denied": "모든 사이트에 대한 액세스가 허용되지 않았습니다."
+"everywhere_denied": "모든 사이트에 대한 액세스가 허용되지 않았습니다.",
+"history_search": "기록 검색…",
+"history_all_sites": "모든 사이트",
+"day_today": "오늘",
+"day_yesterday": "어제",
+"nothing_found": "찾은 항목이 없습니다",
+"words_search": "단어 검색…",
+"words_filter_all": "모든 단어",
+"words_filter_due": "복습할 단어",
+"words_filter_fav": "즐겨찾기",
+"words_status_all": "모든 상태",
+"status_new": "새 단어",
+"status_review": "복습 중",
+"status_learned": "학습 완료",
+"favorite_add": "즐겨찾기에 추가",
+"favorite_remove": "즐겨찾기에서 삭제"
 }

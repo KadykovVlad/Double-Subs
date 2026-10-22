@@ -275,5 +275,20 @@
 "site_off_enable": "Включить",
 "everywhere_label": "Запускаться само на любом сайте",
 "everywhere_hint": "Субтитры включаются на любой странице с видео. Нужен доступ ко всем сайтам; расширение читает только субтитры видео.",
-"everywhere_denied": "Доступ ко всем сайтам не выдан."
+"everywhere_denied": "Доступ ко всем сайтам не выдан.",
+"history_search": "Поиск по истории…",
+"history_all_sites": "Все сайты",
+"day_today": "Сегодня",
+"day_yesterday": "Вчера",
+"nothing_found": "Ничего не найдено",
+"words_search": "Поиск слова…",
+"words_filter_all": "Все слова",
+"words_filter_due": "К повторению",
+"words_filter_fav": "Избранные",
+"words_status_all": "Все статусы",
+"status_new": "Новое",
+"status_review": "На повторении",
+"status_learned": "Изучено",
+"favorite_add": "В избранное",
+"favorite_remove": "Убрать из избранного"
 }

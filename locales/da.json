@@ -275,5 +275,20 @@
 "site_off_enable": "Slå til",
 "everywhere_label": "Start af sig selv på alle websteder",
 "everywhere_hint": "Underteksterne starter på alle sider med video. Kræver adgang til alle websteder; udvidelsen læser kun videoens undertekster.",
-"everywhere_denied": "Adgang til alle websteder blev ikke givet."
+"everywhere_denied": "Adgang til alle websteder blev ikke givet.",
+"history_search": "Søg i historikken…",
+"history_all_sites": "Alle websteder",
+"day_today": "I dag",
+"day_yesterday": "I går",
+"nothing_found": "Intet fundet",
+"words_search": "Søg efter ord…",
+"words_filter_all": "Alle ord",
+"words_filter_due": "Til repetition",
+"words_filter_fav": "Favoritter",
+"words_status_all": "Alle statusser",
+"status_new": "Nyt",
+"status_review": "Under repetition",
+"status_learned": "Lært",
+"favorite_add": "Føj til favoritter",
+"favorite_remove": "Fjern fra favoritter"
 }

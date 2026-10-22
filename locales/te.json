@@ -275,5 +275,20 @@
 "site_off_enable": "ఆన్ చేయి",
 "everywhere_label": "ప్రతి సైట్‌లో వాటంతట అవే ప్రారంభం కావాలి",
 "everywhere_hint": "వీడియో ఉన్న ఏ పేజీలోనైనా ఉపశీర్షికలు ప్రారంభమవుతాయి. అన్ని సైట్‌లకు యాక్సెస్ కావాలి; ఎక్స్‌టెన్షన్ వీడియో ఉపశీర్షికలను మాత్రమే చదువుతుంది.",
-"everywhere_denied": "అన్ని సైట్‌లకు యాక్సెస్ ఇవ్వలేదు."
+"everywhere_denied": "అన్ని సైట్‌లకు యాక్సెస్ ఇవ్వలేదు.",
+"history_search": "చరిత్రలో వెతకండి…",
+"history_all_sites": "అన్ని సైట్‌లు",
+"day_today": "ఈరోజు",
+"day_yesterday": "నిన్న",
+"nothing_found": "ఏమీ కనబడలేదు",
+"words_search": "పదాలను వెతకండి…",
+"words_filter_all": "అన్ని పదాలు",
+"words_filter_due": "పునరావృతానికి",
+"words_filter_fav": "ఇష్టమైనవి",
+"words_status_all": "అన్ని స్థితులు",
+"status_new": "కొత్తది",
+"status_review": "పునరావృతంలో",
+"status_learned": "నేర్చుకున్నది",
+"favorite_add": "ఇష్టమైనవాటికి జోడించు",
+"favorite_remove": "ఇష్టమైనవాటి నుండి తీసివేయి"
 }

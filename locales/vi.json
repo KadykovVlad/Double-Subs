@@ -275,5 +275,20 @@
 "site_off_enable": "Bật",
 "everywhere_label": "Tự khởi động trên mọi trang web",
 "everywhere_hint": "Phụ đề bắt đầu trên mọi trang có video. Cần quyền truy cập mọi trang web; tiện ích chỉ đọc phụ đề của video.",
-"everywhere_denied": "Chưa được cấp quyền truy cập mọi trang web."
+"everywhere_denied": "Chưa được cấp quyền truy cập mọi trang web.",
+"history_search": "Tìm trong lịch sử…",
+"history_all_sites": "Tất cả trang web",
+"day_today": "Hôm nay",
+"day_yesterday": "Hôm qua",
+"nothing_found": "Không tìm thấy gì",
+"words_search": "Tìm từ…",
+"words_filter_all": "Tất cả từ",
+"words_filter_due": "Cần ôn",
+"words_filter_fav": "Yêu thích",
+"words_status_all": "Tất cả trạng thái",
+"status_new": "Mới",
+"status_review": "Đang ôn",
+"status_learned": "Đã thuộc",
+"favorite_add": "Thêm vào yêu thích",
+"favorite_remove": "Bỏ khỏi yêu thích"
 }

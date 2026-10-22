@@ -275,5 +275,20 @@
 "site_off_enable": "Aç",
 "everywhere_label": "Her sitede kendiliğinden başla",
 "everywhere_hint": "Altyazılar videosu olan her sayfada başlar. Tüm sitelere erişim gerekir; uzantı yalnızca videonun altyazılarını okur.",
-"everywhere_denied": "Tüm sitelere erişim verilmedi."
+"everywhere_denied": "Tüm sitelere erişim verilmedi.",
+"history_search": "Geçmişte ara…",
+"history_all_sites": "Tüm siteler",
+"day_today": "Bugün",
+"day_yesterday": "Dün",
+"nothing_found": "Hiçbir şey bulunamadı",
+"words_search": "Kelime ara…",
+"words_filter_all": "Tüm kelimeler",
+"words_filter_due": "Tekrar edilecek",
+"words_filter_fav": "Favoriler",
+"words_status_all": "Tüm durumlar",
+"status_new": "Yeni",
+"status_review": "Tekrarda",
+"status_learned": "Öğrenildi",
+"favorite_add": "Favorilere ekle",
+"favorite_remove": "Favorilerden çıkar"
 }

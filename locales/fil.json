@@ -275,5 +275,20 @@
 "site_off_enable": "I-on",
 "everywhere_label": "Kusang magsimula sa bawat site",
 "everywhere_hint": "Nagsisimula ang mga subtitle sa anumang page na may video. Kailangan ng access sa lahat ng site; ang extension ay nagbabasa lang ng mga subtitle ng video.",
-"everywhere_denied": "Hindi ibinigay ang access sa lahat ng site."
+"everywhere_denied": "Hindi ibinigay ang access sa lahat ng site.",
+"history_search": "Maghanap sa history…",
+"history_all_sites": "Lahat ng site",
+"day_today": "Ngayon",
+"day_yesterday": "Kahapon",
+"nothing_found": "Walang nahanap",
+"words_search": "Maghanap ng salita…",
+"words_filter_all": "Lahat ng salita",
+"words_filter_due": "Babalikan",
+"words_filter_fav": "Mga paborito",
+"words_status_all": "Lahat ng status",
+"status_new": "Bago",
+"status_review": "Binabalikan",
+"status_learned": "Natutunan",
+"favorite_add": "Idagdag sa mga paborito",
+"favorite_remove": "Alisin sa mga paborito"
 }

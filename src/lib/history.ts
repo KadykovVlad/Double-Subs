@@ -117,3 +117,63 @@ export function watchHistory(listener: (list: HistoryEntry[]) => void): () => vo
   browser.storage.onChanged.addListener(onChanged);
   return () => browser.storage.onChanged.removeListener(onChanged);
 }
+
+/** The id of a YouTube video ("dQw4w9WgXcQ"), for its preview picture; null for any other page. */
+export function youtubeVideoId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (!/(^|\.)youtube\.com$/.test(u.hostname)) return null;
+    const id = u.searchParams.get('v') ?? u.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/)?.[1];
+    return id && /^[\w-]{6,20}$/.test(id) ? id : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The entries whose title or address has `query` (any case), on `host` when one is chosen. */
+export function filterHistory(list: HistoryEntry[], query: string, host = ''): HistoryEntry[] {
+  const needle = query.trim().toLowerCase();
+  return list.filter(
+    (entry) =>
+      (!host || entry.host === host) &&
+      (!needle ||
+        entry.title.toLowerCase().includes(needle) ||
+        entry.url.toLowerCase().includes(needle)),
+  );
+}
+
+/** The sites in the history, most watched first: for the "all sites" filter. */
+export function historyHosts(list: HistoryEntry[]): string[] {
+  const count = new Map<string, number>();
+  for (const entry of list) if (entry.host) count.set(entry.host, (count.get(entry.host) ?? 0) + 1);
+  return [...count].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([host]) => host);
+}
+
+/** The list cut into days of the last view, newest first; `daysAgo` 0 is today (local time). */
+export function groupByDay(
+  list: HistoryEntry[],
+  now = Date.now(),
+): Array<{ daysAgo: number; day: number; entries: HistoryEntry[] }> {
+  const dayStart = (ts: number) => {
+    const d = new Date(ts);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  };
+  const today = dayStart(now);
+  const groups: Array<{ daysAgo: number; day: number; entries: HistoryEntry[] }> = [];
+  for (const entry of [...list].sort((a, b) => b.lastAt - a.lastAt)) {
+    const day = dayStart(entry.lastAt);
+    const last = groups[groups.length - 1];
+    if (last && last.day === day) last.entries.push(entry);
+    else groups.push({ day, daysAgo: Math.round((today - day) / 86_400_000), entries: [entry] });
+  }
+  return groups;
+}
+
+/** 95 → "1:35", 3725 → "1:02:05". */
+export function formatDuration(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = String(total % 60).padStart(2, '0');
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
+}

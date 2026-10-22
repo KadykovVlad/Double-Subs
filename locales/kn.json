@@ -275,5 +275,20 @@
 "site_off_enable": "ಆನ್ ಮಾಡಿ",
 "everywhere_label": "ಪ್ರತಿ ಸೈಟ್‌ನಲ್ಲಿ ತಾನಾಗಿಯೇ ಪ್ರಾರಂಭವಾಗಲಿ",
 "everywhere_hint": "ವೀಡಿಯೊ ಇರುವ ಯಾವುದೇ ಪುಟದಲ್ಲಿ ಉಪಶೀರ್ಷಿಕೆಗಳು ಪ್ರಾರಂಭವಾಗುತ್ತವೆ. ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗೆ ಪ್ರವೇಶ ಬೇಕು; ವಿಸ್ತರಣೆಯು ವೀಡಿಯೊದ ಉಪಶೀರ್ಷಿಕೆಗಳನ್ನು ಮಾತ್ರ ಓದುತ್ತದೆ.",
-"everywhere_denied": "ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗೆ ಪ್ರವೇಶ ನೀಡಲಾಗಿಲ್ಲ."
+"everywhere_denied": "ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗೆ ಪ್ರವೇಶ ನೀಡಲಾಗಿಲ್ಲ.",
+"history_search": "ಇತಿಹಾಸದಲ್ಲಿ ಹುಡುಕಿ…",
+"history_all_sites": "ಎಲ್ಲಾ ಸೈಟ್‌ಗಳು",
+"day_today": "ಇಂದು",
+"day_yesterday": "ನಿನ್ನೆ",
+"nothing_found": "ಏನೂ ಸಿಗಲಿಲ್ಲ",
+"words_search": "ಪದಗಳನ್ನು ಹುಡುಕಿ…",
+"words_filter_all": "ಎಲ್ಲಾ ಪದಗಳು",
+"words_filter_due": "ಪುನರಾವರ್ತನೆಗೆ",
+"words_filter_fav": "ಮೆಚ್ಚಿನವು",
+"words_status_all": "ಎಲ್ಲಾ ಸ್ಥಿತಿಗಳು",
+"status_new": "ಹೊಸದು",
+"status_review": "ಪುನರಾವರ್ತನೆಯಲ್ಲಿ",
+"status_learned": "ಕಲಿತದ್ದು",
+"favorite_add": "ಮೆಚ್ಚಿನವುಗಳಿಗೆ ಸೇರಿಸಿ",
+"favorite_remove": "ಮೆಚ್ಚಿನವುಗಳಿಂದ ತೆಗೆದುಹಾಕಿ"
 }

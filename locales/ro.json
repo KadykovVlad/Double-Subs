@@ -275,5 +275,20 @@
 "site_off_enable": "Activează",
 "everywhere_label": "Pornește singur pe orice site",
 "everywhere_hint": "Subtitrările pornesc pe orice pagină cu video. Necesită acces la toate site-urile; extensia citește doar subtitrările videoclipului.",
-"everywhere_denied": "Accesul la toate site-urile nu a fost acordat."
+"everywhere_denied": "Accesul la toate site-urile nu a fost acordat.",
+"history_search": "Caută în istoric…",
+"history_all_sites": "Toate site-urile",
+"day_today": "Astăzi",
+"day_yesterday": "Ieri",
+"nothing_found": "Nu s-a găsit nimic",
+"words_search": "Caută cuvinte…",
+"words_filter_all": "Toate cuvintele",
+"words_filter_due": "De repetat",
+"words_filter_fav": "Favorite",
+"words_status_all": "Toate stările",
+"status_new": "Nou",
+"status_review": "În repetare",
+"status_learned": "Învățat",
+"favorite_add": "Adaugă la favorite",
+"favorite_remove": "Elimină din favorite"
 }

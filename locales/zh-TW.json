@@ -275,5 +275,20 @@
 "site_off_enable": "開啟",
 "everywhere_label": "在所有網站上自動啟動",
 "everywhere_hint": "字幕會在任何有影片的頁面上開始。需要存取所有網站；擴充功能只會讀取影片字幕。",
-"everywhere_denied": "未授予對所有網站的存取權限。"
+"everywhere_denied": "未授予對所有網站的存取權限。",
+"history_search": "搜尋記錄…",
+"history_all_sites": "所有網站",
+"day_today": "今天",
+"day_yesterday": "昨天",
+"nothing_found": "找不到內容",
+"words_search": "搜尋單字…",
+"words_filter_all": "全部單字",
+"words_filter_due": "待複習",
+"words_filter_fav": "收藏",
+"words_status_all": "全部狀態",
+"status_new": "新字",
+"status_review": "複習中",
+"status_learned": "已掌握",
+"favorite_add": "加入收藏",
+"favorite_remove": "取消收藏"
 }

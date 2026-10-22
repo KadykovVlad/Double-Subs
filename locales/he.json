@@ -275,5 +275,20 @@
 "site_off_enable": "הפעלה",
 "everywhere_label": "להתחיל מעצמו בכל אתר",
 "everywhere_hint": "הכתוביות מתחילות בכל דף עם סרטון. נדרשת גישה לכל האתרים; התוסף קורא רק את כתוביות הסרטון.",
-"everywhere_denied": "הגישה לכל האתרים לא ניתנה."
+"everywhere_denied": "הגישה לכל האתרים לא ניתנה.",
+"history_search": "חיפוש בהיסטוריה…",
+"history_all_sites": "כל האתרים",
+"day_today": "היום",
+"day_yesterday": "אתמול",
+"nothing_found": "לא נמצא דבר",
+"words_search": "חיפוש מילים…",
+"words_filter_all": "כל המילים",
+"words_filter_due": "לחזרה",
+"words_filter_fav": "מועדפים",
+"words_status_all": "כל הסטטוסים",
+"status_new": "חדשה",
+"status_review": "בחזרה",
+"status_learned": "נלמדה",
+"favorite_add": "הוספה למועדפים",
+"favorite_remove": "הסרה מהמועדפים"
 }

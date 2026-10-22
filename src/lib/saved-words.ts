@@ -16,6 +16,8 @@ export interface SavedWord {
   definition?: string;
   /** Repetition schedule; a word saved before it existed gets one when it is first read. */
   srs?: Srs;
+  /** Starred by the user. */
+  favorite?: boolean;
 }
 
 /** The keys that mark a word as saved in the subtitles: the dictionary form and the form it was saved from. */
@@ -63,6 +65,25 @@ export async function updateSavedSrs(key: string, srs: Srs): Promise<void> {
   await browser.storage.local.set({
     [KEY]: list.map((item) => (item.key === key ? { ...item, srs } : item)),
   });
+}
+
+/** Stars the word, or takes the star off. */
+export async function toggleFavorite(key: string): Promise<void> {
+  const list = await loadSavedWords();
+  await browser.storage.local.set({
+    [KEY]: list.map((item) => (item.key === key ? { ...item, favorite: !item.favorite } : item)),
+  });
+}
+
+/** The words whose word, form, translation or line has `query` (any case). */
+export function filterWords(list: SavedWord[], query: string): SavedWord[] {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return list;
+  return list.filter((item) =>
+    [item.word, item.form, item.translation, item.context].some((text) =>
+      text?.toLowerCase().includes(needle),
+    ),
+  );
 }
 
 export async function toggleSavedWord(entry: SavedWord): Promise<void> {

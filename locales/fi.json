@@ -275,5 +275,20 @@
 "site_off_enable": "Ota käyttöön",
 "everywhere_label": "Käynnisty itse kaikilla sivustoilla",
 "everywhere_hint": "Tekstitykset alkavat millä tahansa sivulla, jolla on video. Tarvitsee pääsyn kaikkiin sivustoihin; laajennus lukee vain videon tekstitykset.",
-"everywhere_denied": "Pääsyä kaikkiin sivustoihin ei annettu."
+"everywhere_denied": "Pääsyä kaikkiin sivustoihin ei annettu.",
+"history_search": "Hae historiasta…",
+"history_all_sites": "Kaikki sivustot",
+"day_today": "Tänään",
+"day_yesterday": "Eilen",
+"nothing_found": "Ei tuloksia",
+"words_search": "Hae sanoja…",
+"words_filter_all": "Kaikki sanat",
+"words_filter_due": "Kerrattavat",
+"words_filter_fav": "Suosikit",
+"words_status_all": "Kaikki tilat",
+"status_new": "Uusi",
+"status_review": "Kertauksessa",
+"status_learned": "Opittu",
+"favorite_add": "Lisää suosikkeihin",
+"favorite_remove": "Poista suosikeista"
 }

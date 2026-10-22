@@ -275,5 +275,20 @@
 "site_off_enable": "Hidupkan",
 "everywhere_label": "Mula sendiri di setiap tapak",
 "everywhere_hint": "Sari kata bermula pada mana-mana halaman yang ada video. Memerlukan akses kepada semua tapak; sambungan hanya membaca sari kata video.",
-"everywhere_denied": "Akses kepada semua tapak tidak diberikan."
+"everywhere_denied": "Akses kepada semua tapak tidak diberikan.",
+"history_search": "Cari dalam sejarah…",
+"history_all_sites": "Semua tapak",
+"day_today": "Hari ini",
+"day_yesterday": "Semalam",
+"nothing_found": "Tiada apa-apa ditemui",
+"words_search": "Cari perkataan…",
+"words_filter_all": "Semua perkataan",
+"words_filter_due": "Untuk diulang kaji",
+"words_filter_fav": "Kegemaran",
+"words_status_all": "Semua status",
+"status_new": "Baharu",
+"status_review": "Sedang diulang kaji",
+"status_learned": "Sudah dipelajari",
+"favorite_add": "Tambah ke kegemaran",
+"favorite_remove": "Buang daripada kegemaran"
 }

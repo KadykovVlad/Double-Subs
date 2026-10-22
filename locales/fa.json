@@ -275,5 +275,20 @@
 "site_off_enable": "روشن کردن",
 "everywhere_label": "شروع خودکار در همه سایت‌ها",
 "everywhere_hint": "زیرنویس‌ها در هر صفحه‌ای که ویدیو دارد شروع می‌شوند. دسترسی به همه سایت‌ها لازم است؛ افزونه فقط زیرنویس ویدیو را می‌خواند.",
-"everywhere_denied": "دسترسی به همه سایت‌ها داده نشد."
+"everywhere_denied": "دسترسی به همه سایت‌ها داده نشد.",
+"history_search": "جستجو در تاریخچه…",
+"history_all_sites": "همه سایت‌ها",
+"day_today": "امروز",
+"day_yesterday": "دیروز",
+"nothing_found": "چیزی پیدا نشد",
+"words_search": "جستجوی واژه…",
+"words_filter_all": "همه واژه‌ها",
+"words_filter_due": "برای مرور",
+"words_filter_fav": "برگزیده‌ها",
+"words_status_all": "همه وضعیت‌ها",
+"status_new": "جدید",
+"status_review": "در حال مرور",
+"status_learned": "آموخته‌شده",
+"favorite_add": "افزودن به برگزیده‌ها",
+"favorite_remove": "حذف از برگزیده‌ها"
 }

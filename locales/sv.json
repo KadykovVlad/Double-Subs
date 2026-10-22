@@ -275,5 +275,20 @@
 "site_off_enable": "Slå på",
 "everywhere_label": "Starta av sig själv på alla webbplatser",
 "everywhere_hint": "Undertexterna startar på alla sidor med video. Kräver åtkomst till alla webbplatser; tillägget läser bara videons undertexter.",
-"everywhere_denied": "Åtkomst till alla webbplatser gavs inte."
+"everywhere_denied": "Åtkomst till alla webbplatser gavs inte.",
+"history_search": "Sök i historiken…",
+"history_all_sites": "Alla webbplatser",
+"day_today": "I dag",
+"day_yesterday": "I går",
+"nothing_found": "Inget hittades",
+"words_search": "Sök ord…",
+"words_filter_all": "Alla ord",
+"words_filter_due": "Att repetera",
+"words_filter_fav": "Favoriter",
+"words_status_all": "Alla statusar",
+"status_new": "Nytt",
+"status_review": "Repeteras",
+"status_learned": "Inlärt",
+"favorite_add": "Lägg till i favoriter",
+"favorite_remove": "Ta bort från favoriter"
 }

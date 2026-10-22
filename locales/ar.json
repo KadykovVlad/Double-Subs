@@ -275,5 +275,20 @@
 "site_off_enable": "تفعيل",
 "everywhere_label": "البدء تلقائيًا في كل موقع",
 "everywhere_hint": "تبدأ الترجمات في أي صفحة تحتوي على فيديو. يتطلب الوصول إلى كل المواقع؛ يقرأ الامتداد ترجمات الفيديو فقط.",
-"everywhere_denied": "لم يتم منح الوصول إلى كل المواقع."
+"everywhere_denied": "لم يتم منح الوصول إلى كل المواقع.",
+"history_search": "ابحث في السجل…",
+"history_all_sites": "كل المواقع",
+"day_today": "اليوم",
+"day_yesterday": "أمس",
+"nothing_found": "لم يُعثر على شيء",
+"words_search": "ابحث عن كلمات…",
+"words_filter_all": "كل الكلمات",
+"words_filter_due": "للمراجعة",
+"words_filter_fav": "المفضلة",
+"words_status_all": "كل الحالات",
+"status_new": "جديدة",
+"status_review": "قيد المراجعة",
+"status_learned": "محفوظة",
+"favorite_add": "إضافة إلى المفضلة",
+"favorite_remove": "إزالة من المفضلة"
 }

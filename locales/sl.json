@@ -275,5 +275,20 @@
 "site_off_enable": "Vklopi",
 "everywhere_label": "Samodejno zaženi na vsakem spletnem mestu",
 "everywhere_hint": "Podnapisi se zaženejo na vsaki strani z videom. Potreben je dostop do vseh spletnih mest; razširitev bere samo podnapise videa.",
-"everywhere_denied": "Dostop do vseh spletnih mest ni bil odobren."
+"everywhere_denied": "Dostop do vseh spletnih mest ni bil odobren.",
+"history_search": "Iskanje po zgodovini …",
+"history_all_sites": "Vsa spletna mesta",
+"day_today": "Danes",
+"day_yesterday": "Včeraj",
+"nothing_found": "Ni zadetkov",
+"words_search": "Iskanje besed …",
+"words_filter_all": "Vse besede",
+"words_filter_due": "Za ponovitev",
+"words_filter_fav": "Priljubljene",
+"words_status_all": "Vsa stanja",
+"status_new": "Nova",
+"status_review": "V ponavljanju",
+"status_learned": "Naučena",
+"favorite_add": "Dodaj med priljubljene",
+"favorite_remove": "Odstrani iz priljubljenih"
 }

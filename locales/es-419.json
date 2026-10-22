@@ -275,5 +275,20 @@
 "site_off_enable": "Activar",
 "everywhere_label": "Iniciarse solo en cualquier sitio",
 "everywhere_hint": "Los subtítulos empiezan en cualquier página con video. Requiere acceso a todos los sitios; la extensión solo lee los subtítulos del video.",
-"everywhere_denied": "No se concedió el acceso a todos los sitios."
+"everywhere_denied": "No se concedió el acceso a todos los sitios.",
+"history_search": "Buscar en el historial…",
+"history_all_sites": "Todos los sitios",
+"day_today": "Hoy",
+"day_yesterday": "Ayer",
+"nothing_found": "No se encontró nada",
+"words_search": "Buscar palabras…",
+"words_filter_all": "Todas las palabras",
+"words_filter_due": "Por repasar",
+"words_filter_fav": "Favoritas",
+"words_status_all": "Todos los estados",
+"status_new": "Nueva",
+"status_review": "En repaso",
+"status_learned": "Aprendida",
+"favorite_add": "Agregar a favoritas",
+"favorite_remove": "Quitar de favoritas"
 }

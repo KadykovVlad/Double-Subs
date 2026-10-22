@@ -275,5 +275,20 @@
 "site_off_enable": "Lülita sisse",
 "everywhere_label": "Käivitu ise igal saidil",
 "everywhere_hint": "Subtiitrid algavad igal videoga lehel. Vaja on juurdepääsu kõigile saitidele; laiendus loeb ainult video subtiitreid.",
-"everywhere_denied": "Juurdepääsu kõigile saitidele ei antud."
+"everywhere_denied": "Juurdepääsu kõigile saitidele ei antud.",
+"history_search": "Otsi ajaloost…",
+"history_all_sites": "Kõik saidid",
+"day_today": "Täna",
+"day_yesterday": "Eile",
+"nothing_found": "Midagi ei leitud",
+"words_search": "Otsi sõnu…",
+"words_filter_all": "Kõik sõnad",
+"words_filter_due": "Kordamiseks",
+"words_filter_fav": "Lemmikud",
+"words_status_all": "Kõik olekud",
+"status_new": "Uus",
+"status_review": "Kordamisel",
+"status_learned": "Õpitud",
+"favorite_add": "Lisa lemmikutesse",
+"favorite_remove": "Eemalda lemmikutest"
 }

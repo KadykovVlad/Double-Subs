@@ -275,5 +275,20 @@
 "site_off_enable": "አብራ",
 "everywhere_label": "በእያንዳንዱ ድር ጣቢያ በራሱ ይጀምር",
 "everywhere_hint": "ንዑስ ርዕሶች ቪዲዮ ባለው በማንኛውም ገጽ ላይ ይጀምራሉ። ወደ ሁሉም ድር ጣቢያዎች መድረስ ያስፈልጋል፤ ቅጥያው የቪዲዮውን ንዑስ ርዕሶች ብቻ ያነባል።",
-"everywhere_denied": "ወደ ሁሉም ድር ጣቢያዎች መድረስ አልተሰጠም።"
+"everywhere_denied": "ወደ ሁሉም ድር ጣቢያዎች መድረስ አልተሰጠም።",
+"history_search": "በታሪክ ውስጥ ፈልግ…",
+"history_all_sites": "ሁሉም ድር ጣቢያዎች",
+"day_today": "ዛሬ",
+"day_yesterday": "ትላንት",
+"nothing_found": "ምንም አልተገኘም",
+"words_search": "ቃላትን ፈልግ…",
+"words_filter_all": "ሁሉም ቃላት",
+"words_filter_due": "ለመከለስ",
+"words_filter_fav": "ተወዳጆች",
+"words_status_all": "ሁሉም ሁኔታዎች",
+"status_new": "አዲስ",
+"status_review": "በመከለስ ላይ",
+"status_learned": "የተማረ",
+"favorite_add": "ወደ ተወዳጆች አክል",
+"favorite_remove": "ከተወዳጆች አስወግድ"
 }

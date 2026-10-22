@@ -79,6 +79,9 @@ export const Icons = {
     </>,
   ),
   play: icon(<path d="M8 5.5v13l10.5-6.5L8 5.5z" />),
+  star: icon(
+    <path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8L12 3.8z" />,
+  ),
   tray: icon(
     <>
       <path d="M4 13l2.5-7h11L20 13v5H4v-5z" />
@@ -203,6 +206,28 @@ export function Progress({ value }: { value: number }) {
     <div class="progress" aria-hidden="true">
       <i style={{ width: `${Math.round(Math.min(1, Math.max(0, value)) * 100)}%` }} />
     </div>
+  );
+}
+
+/** A search field with a magnifier; the value is kept by the caller. */
+export function SearchField(props: {
+  placeholder: string;
+  value: string;
+  testid: string;
+  onInput: (value: string) => void;
+}) {
+  return (
+    <label class="search">
+      {Icons.search}
+      <input
+        type="search"
+        placeholder={props.placeholder}
+        aria-label={props.placeholder}
+        data-testid={props.testid}
+        value={props.value}
+        onInput={(event) => props.onInput(event.currentTarget.value)}
+      />
+    </label>
   );
 }
 

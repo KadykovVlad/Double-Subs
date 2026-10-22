@@ -275,5 +275,20 @@
 "site_off_enable": "Įjungti",
 "everywhere_label": "Pačiam pasileisti bet kurioje svetainėje",
 "everywhere_hint": "Subtitrai prasideda bet kuriame puslapyje su vaizdo įrašu. Reikia prieigos prie visų svetainių; plėtinys skaito tik vaizdo įrašo subtitrus.",
-"everywhere_denied": "Prieiga prie visų svetainių nebuvo suteikta."
+"everywhere_denied": "Prieiga prie visų svetainių nebuvo suteikta.",
+"history_search": "Ieškoti istorijoje…",
+"history_all_sites": "Visos svetainės",
+"day_today": "Šiandien",
+"day_yesterday": "Vakar",
+"nothing_found": "Nieko nerasta",
+"words_search": "Ieškoti žodžių…",
+"words_filter_all": "Visi žodžiai",
+"words_filter_due": "Kartoti",
+"words_filter_fav": "Mėgstami",
+"words_status_all": "Visos būsenos",
+"status_new": "Naujas",
+"status_review": "Kartojamas",
+"status_learned": "Išmoktas",
+"favorite_add": "Pridėti prie mėgstamų",
+"favorite_remove": "Pašalinti iš mėgstamų"
 }

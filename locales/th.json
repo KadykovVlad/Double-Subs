@@ -275,5 +275,20 @@
 "site_off_enable": "เปิด",
 "everywhere_label": "เริ่มเองในทุกไซต์",
 "everywhere_hint": "คำบรรยายจะเริ่มในทุกหน้าที่มีวิดีโอ ต้องมีสิทธิ์เข้าถึงทุกไซต์ ส่วนขยายอ่านเฉพาะคำบรรยายของวิดีโอ",
-"everywhere_denied": "ไม่ได้รับอนุญาตให้เข้าถึงทุกไซต์"
+"everywhere_denied": "ไม่ได้รับอนุญาตให้เข้าถึงทุกไซต์",
+"history_search": "ค้นหาในประวัติ…",
+"history_all_sites": "ทุกเว็บไซต์",
+"day_today": "วันนี้",
+"day_yesterday": "เมื่อวาน",
+"nothing_found": "ไม่พบสิ่งใด",
+"words_search": "ค้นหาคำ…",
+"words_filter_all": "คำทั้งหมด",
+"words_filter_due": "ต้องทบทวน",
+"words_filter_fav": "รายการโปรด",
+"words_status_all": "ทุกสถานะ",
+"status_new": "ใหม่",
+"status_review": "กำลังทบทวน",
+"status_learned": "เรียนแล้ว",
+"favorite_add": "เพิ่มในรายการโปรด",
+"favorite_remove": "นำออกจากรายการโปรด"
 }

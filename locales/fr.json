@@ -275,5 +275,20 @@
 "site_off_enable": "Activer",
 "everywhere_label": "Démarrer seul sur tous les sites",
 "everywhere_hint": "Les sous-titres démarrent sur toute page contenant une vidéo. Nécessite l’accès à tous les sites ; l’extension ne lit que les sous-titres de la vidéo.",
-"everywhere_denied": "L’accès à tous les sites n’a pas été accordé."
+"everywhere_denied": "L’accès à tous les sites n’a pas été accordé.",
+"history_search": "Rechercher dans l’historique…",
+"history_all_sites": "Tous les sites",
+"day_today": "Aujourd’hui",
+"day_yesterday": "Hier",
+"nothing_found": "Aucun résultat",
+"words_search": "Rechercher un mot…",
+"words_filter_all": "Tous les mots",
+"words_filter_due": "À réviser",
+"words_filter_fav": "Favoris",
+"words_status_all": "Tous les statuts",
+"status_new": "Nouveau",
+"status_review": "En révision",
+"status_learned": "Appris",
+"favorite_add": "Ajouter aux favoris",
+"favorite_remove": "Retirer des favoris"
 }

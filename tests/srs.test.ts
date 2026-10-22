@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AGAIN_DELAY_MS, gapLabel, grade, isDue, newSrs, normalizeSrs } from '../src/lib/srs';
+import { AGAIN_DELAY_MS, gapLabel, grade, isDue, newSrs, normalizeSrs, wordStatus } from '../src/lib/srs';
 
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = 1_000_000_000_000;
@@ -66,5 +66,15 @@ describe('spaced repetition', () => {
       ease: 1.3,
       reps: 0,
     });
+  });
+});
+
+describe('word status', () => {
+  it('is new until the first answer, on review after it, learned at three weeks', () => {
+    const fresh = newSrs(NOW);
+    expect(wordStatus(fresh)).toBe('new');
+    expect(wordStatus(grade(fresh, 'good', NOW))).toBe('review');
+    expect(wordStatus(grade(fresh, 'again', NOW))).toBe('review');
+    expect(wordStatus({ ...fresh, reps: 5, interval: 21 })).toBe('learned');
   });
 });

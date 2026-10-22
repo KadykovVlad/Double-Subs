@@ -275,5 +275,20 @@
 "site_off_enable": "चालू करा",
 "everywhere_label": "प्रत्येक साइटवर आपोआप सुरू व्हा",
 "everywhere_hint": "व्हिडिओ असलेल्या कोणत्याही पेजवर सबटायटल्स सुरू होतात. सर्व साइट्सवर प्रवेश हवा; एक्सटेंशन फक्त व्हिडिओचे सबटायटल्स वाचते.",
-"everywhere_denied": "सर्व साइट्सवर प्रवेश दिला गेला नाही."
+"everywhere_denied": "सर्व साइट्सवर प्रवेश दिला गेला नाही.",
+"history_search": "इतिहासात शोधा…",
+"history_all_sites": "सर्व साइट्स",
+"day_today": "आज",
+"day_yesterday": "काल",
+"nothing_found": "काहीही सापडले नाही",
+"words_search": "शब्द शोधा…",
+"words_filter_all": "सर्व शब्द",
+"words_filter_due": "उजळणीसाठी",
+"words_filter_fav": "आवडते",
+"words_status_all": "सर्व स्थिती",
+"status_new": "नवीन",
+"status_review": "उजळणीत",
+"status_learned": "शिकलेले",
+"favorite_add": "आवडत्यांमध्ये जोडा",
+"favorite_remove": "आवडत्यांमधून काढा"
 }

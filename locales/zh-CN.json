@@ -275,5 +275,20 @@
 "site_off_enable": "开启",
 "everywhere_label": "在所有网站上自动启动",
 "everywhere_hint": "字幕会在任何有视频的页面上开始。需要访问所有网站；扩展程序只读取视频字幕。",
-"everywhere_denied": "未授予对所有网站的访问权限。"
+"everywhere_denied": "未授予对所有网站的访问权限。",
+"history_search": "搜索历史…",
+"history_all_sites": "所有网站",
+"day_today": "今天",
+"day_yesterday": "昨天",
+"nothing_found": "未找到内容",
+"words_search": "搜索单词…",
+"words_filter_all": "全部单词",
+"words_filter_due": "待复习",
+"words_filter_fav": "收藏",
+"words_status_all": "全部状态",
+"status_new": "新词",
+"status_review": "复习中",
+"status_learned": "已掌握",
+"favorite_add": "加入收藏",
+"favorite_remove": "取消收藏"
 }

@@ -275,5 +275,20 @@
 "site_off_enable": "Activa",
 "everywhere_label": "Inicia’t sol a tots els llocs",
 "everywhere_hint": "Els subtítols comencen a qualsevol pàgina amb vídeo. Cal accés a tots els llocs; l’extensió només llegeix els subtítols del vídeo.",
-"everywhere_denied": "No s’ha concedit l’accés a tots els llocs."
+"everywhere_denied": "No s’ha concedit l’accés a tots els llocs.",
+"history_search": "Cerca a l’historial…",
+"history_all_sites": "Tots els llocs",
+"day_today": "Avui",
+"day_yesterday": "Ahir",
+"nothing_found": "No s’ha trobat res",
+"words_search": "Cerca paraules…",
+"words_filter_all": "Totes les paraules",
+"words_filter_due": "Per repassar",
+"words_filter_fav": "Preferides",
+"words_status_all": "Tots els estats",
+"status_new": "Nova",
+"status_review": "En repàs",
+"status_learned": "Apresa",
+"favorite_add": "Afegeix a preferides",
+"favorite_remove": "Treu de preferides"
 }

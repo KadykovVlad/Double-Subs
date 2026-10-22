@@ -275,5 +275,20 @@
 "site_off_enable": "Uključi",
 "everywhere_label": "Pokreni se sam na svakom web-mjestu",
 "everywhere_hint": "Titlovi se pokreću na svakoj stranici s videozapisom. Potreban je pristup svim web-mjestima; proširenje čita samo titlove videozapisa.",
-"everywhere_denied": "Pristup svim web-mjestima nije odobren."
+"everywhere_denied": "Pristup svim web-mjestima nije odobren.",
+"history_search": "Pretraži povijest…",
+"history_all_sites": "Sva web-mjesta",
+"day_today": "Danas",
+"day_yesterday": "Jučer",
+"nothing_found": "Ništa nije pronađeno",
+"words_search": "Pretraži riječi…",
+"words_filter_all": "Sve riječi",
+"words_filter_due": "Za ponavljanje",
+"words_filter_fav": "Omiljene",
+"words_status_all": "Svi statusi",
+"status_new": "Nova",
+"status_review": "U ponavljanju",
+"status_learned": "Naučena",
+"favorite_add": "Dodaj u omiljene",
+"favorite_remove": "Ukloni iz omiljenih"
 }

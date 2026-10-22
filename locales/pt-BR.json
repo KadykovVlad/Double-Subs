@@ -275,5 +275,20 @@
 "site_off_enable": "Ativar",
 "everywhere_label": "Iniciar sozinho em qualquer site",
 "everywhere_hint": "As legendas começam em qualquer página com vídeo. Requer acesso a todos os sites; a extensão lê apenas as legendas do vídeo.",
-"everywhere_denied": "O acesso a todos os sites não foi concedido."
+"everywhere_denied": "O acesso a todos os sites não foi concedido.",
+"history_search": "Pesquisar no histórico…",
+"history_all_sites": "Todos os sites",
+"day_today": "Hoje",
+"day_yesterday": "Ontem",
+"nothing_found": "Nada encontrado",
+"words_search": "Pesquisar palavras…",
+"words_filter_all": "Todas as palavras",
+"words_filter_due": "Para revisar",
+"words_filter_fav": "Favoritas",
+"words_status_all": "Todos os status",
+"status_new": "Nova",
+"status_review": "Em revisão",
+"status_learned": "Aprendida",
+"favorite_add": "Adicionar aos favoritos",
+"favorite_remove": "Remover dos favoritos"
 }

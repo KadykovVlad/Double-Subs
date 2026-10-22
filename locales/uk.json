@@ -275,5 +275,20 @@
 "site_off_enable": "Увімкнути",
 "everywhere_label": "Запускатися самому на будь-якому сайті",
 "everywhere_hint": "Субтитри вмикаються на будь-якій сторінці з відео. Потрібен доступ до всіх сайтів; розширення читає лише субтитри відео.",
-"everywhere_denied": "Доступ до всіх сайтів не надано."
+"everywhere_denied": "Доступ до всіх сайтів не надано.",
+"history_search": "Пошук в історії…",
+"history_all_sites": "Усі сайти",
+"day_today": "Сьогодні",
+"day_yesterday": "Учора",
+"nothing_found": "Нічого не знайдено",
+"words_search": "Пошук слова…",
+"words_filter_all": "Усі слова",
+"words_filter_due": "До повторення",
+"words_filter_fav": "Обрані",
+"words_status_all": "Усі статуси",
+"status_new": "Нове",
+"status_review": "На повторенні",
+"status_learned": "Вивчено",
+"favorite_add": "До обраного",
+"favorite_remove": "Прибрати з обраного"
 }

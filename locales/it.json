@@ -275,5 +275,20 @@
 "site_off_enable": "Attiva",
 "everywhere_label": "Avvia da solo su ogni sito",
 "everywhere_hint": "I sottotitoli partono su qualsiasi pagina con un video. Richiede l’accesso a tutti i siti; l’estensione legge solo i sottotitoli del video.",
-"everywhere_denied": "L’accesso a tutti i siti non è stato concesso."
+"everywhere_denied": "L’accesso a tutti i siti non è stato concesso.",
+"history_search": "Cerca nella cronologia…",
+"history_all_sites": "Tutti i siti",
+"day_today": "Oggi",
+"day_yesterday": "Ieri",
+"nothing_found": "Nessun risultato",
+"words_search": "Cerca parole…",
+"words_filter_all": "Tutte le parole",
+"words_filter_due": "Da ripassare",
+"words_filter_fav": "Preferite",
+"words_status_all": "Tutti gli stati",
+"status_new": "Nuova",
+"status_review": "In ripasso",
+"status_learned": "Imparata",
+"favorite_add": "Aggiungi ai preferiti",
+"favorite_remove": "Rimuovi dai preferiti"
 }

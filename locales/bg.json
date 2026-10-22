@@ -275,5 +275,20 @@
 "site_off_enable": "Включване",
 "everywhere_label": "Стартиране сам във всеки сайт",
 "everywhere_hint": "Субтитрите се включват на всяка страница с видео. Нужен е достъп до всички сайтове; разширението чете само субтитрите на видеото.",
-"everywhere_denied": "Достъпът до всички сайтове не е предоставен."
+"everywhere_denied": "Достъпът до всички сайтове не е предоставен.",
+"history_search": "Търсене в историята…",
+"history_all_sites": "Всички сайтове",
+"day_today": "Днес",
+"day_yesterday": "Вчера",
+"nothing_found": "Нищо не е намерено",
+"words_search": "Търсене на думи…",
+"words_filter_all": "Всички думи",
+"words_filter_due": "За преговор",
+"words_filter_fav": "Любими",
+"words_status_all": "Всички статуси",
+"status_new": "Нова",
+"status_review": "В преговор",
+"status_learned": "Научена",
+"favorite_add": "Добавяне към любими",
+"favorite_remove": "Премахване от любими"
 }

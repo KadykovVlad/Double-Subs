@@ -234,6 +234,41 @@ test('the review shows the sentence of the word with the word marked', async () 
   await expect(panel.locator('.review-ctx mark')).toHaveText('Hello');
 });
 
+test('words can be starred, filtered by favourites and status, and searched', async () => {
+  await seedWords();
+  const page = await openPage('shadow-video.html');
+  const panel = await openPopupFor(session, page);
+  await openPanelTab(panel, 'words');
+  await expect(panel.getByTestId('saved-word')).toHaveCount(2);
+  await expect(panel.getByTestId('word-status').first()).toHaveText('Новое');
+
+  await panel
+    .getByTestId('saved-word')
+    .filter({ hasText: 'night' })
+    .getByTestId('word-favorite')
+    .click();
+  await expect(panel.getByTestId('words-filter-fav')).toContainText('1');
+  await panel.getByTestId('words-filter-fav').click();
+  await expect(panel.getByTestId('saved-word')).toHaveCount(1);
+  await expect(panel.getByTestId('saved-word')).toContainText('night');
+  await expect
+    .poll(
+      async () =>
+        (await stored<Array<{ key: string; favorite?: boolean }>>('savedWords')).find(
+          (w) => w.key === 'en:night',
+        )?.favorite,
+    )
+    .toBe(true);
+
+  await panel.getByTestId('words-filter-all').click();
+  await panel.getByTestId('words-search').fill('ПРИВ');
+  await expect(panel.getByTestId('saved-word')).toHaveCount(1);
+  await expect(panel.getByTestId('saved-word')).toContainText('Hello');
+  await panel.getByTestId('words-search').fill('');
+  await panel.getByTestId('words-status').selectOption('learned');
+  await expect(panel.getByText('Ничего не найдено')).toBeVisible();
+});
+
 // ---------------------------------------------------------------- history
 
 test('what is being watched goes to the history with its place, and can be removed', async () => {
@@ -254,6 +289,43 @@ test('what is being watched goes to the history with its place, and can be remov
   await expect(panel.getByTestId('history-item')).toContainText('localhost');
   await panel.getByRole('button', { name: /^Убрать/ }).click();
   await expect(panel.getByTestId('history-item')).toHaveCount(0);
+});
+
+test('the history is grouped by day and can be searched and filtered by site', async () => {
+  const now = Date.now();
+  const item = (id: string, host: string, title: string, lastAt: number) => ({
+    id: `https://${host}/${id}`,
+    url: `https://${host}/${id}`,
+    title,
+    host,
+    firstAt: lastAt,
+    lastAt,
+    position: 30,
+    duration: 120,
+  });
+  await session.worker.evaluate(
+    (history) => chrome.storage.local.set({ history }),
+    [
+      item('a', 'www.youtube.com', 'The Mentalist', now - 60_000),
+      item('b', 'vimeo.com', 'Jacob Collier', now - 60_000),
+      item('c', 'vimeo.com', 'Old mentalist clip', now - 9 * 86_400_000),
+    ],
+  );
+  // The panel alone: a page with a video would add itself to the history.
+  const panel = await session.context.newPage();
+  await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
+  await openPanelTab(panel, 'history');
+  await expect(panel.getByTestId('history-item')).toHaveCount(3);
+  await expect(panel.getByTestId('history-day').first()).toHaveText('Сегодня');
+  await expect(panel.getByTestId('history-item').first()).toContainText('25%');
+
+  await panel.getByTestId('history-search').fill('mentalist');
+  await expect(panel.getByTestId('history-item')).toHaveCount(2);
+  await panel.getByTestId('history-site').selectOption('vimeo.com');
+  await expect(panel.getByTestId('history-item')).toHaveCount(1);
+  await expect(panel.getByTestId('history-item')).toContainText('Old mentalist clip');
+  await panel.getByTestId('history-search').fill('nothing like this');
+  await expect(panel.getByText('Ничего не найдено')).toBeVisible();
 });
 
 test('with the setting off nothing is remembered', async () => {

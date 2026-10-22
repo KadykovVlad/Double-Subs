@@ -275,5 +275,20 @@
 "site_off_enable": "Ieslēgt",
 "everywhere_label": "Startēt pašam jebkurā vietnē",
 "everywhere_hint": "Subtitri sākas jebkurā lapā ar video. Nepieciešama piekļuve visām vietnēm; paplašinājums lasa tikai video subtitrus.",
-"everywhere_denied": "Piekļuve visām vietnēm netika dota."
+"everywhere_denied": "Piekļuve visām vietnēm netika dota.",
+"history_search": "Meklēt vēsturē…",
+"history_all_sites": "Visas vietnes",
+"day_today": "Šodien",
+"day_yesterday": "Vakar",
+"nothing_found": "Nekas netika atrasts",
+"words_search": "Meklēt vārdus…",
+"words_filter_all": "Visi vārdi",
+"words_filter_due": "Jāatkārto",
+"words_filter_fav": "Izlase",
+"words_status_all": "Visi statusi",
+"status_new": "Jauns",
+"status_review": "Atkārtošanā",
+"status_learned": "Iemācīts",
+"favorite_add": "Pievienot izlasei",
+"favorite_remove": "Noņemt no izlases"
 }

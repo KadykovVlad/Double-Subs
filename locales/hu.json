@@ -275,5 +275,20 @@
 "site_off_enable": "Bekapcsolás",
 "everywhere_label": "Minden webhelyen induljon magától",
 "everywhere_hint": "A feliratok minden videót tartalmazó oldalon elindulnak. Hozzáférés kell az összes webhelyhez; a bővítmény csak a videó feliratait olvassa.",
-"everywhere_denied": "Az összes webhelyhez nem adtak hozzáférést."
+"everywhere_denied": "Az összes webhelyhez nem adtak hozzáférést.",
+"history_search": "Keresés az előzményekben…",
+"history_all_sites": "Minden webhely",
+"day_today": "Ma",
+"day_yesterday": "Tegnap",
+"nothing_found": "Nincs találat",
+"words_search": "Szavak keresése…",
+"words_filter_all": "Minden szó",
+"words_filter_due": "Ismétlendő",
+"words_filter_fav": "Kedvencek",
+"words_status_all": "Minden állapot",
+"status_new": "Új",
+"status_review": "Ismétlés alatt",
+"status_learned": "Megtanult",
+"favorite_add": "Hozzáadás a kedvencekhez",
+"favorite_remove": "Eltávolítás a kedvencek közül"
 }

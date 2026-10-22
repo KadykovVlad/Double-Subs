@@ -275,5 +275,20 @@
 "site_off_enable": "Einschalten",
 "everywhere_label": "Auf jeder Website von selbst starten",
 "everywhere_hint": "Die Untertitel starten auf jeder Seite mit einem Video. Dafür ist Zugriff auf alle Websites nötig; die Erweiterung liest nur die Untertitel des Videos.",
-"everywhere_denied": "Zugriff auf alle Websites wurde nicht erteilt."
+"everywhere_denied": "Zugriff auf alle Websites wurde nicht erteilt.",
+"history_search": "Verlauf durchsuchen…",
+"history_all_sites": "Alle Websites",
+"day_today": "Heute",
+"day_yesterday": "Gestern",
+"nothing_found": "Nichts gefunden",
+"words_search": "Wörter suchen…",
+"words_filter_all": "Alle Wörter",
+"words_filter_due": "Zu wiederholen",
+"words_filter_fav": "Favoriten",
+"words_status_all": "Alle Status",
+"status_new": "Neu",
+"status_review": "In Wiederholung",
+"status_learned": "Gelernt",
+"favorite_add": "Zu Favoriten",
+"favorite_remove": "Aus Favoriten entfernen"
 }

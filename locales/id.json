@@ -275,5 +275,20 @@
 "site_off_enable": "Aktifkan",
 "everywhere_label": "Mulai sendiri di setiap situs",
 "everywhere_hint": "Subtitle dimulai di halaman mana pun yang punya video. Perlu akses ke semua situs; ekstensi hanya membaca subtitle video.",
-"everywhere_denied": "Akses ke semua situs tidak diberikan."
+"everywhere_denied": "Akses ke semua situs tidak diberikan.",
+"history_search": "Cari di riwayat…",
+"history_all_sites": "Semua situs",
+"day_today": "Hari ini",
+"day_yesterday": "Kemarin",
+"nothing_found": "Tidak ada yang ditemukan",
+"words_search": "Cari kata…",
+"words_filter_all": "Semua kata",
+"words_filter_due": "Perlu diulang",
+"words_filter_fav": "Favorit",
+"words_status_all": "Semua status",
+"status_new": "Baru",
+"status_review": "Sedang diulang",
+"status_learned": "Sudah dipelajari",
+"favorite_add": "Tambahkan ke favorit",
+"favorite_remove": "Hapus dari favorit"
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { savedKeys, toggleWord, toTsv, type SavedWord } from '../src/lib/saved-words';
+import { filterWords, savedKeys, toggleWord, toTsv, type SavedWord } from '../src/lib/saved-words';
 import { extractMarked, markWord, matchesTranslation, splitWords, wordKey } from '../src/lib/words';
 
 const wordsOf = (text: string, lang: 'en' | 'ru') =>
@@ -134,5 +134,27 @@ describe('meaning in context', () => {
   it('gives null when the marks did not survive the translation', () => {
     expect(extractMarked('Он зажёг огонь.')).toBeNull();
     expect(extractMarked('«»')).toBeNull();
+  });
+});
+
+describe('filterWords', () => {
+  const word = (key: string, extra: Partial<SavedWord>): SavedWord => ({
+    key,
+    word: key,
+    lang: 'en',
+    translation: null,
+    context: '',
+    savedAt: 0,
+    ...extra,
+  });
+  it('finds a word by itself, its form, its translation or its line', () => {
+    const list = [
+      word('go', { form: 'went', translation: 'идти' }),
+      word('happen', { context: 'what happens next' }),
+    ];
+    expect(filterWords(list, 'WENT').map((w) => w.key)).toEqual(['go']);
+    expect(filterWords(list, 'иДти').map((w) => w.key)).toEqual(['go']);
+    expect(filterWords(list, 'next').map((w) => w.key)).toEqual(['happen']);
+    expect(filterWords(list, ' ')).toHaveLength(2);
   });
 });

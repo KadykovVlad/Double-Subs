@@ -10,7 +10,7 @@
 - Subtitles are read from the video player on the page you open the extension on.
 - Missing subtitle lines are translated by Chrome's built-in on-device Translator API. The text is not sent to us or to any server of ours.
 - Translated lines and single words are cached in the extension's own storage on your computer.
-- Your settings, the list of sites you switched automatic start on, the words you saved (with their repetition schedule) and the list of videos you watched with Double Sub (page address, title, the place where you stopped) are kept in `chrome.storage.local`. They are not uploaded anywhere. The history can be switched off and cleared in the settings.
+- Your settings, the list of sites you switched automatic start on, the words you saved (with their repetition schedule) and the list of videos you watched with Double Sub (page address, title, the place where you stopped) are kept in `chrome.storage.local`. They are not uploaded anywhere. The history can be switched off and cleared in the settings. For YouTube videos in the history the panel shows their preview picture, loaded from YouTube's image server (`i.ytimg.com`) without a referrer; other sites get a letter tile and nothing is loaded.
 
 **Account (required).** The extension works after you sign in with Google; before that it does nothing on any page. Until you sign in, the side panel shows one card with the choice of language, the request for access to the sites and the sign-in, each with a click (a mark on the icon tells you to open it). When you sign in:
 - Google gives the extension an ID token for your Google account (we ask only for `openid`, `email` and `profile`). The extension sends it to our server (a Cloudflare Worker with a database), which checks it with Google's public keys.
@@ -40,7 +40,7 @@
 - субтитры читаются из плеера на странице, на которой вы открыли расширение;
 - недостающая строка переводится встроенным переводчиком Chrome прямо на устройстве, текст не отправляется ни нам, ни на какие наши серверы;
 - переводы кэшируются в хранилище расширения на вашем компьютере;
-- настройки, список сайтов с автозапуском, сохранённые слова (с графиком повторения) и история просмотра (адрес страницы, название, место остановки) лежат в `chrome.storage.local` и никуда не передаются. Историю можно выключить и очистить в настройках.
+- настройки, список сайтов с автозапуском, сохранённые слова (с графиком повторения) и история просмотра (адрес страницы, название, место остановки) лежат в `chrome.storage.local` и никуда не передаются. Историю можно выключить и очистить в настройках. Для видео YouTube в истории панель показывает превью, загружая картинку с сервера изображений YouTube (`i.ytimg.com`) без адреса страницы; для других сайтов — плитка с буквой, ничего не загружается.
 
 **Аккаунт (обязателен).** Расширение работает после входа через Google; до этого оно ничего не делает ни на одной странице. Пока вы не вошли, боковая панель показывает одну карточку: выбор языка, запрос доступа к сайтам и вход, каждое по клику (отметка на значке подсказывает, что панель нужно открыть). При входе:
 - Google выдаёт расширению ID-токен вашего аккаунта (запрашиваем только `openid`, `email` и `profile`). Расширение отправляет его на наш сервер (Cloudflare Worker с базой данных), который проверяет его по открытым ключам Google;

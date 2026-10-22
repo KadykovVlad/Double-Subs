@@ -275,5 +275,20 @@
 "site_off_enable": "Turn on",
 "everywhere_label": "Start by itself on every site",
 "everywhere_hint": "The subtitles begin on any page with a video. Needs access to all sites; the extension reads only the video's subtitles.",
-"everywhere_denied": "Access to all sites was not given."
+"everywhere_denied": "Access to all sites was not given.",
+"history_search": "Search history…",
+"history_all_sites": "All sites",
+"day_today": "Today",
+"day_yesterday": "Yesterday",
+"nothing_found": "Nothing found",
+"words_search": "Search words…",
+"words_filter_all": "All words",
+"words_filter_due": "To review",
+"words_filter_fav": "Favorites",
+"words_status_all": "All statuses",
+"status_new": "New",
+"status_review": "Reviewing",
+"status_learned": "Learned",
+"favorite_add": "Add to favorites",
+"favorite_remove": "Remove from favorites"
 }

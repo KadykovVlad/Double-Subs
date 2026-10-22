@@ -275,5 +275,20 @@
 "site_off_enable": "Inschakelen",
 "everywhere_label": "Op elke site vanzelf starten",
 "everywhere_hint": "De ondertitels starten op elke pagina met een video. Vereist toegang tot alle sites; de extensie leest alleen de ondertitels van de video.",
-"everywhere_denied": "Toegang tot alle sites is niet verleend."
+"everywhere_denied": "Toegang tot alle sites is niet verleend.",
+"history_search": "Geschiedenis doorzoeken…",
+"history_all_sites": "Alle sites",
+"day_today": "Vandaag",
+"day_yesterday": "Gisteren",
+"nothing_found": "Niets gevonden",
+"words_search": "Woorden zoeken…",
+"words_filter_all": "Alle woorden",
+"words_filter_due": "Te herhalen",
+"words_filter_fav": "Favorieten",
+"words_status_all": "Alle statussen",
+"status_new": "Nieuw",
+"status_review": "In herhaling",
+"status_learned": "Geleerd",
+"favorite_add": "Aan favorieten toevoegen",
+"favorite_remove": "Uit favorieten verwijderen"
 }

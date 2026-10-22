@@ -275,5 +275,20 @@
 "site_off_enable": "ચાલુ કરો",
 "everywhere_label": "દરેક સાઇટ પર જાતે શરૂ થાય",
 "everywhere_hint": "વીડિયો ધરાવતા કોઈપણ પેજ પર સબટાઇટલ શરૂ થાય છે. બધી સાઇટ્સ પર ઍક્સેસ જોઈએ; એક્સ્ટેંશન ફક્ત વીડિયોના સબટાઇટલ વાંચે છે.",
-"everywhere_denied": "બધી સાઇટ્સ પર ઍક્સેસ આપવામાં આવી નથી."
+"everywhere_denied": "બધી સાઇટ્સ પર ઍક્સેસ આપવામાં આવી નથી.",
+"history_search": "ઇતિહાસમાં શોધો…",
+"history_all_sites": "બધી સાઇટ્સ",
+"day_today": "આજે",
+"day_yesterday": "ગઈકાલે",
+"nothing_found": "કંઈ મળ્યું નહીં",
+"words_search": "શબ્દો શોધો…",
+"words_filter_all": "બધા શબ્દો",
+"words_filter_due": "પુનરાવર્તન માટે",
+"words_filter_fav": "મનપસંદ",
+"words_status_all": "બધી સ્થિતિઓ",
+"status_new": "નવું",
+"status_review": "પુનરાવર્તનમાં",
+"status_learned": "શીખેલું",
+"favorite_add": "મનપસંદમાં ઉમેરો",
+"favorite_remove": "મનપસંદમાંથી દૂર કરો"
 }

@@ -275,5 +275,20 @@
 "site_off_enable": "オンにする",
 "everywhere_label": "すべてのサイトで自動的に開始",
 "everywhere_hint": "動画のあるどのページでも字幕が始まります。すべてのサイトへのアクセスが必要です。拡張機能が読み取るのは動画の字幕だけです。",
-"everywhere_denied": "すべてのサイトへのアクセスが許可されていません。"
+"everywhere_denied": "すべてのサイトへのアクセスが許可されていません。",
+"history_search": "履歴を検索…",
+"history_all_sites": "すべてのサイト",
+"day_today": "今日",
+"day_yesterday": "昨日",
+"nothing_found": "見つかりませんでした",
+"words_search": "単語を検索…",
+"words_filter_all": "すべての単語",
+"words_filter_due": "復習する",
+"words_filter_fav": "お気に入り",
+"words_status_all": "すべてのステータス",
+"status_new": "新規",
+"status_review": "復習中",
+"status_learned": "習得済み",
+"favorite_add": "お気に入りに追加",
+"favorite_remove": "お気に入りから削除"
 }

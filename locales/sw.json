@@ -275,5 +275,20 @@
 "site_off_enable": "Washa",
 "everywhere_label": "Anza yenyewe kwenye kila tovuti",
 "everywhere_hint": "Manukuu huanza kwenye ukurasa wowote wenye video. Inahitaji ufikiaji wa tovuti zote; kiendelezi husoma tu manukuu ya video.",
-"everywhere_denied": "Ufikiaji wa tovuti zote haukutolewa."
+"everywhere_denied": "Ufikiaji wa tovuti zote haukutolewa.",
+"history_search": "Tafuta kwenye historia…",
+"history_all_sites": "Tovuti zote",
+"day_today": "Leo",
+"day_yesterday": "Jana",
+"nothing_found": "Hakuna kilichopatikana",
+"words_search": "Tafuta maneno…",
+"words_filter_all": "Maneno yote",
+"words_filter_due": "Ya kurudia",
+"words_filter_fav": "Vipendwa",
+"words_status_all": "Hali zote",
+"status_new": "Mpya",
+"status_review": "Inarudiwa",
+"status_learned": "Imejifunzwa",
+"favorite_add": "Ongeza kwenye vipendwa",
+"favorite_remove": "Ondoa kwenye vipendwa"
 }

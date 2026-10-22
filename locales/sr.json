@@ -275,5 +275,20 @@
 "site_off_enable": "Укључи",
 "everywhere_label": "Покрени се сам на сваком сајту",
 "everywhere_hint": "Титлови се покрећу на свакој страници са видео-снимком. Потребан је приступ свим сајтовима; проширење чита само титлове видео-снимка.",
-"everywhere_denied": "Приступ свим сајтовима није одобрен."
+"everywhere_denied": "Приступ свим сајтовима није одобрен.",
+"history_search": "Претражи историју…",
+"history_all_sites": "Сви сајтови",
+"day_today": "Данас",
+"day_yesterday": "Јуче",
+"nothing_found": "Ништа није пронађено",
+"words_search": "Претражи речи…",
+"words_filter_all": "Све речи",
+"words_filter_due": "За понављање",
+"words_filter_fav": "Омиљене",
+"words_status_all": "Сви статуси",
+"status_new": "Нова",
+"status_review": "У понављању",
+"status_learned": "Научена",
+"favorite_add": "Додај у омиљене",
+"favorite_remove": "Уклони из омиљених"
 }

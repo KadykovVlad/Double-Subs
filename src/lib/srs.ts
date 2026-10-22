@@ -90,6 +90,17 @@ export function grade(srs: Srs, rating: Rating, now: number): Srs {
 
 export const isDue = (srs: Srs, now: number) => srs.due <= now;
 
+export type WordStatus = 'new' | 'review' | 'learned';
+
+/** A gap of three weeks and more: the word is known. */
+const LEARNED_DAYS = 21;
+
+/** "New" until the first answer, "learned" once the gap reaches three weeks, "on review" in between. */
+export function wordStatus(srs: Srs): WordStatus {
+  if (srs.reps === 0 && srs.lapses === 0) return 'new';
+  return srs.interval >= LEARNED_DAYS ? 'learned' : 'review';
+}
+
 /** "10 min", "1 d", "3 wk" (in the user's language): how long the gap after an answer will be, for the button labels. */
 export function gapLabel(srs: Srs, rating: Rating, now: number): string {
   const ms = grade(srs, rating, now).due - now;

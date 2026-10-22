@@ -2,11 +2,16 @@ import { describe, expect, it } from 'vitest';
 import {
   cleanTitle,
   displayUrl,
+  filterHistory,
+  formatDuration,
+  groupByDay,
+  historyHosts,
   historyId,
   MAX_HISTORY,
   normalizeHistory,
   resumeUrl,
   upsertEntry,
+  youtubeVideoId,
   type HistoryEntry,
 } from '../src/lib/history';
 
@@ -86,5 +91,52 @@ describe('displayUrl', () => {
     );
     expect(displayUrl('https://site.example/')).toBe('site.example');
     expect(displayUrl('not a url')).toBe('not a url');
+  });
+});
+
+describe('the history list in the panel', () => {
+  it('finds the YouTube video id for the preview, and nothing elsewhere', () => {
+    expect(youtubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=5')).toBe('dQw4w9WgXcQ');
+    expect(youtubeVideoId('https://m.youtube.com/shorts/abcDEF12345')).toBe('abcDEF12345');
+    expect(youtubeVideoId('https://vimeo.com/123456')).toBeNull();
+    expect(youtubeVideoId('https://www.youtube.com/watch?v=<bad>')).toBeNull();
+    expect(youtubeVideoId('not a url')).toBeNull();
+  });
+
+  it('filters by words of the title or address and by site', () => {
+    const list = [
+      entry('a', 3, { title: 'The Mentalist S1' }),
+      entry('b', 2, { title: 'Jacob Collier' }),
+      entry('c', 1, { title: 'mentalist again', host: 'b.example' }),
+    ];
+    expect(filterHistory(list, '  MENTALIST ').map((e) => e.id)).toEqual(['a', 'c']);
+    expect(filterHistory(list, 'mentalist', 'b.example').map((e) => e.id)).toEqual(['c']);
+    expect(filterHistory(list, 'b.example/watch').map((e) => e.id)).toEqual(['b']);
+    expect(filterHistory(list, '')).toHaveLength(3);
+  });
+
+  it('lists the sites, the most watched first', () => {
+    const list = [entry('a', 1), entry('b', 2), entry('c', 3, { host: 'b.example' })];
+    expect(historyHosts(list)).toEqual(['b.example', 'a.example']);
+  });
+
+  it('groups by the local day of the last view, across midnight', () => {
+    const now = new Date(2026, 9, 22, 0, 30).getTime();
+    const list = [
+      entry('late', new Date(2026, 9, 21, 23, 50).getTime()),
+      entry('now', new Date(2026, 9, 22, 0, 10).getTime()),
+      entry('old', new Date(2026, 9, 15, 12).getTime()),
+    ];
+    expect(groupByDay(list, now).map((g) => [g.daysAgo, g.entries.map((e) => e.id)])).toEqual([
+      [0, ['now']],
+      [1, ['late']],
+      [7, ['old']],
+    ]);
+  });
+
+  it('formats a duration like a player', () => {
+    expect(formatDuration(95)).toBe('1:35');
+    expect(formatDuration(3725)).toBe('1:02:05');
+    expect(formatDuration(0)).toBe('0:00');
   });
 });
