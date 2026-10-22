@@ -103,6 +103,8 @@ export interface NowProps {
 export interface SettingsFocus {
   section: 'account' | 'subtitles' | 'window';
   styles?: boolean;
+  /** A block inside the section to scroll to and blink, by a selector of something in it. */
+  target?: string;
 }
 
 export function NowTab(props: NowProps) {
@@ -579,8 +581,18 @@ const TOOLS: Array<{
   icon: preact.JSX.Element;
   focus: SettingsFocus;
 }> = [
-  { id: 'size', label: 'tool_size', icon: Icons.textSize, focus: { section: 'subtitles' } },
-  { id: 'colors', label: 'tool_colors', icon: Icons.palette, focus: { section: 'subtitles' } },
+  {
+    id: 'size',
+    label: 'tool_size',
+    icon: Icons.textSize,
+    focus: { section: 'subtitles', target: '[data-testid="font-scale"]' },
+  },
+  {
+    id: 'colors',
+    label: 'tool_colors',
+    icon: Icons.palette,
+    focus: { section: 'subtitles', target: '[data-testid="color-en"]' },
+  },
   { id: 'window', label: 'tool_window', icon: Icons.window, focus: { section: 'window' } },
   {
     id: 'style',

@@ -102,6 +102,8 @@ test('the contents of the settings scroll to a section and light it', async () =
   await expect(panel.getByTestId('toggle-history')).toBeInViewport();
   await expect(panel.getByTestId('settings-nav-history')).toHaveAttribute('aria-current', 'true');
   await expect(panel.getByTestId('settings-nav-account')).not.toHaveAttribute('aria-current');
+  // The last section: the page goes as far down as it can, and the section blinks.
+  await expect(panel.locator('#set-history .card').first()).toHaveClass(/blink/);
 });
 
 test('signing out ends the session on the server and brings the sign-in screen back', async () => {

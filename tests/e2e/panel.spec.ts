@@ -280,6 +280,16 @@ test('the "Now" tab shows the video: its title, and where the user is once the h
   await expect(panel.getByTestId('preview-time')).toContainText(' / ');
 });
 
+test('a tool scrolls to its block in the settings and makes it blink', async () => {
+  const page = await openPage('shadow-video.html');
+  const panel = await openPopupFor(session, page);
+  await panel.getByTestId('tool-colors').click();
+  const row = panel.locator('.row', { has: panel.getByTestId('color-en') });
+  await expect(row).toHaveClass(/blink/);
+  await expect(row).toBeInViewport();
+  await expect(row).not.toHaveClass(/blink/, { timeout: 4000 }); // three blinks, then it stops
+});
+
 test('a tool of the "Now" tab opens the settings at its place', async () => {
   const page = await openPage('shadow-video.html');
   const panel = await openPopupFor(session, page);

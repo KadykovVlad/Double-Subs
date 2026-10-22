@@ -1603,3 +1603,23 @@ a.page-url:hover {
     transform: translateY(8px);
   }
 }
+
+/* A section the user was sent to blinks three times. */
+.blink {
+  animation: blink 0.55s ease-in-out 3;
+}
+@keyframes blink {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 0 22px 2px rgba(99, 102, 241, 0.55);
+    background-color: var(--accent-soft);
+  }
+}
+.row.blink {
+  border-radius: 10px;
+}

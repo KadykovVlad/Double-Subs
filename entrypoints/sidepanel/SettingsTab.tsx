@@ -62,10 +62,14 @@ export function SettingsTab({
   focus?: SettingsFocus | null;
 }) {
   useEffect(() => {
+    // Coming from another tab the page has just been built: no smooth scroll, it would be cut short.
     if (!focus) return;
-    const section = document.getElementById(`set-${focus.section}`);
-    if (focus.styles) section?.querySelector('details')?.setAttribute('open', '');
-    section?.scrollIntoView({ block: 'start' });
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() =>
+        revealSection(focus.section, { ...focus, instant: true }),
+      );
+    });
+    return () => cancelAnimationFrame(frame);
   }, [focus]);
 
   const [settings, change] = useSettings();
@@ -316,6 +320,47 @@ export function SettingsTab({
   );
 }
 
+/**
+ * Brings a section (or one block of it) into view and makes it blink three times, so the eye finds
+ * it. The last section cannot reach the top of the page: the page scrolls as far as it goes and the
+ * section is seen at the bottom.
+ */
+function revealSection(
+  id: SectionId,
+  options: { styles?: boolean; target?: string; instant?: boolean } = {},
+) {
+  const section = document.getElementById(`set-${id}`);
+  if (!section) return;
+  if (options.styles) section.querySelector('details')?.setAttribute('open', '');
+  const block = options.target
+    ? section.querySelector(options.target)?.closest<HTMLElement>('.row, details')
+    : null;
+  const blinking = block
+    ? [block]
+    : options.styles
+      ? [...section.querySelectorAll<HTMLElement>('details')]
+      : [...section.querySelectorAll<HTMLElement>('.card')];
+  const smooth = !options.instant && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (block ?? section).scrollIntoView({
+    behavior: smooth ? 'smooth' : 'auto',
+    block: block ? 'center' : 'start',
+  });
+  // The blinking starts when the scroll has mostly arrived; blinking again restarts it.
+  setTimeout(
+    () => {
+      for (const element of blinking) {
+        element.classList.remove('blink');
+        void element.offsetWidth;
+        element.classList.add('blink');
+        setTimeout(() => element.classList.remove('blink'), BLINK_MS);
+      }
+    },
+    smooth ? 380 : 120,
+  );
+}
+
+const BLINK_MS = 1650;
+
 type SectionId = 'account' | 'subtitles' | 'window' | 'sites' | 'history' | 'dev';
 
 const SECTIONS: Array<{ id: SectionId; label: MessageKey; icon: JSX.Element }> = [
@@ -378,10 +423,7 @@ function SettingsNav({ sections }: { sections: typeof SECTIONS }) {
   const go = (id: SectionId) => {
     setCurrent(id);
     chosen.current = true;
-    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-    document
-      .getElementById(`set-${id}`)
-      ?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    revealSection(id);
   };
 
   return (
