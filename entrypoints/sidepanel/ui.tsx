@@ -82,6 +82,28 @@ export const Icons = {
   star: icon(
     <path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8L12 3.8z" />,
   ),
+  user: icon(
+    <>
+      <circle cx="12" cy="8.5" r="3.5" />
+      <path d="M5 19.5c1.2-3.4 3.8-5 7-5s5.8 1.6 7 5" />
+    </>,
+  ),
+  subtitles: icon(
+    <>
+      <rect x="3.5" y="5" width="17" height="14" rx="3" />
+      <path d="M7 12.5h6M15.5 12.5H17M7 15.5h3M12.5 15.5H17" />
+    </>,
+  ),
+  window: icon(
+    <>
+      <rect x="3.5" y="5" width="17" height="14" rx="3" />
+      <path d="M3.5 9h17" />
+    </>,
+  ),
+  tool: icon(
+    <path d="M14.5 6.5a4 4 0 0 0-5.3 5.3l-5 5 2 2 5-5a4 4 0 0 0 5.3-5.3l-2.4 2.4-2-2 2.4-2.4z" />,
+  ),
+  crown: icon(<path d="M4 8l4 4 4-6 4 6 4-4-1.5 10h-13L4 8z" />),
   tray: icon(
     <>
       <path d="M4 13l2.5-7h11L20 13v5H4v-5z" />
@@ -110,11 +132,17 @@ export function Logo() {
 export function Card({
   children,
   class: className = '',
+  testid,
 }: {
   children: ComponentChildren;
   class?: string;
+  testid?: string;
 }) {
-  return <section class={`card ${className}`}>{children}</section>;
+  return (
+    <section class={`card ${className}`} data-testid={testid}>
+      {children}
+    </section>
+  );
 }
 
 export const SectionTitle = ({ children }: { children: ComponentChildren }) => (

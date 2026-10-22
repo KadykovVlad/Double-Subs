@@ -67,6 +67,10 @@ test('signed out: only the sign-in is offered, no tabs; signing in opens the pan
   await openPanelTab(panel, 'settings');
   await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как learner@example.com');
   await expect(panel.getByTestId('account-plan')).toHaveText('План Pro');
+  await expect(panel.getByTestId('plan-pro').getByTestId('plan-current')).toHaveText(
+    'Текущий план',
+  );
+  await expect(panel.getByTestId('plan-upgrade')).toHaveCount(0);
   expect(api.requests.map((r) => `${r.method} ${r.path}`)).toEqual([
     'POST /auth/google',
     'GET /me',
@@ -82,6 +86,22 @@ test('a free account stays free: no words tab, the plan says so', async () => {
   await openPanelTab(panel, 'settings');
   await expect(panel.getByTestId('account-plan')).toHaveText('Бесплатный план');
   await expect(panel.getByTestId('tab-words')).toHaveCount(0);
+  // The plan cards: free is the current one; there is no payment yet, so the way to Pro says "soon".
+  await expect(panel.getByTestId('plan-free').getByTestId('plan-current')).toBeVisible();
+  await expect(panel.getByTestId('plan-pro')).toContainText('Сохранение слов');
+  await expect(panel.getByTestId('plan-upgrade')).toBeDisabled();
+  await expect(panel.getByTestId('plan-upgrade')).toContainText('скоро');
+});
+
+test('the contents of the settings scroll to a section and light it', async () => {
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('settings-nav-account')).toHaveAttribute('aria-current', 'true');
+  await panel.getByTestId('settings-nav-history').click();
+  await expect(panel.getByTestId('toggle-history')).toBeInViewport();
+  await expect(panel.getByTestId('settings-nav-history')).toHaveAttribute('aria-current', 'true');
+  await expect(panel.getByTestId('settings-nav-account')).not.toHaveAttribute('aria-current');
 });
 
 test('signing out ends the session on the server and brings the sign-in screen back', async () => {

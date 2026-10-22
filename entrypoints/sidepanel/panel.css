@@ -195,9 +195,12 @@ select {
   padding: 4px;
   border: 1px solid var(--border);
   border-radius: 16px;
-  background: color-mix(in srgb, var(--surface-solid) 80%, transparent);
+  background: color-mix(in srgb, var(--surface-solid) 94%, transparent);
   backdrop-filter: blur(14px) saturate(1.2);
-  box-shadow: var(--shadow);
+  /* The thin band above the sticky tabs covers the page scrolling under them. */
+  box-shadow:
+    0 -6px 0 0 var(--bg),
+    var(--shadow);
 }
 .tab {
   position: relative;
@@ -1153,4 +1156,202 @@ a.page-url:hover {
 }
 .icon-btn.star.on svg {
   fill: currentColor;
+}
+
+/* ---------------------------------------------------------------- settings: the contents and the plans */
+/* Every section stays on the page; the contents scroll to one. Narrow panel: a strip of chips under the
+   tabs. Wide panel: a rail on the left, as in the design. */
+.settings {
+  container-type: inline-size;
+}
+.settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.settings-nav {
+  position: sticky;
+  /* Right under the sticky tabs, with no gap the page could show through. */
+  top: 66px;
+  z-index: 1;
+  display: flex;
+  gap: 6px;
+  margin: -14px -12px 0;
+  padding: 14px 12px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(12px);
+}
+.settings-nav button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 560;
+  cursor: pointer;
+  transition:
+    background 0.18s var(--ease),
+    color 0.18s var(--ease),
+    border-color 0.18s var(--ease);
+}
+.settings-nav button:hover {
+  color: var(--text);
+}
+.settings-nav button[aria-current='true'] {
+  border-color: var(--accent-line);
+  background: var(--grad-soft), var(--surface);
+  color: var(--accent-text);
+}
+.settings-nav button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.settings-nav svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.settings-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 18px;
+}
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-margin-top: 132px;
+}
+@container (min-width: 480px) {
+  .settings-grid {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .settings-nav {
+    top: 86px;
+    width: 136px;
+    flex: none;
+    flex-direction: column;
+    margin: 0;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: inset 0 1px 0 var(--highlight);
+  }
+  .settings-nav button {
+    width: 100%;
+    border-color: transparent;
+    background: transparent;
+    text-align: left;
+  }
+  .settings-body {
+    flex: 1;
+  }
+  .settings-section {
+    scroll-margin-top: 90px;
+  }
+}
+
+.plans {
+  display: grid;
+  gap: 12px;
+}
+@container (min-width: 520px) {
+  .plans {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.plan-card {
+  display: flex;
+  flex-direction: column;
+}
+.plan-card.pro {
+  border-color: var(--accent-line);
+  background: var(--grad-soft), var(--surface);
+  box-shadow:
+    inset 0 1px 0 var(--highlight),
+    0 12px 32px -18px rgba(99, 102, 241, 0.7);
+}
+.plan-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.plan-head h3 {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 700;
+}
+.plan-card .crown {
+  display: grid;
+  color: var(--star);
+}
+.plan-card .crown svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+.badge-free {
+  padding: 1px 8px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 18px;
+}
+.plan-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+.plan-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.plan-list svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--ok);
+  stroke-width: 2.4;
+}
+.plan-card.pro .plan-list svg {
+  padding: 2px;
+  border-radius: 5px;
+  background: var(--grad);
+  color: #fff;
+}
+.soon {
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.plan-card .btn {
+  margin-top: auto;
+}
+.plan-card .btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  filter: none;
 }

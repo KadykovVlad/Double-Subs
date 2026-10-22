@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { signOut } from '../../src/lib/account';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
@@ -48,7 +48,8 @@ import {
   useSettings,
 } from './hooks';
 import { Button, Card, ColorRow, Icons, RangeRow, SectionTitle, SelectRow, SwitchRow } from './ui';
-import { t } from '../../src/lib/i18n';
+import { t, type MessageKey } from '../../src/lib/i18n';
+import type { JSX } from 'preact';
 
 export function SettingsTab({
   tabId,
@@ -63,230 +64,331 @@ export function SettingsTab({
   const entitlements = useEntitlements();
 
   return (
-    <>
-      <AccountCard />
-      <SectionTitle>{t('set_learning')}</SectionTitle>
-      <Card>
-        <div class="row">
-          <span class="grow label">{t('set_size')}</span>
-          <span class="stepper">
-            <button
-              type="button"
-              data-testid="font-smaller"
-              aria-label={t('set_smaller')}
-              onClick={() => change({ fontSize: settings.fontSize - FONT_SIZE.step })}
-            >
-              −
-            </button>
-            <span class="value" data-testid="font-scale">
-              {settings.fontSize} px
-            </span>
-            <button
-              type="button"
-              data-testid="font-bigger"
-              aria-label={t('set_bigger')}
-              onClick={() => change({ fontSize: settings.fontSize + FONT_SIZE.step })}
-            >
-              +
-            </button>
-          </span>
-        </div>
-        <ColorRow
-          label={t('set_color')}
-          testid="color-en"
-          value={settings.colorEn}
-          palette={TEXT_COLORS}
-          onChange={(colorEn) => change({ colorEn })}
-        />
-        <LineVoice lang={settings.learnLang} />
-      </Card>
+    <div class="settings">
+      <div class="settings-grid">
+        <SettingsNav sections={VISIBLE_SECTIONS} />
+        <div class="settings-body">
+          <section id="set-account" class="settings-section">
+            <AccountCard />
+          </section>
+          <section id="set-subtitles" class="settings-section">
+            <SectionTitle>{t('set_learning')}</SectionTitle>
+            <Card>
+              <div class="row">
+                <span class="grow label">{t('set_size')}</span>
+                <span class="stepper">
+                  <button
+                    type="button"
+                    data-testid="font-smaller"
+                    aria-label={t('set_smaller')}
+                    onClick={() => change({ fontSize: settings.fontSize - FONT_SIZE.step })}
+                  >
+                    −
+                  </button>
+                  <span class="value" data-testid="font-scale">
+                    {settings.fontSize} px
+                  </span>
+                  <button
+                    type="button"
+                    data-testid="font-bigger"
+                    aria-label={t('set_bigger')}
+                    onClick={() => change({ fontSize: settings.fontSize + FONT_SIZE.step })}
+                  >
+                    +
+                  </button>
+                </span>
+              </div>
+              <ColorRow
+                label={t('set_color')}
+                testid="color-en"
+                value={settings.colorEn}
+                palette={TEXT_COLORS}
+                onChange={(colorEn) => change({ colorEn })}
+              />
+              <LineVoice lang={settings.learnLang} />
+            </Card>
 
-      <SectionTitle>{t('set_native')}</SectionTitle>
-      <Card>
-        <RangeRow
-          label={t('set_size')}
-          testid="translation-size"
-          min={TRANSLATION_SIZE.min}
-          max={TRANSLATION_SIZE.max}
-          step={TRANSLATION_SIZE.step}
-          value={settings.translationSize}
-          suffix=" px"
-          onChange={(translationSize) => change({ translationSize })}
-        />
-        <ColorRow
-          label={t('set_color')}
-          testid="color-ru"
-          value={settings.colorRu}
-          palette={TEXT_COLORS}
-          onChange={(colorRu) => change({ colorRu })}
-        />
-        <LineVoice lang={settings.nativeLang} />
-      </Card>
-
-      <SectionTitle>{t('set_window')}</SectionTitle>
-      <Card>
-        <RangeRow
-          label={t('set_width')}
-          testid="bar-width"
-          min={BAR_WIDTH.min}
-          max={BAR_WIDTH.max}
-          step={BAR_WIDTH.step}
-          value={settings.barWidth}
-          suffix="%"
-          onChange={(barWidth) => change({ barWidth })}
-        />
-        <RangeRow
-          label={t('set_opacity')}
-          testid="bar-opacity"
-          min={BAR_OPACITY.min}
-          max={BAR_OPACITY.max}
-          step={BAR_OPACITY.step}
-          scale={100}
-          value={settings.barOpacity}
-          suffix="%"
-          onChange={(barOpacity) => change({ barOpacity })}
-        />
-        <div class="row">
-          <span class="grow label">{t('set_position')}</span>
-          <Button
-            variant="secondary"
-            size="sm"
-            testid="lines-lower"
-            onClick={() => change({ bottomOffset: settings.bottomOffset - BOTTOM_OFFSET.step })}
-          >
-            {t('set_lower')}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            testid="lines-higher"
-            onClick={() => change({ bottomOffset: settings.bottomOffset + BOTTOM_OFFSET.step })}
-          >
-            {t('set_higher')}
-          </Button>
-        </div>
-        <details class="more-styles">
-          <summary>{t('set_more_styles')}</summary>
-          <SelectRow
-            label={t('set_font')}
-            testid="font-family"
-            value={settings.fontFamily}
-            options={Object.entries(FONT_FAMILIES).map(([key, f]) => [key, t(f.label)])}
-            onChange={(value) => change({ fontFamily: value as FontFamily })}
-          />
-          <SelectRow
-            label={t('set_weight')}
-            testid="font-weight"
-            value={String(settings.fontWeight)}
-            options={FONT_WEIGHTS.map((w) => [String(w), String(w)])}
-            onChange={(value) => change({ fontWeight: Number(value) })}
-          />
-          <SelectRow
-            label={t('set_effect')}
-            testid="text-effect"
-            value={settings.textEffect}
-            options={Object.entries(TEXT_EFFECTS).map(([key, e]) => [key, t(e.label)])}
-            onChange={(value) => change({ textEffect: value as TextEffect })}
-          />
-          <ColorRow
-            label={t('set_glass')}
-            testid="glass-tint"
-            value={settings.glassTint}
-            palette={GLASS_TINTS}
-            onChange={(glassTint) => change({ glassTint })}
-          />
-          <RangeRow
-            label={t('set_blur')}
-            testid="glass-blur"
-            min={GLASS_BLUR.min}
-            max={GLASS_BLUR.max}
-            step={GLASS_BLUR.step}
-            value={settings.glassBlur}
-            suffix=" px"
-            onChange={(glassBlur) => change({ glassBlur })}
-          />
-          <RangeRow
-            label={t('set_radius')}
-            testid="glass-radius"
-            min={GLASS_RADIUS.min}
-            max={GLASS_RADIUS.max}
-            step={GLASS_RADIUS.step}
-            value={settings.glassRadius}
-            suffix="%"
-            onChange={(glassRadius) => change({ glassRadius })}
-          />
-        </details>
-      </Card>
-
-      <SectionTitle>{t('set_sites')}</SectionTitle>
-      <Card>
-        {sites.length === 0 ? (
-          <p class="muted" data-testid="known-sites">
-            {t('set_sites_empty')}
-          </p>
-        ) : (
-          <ul class="list" data-testid="known-sites">
-            {sites.map((site) => (
-              <li key={site.origin} data-testid="known-site">
-                <span class="grow">{new URL(site.origin).host}</span>
+            <SectionTitle>{t('set_native')}</SectionTitle>
+            <Card>
+              <RangeRow
+                label={t('set_size')}
+                testid="translation-size"
+                min={TRANSLATION_SIZE.min}
+                max={TRANSLATION_SIZE.max}
+                step={TRANSLATION_SIZE.step}
+                value={settings.translationSize}
+                suffix=" px"
+                onChange={(translationSize) => change({ translationSize })}
+              />
+              <ColorRow
+                label={t('set_color')}
+                testid="color-ru"
+                value={settings.colorRu}
+                palette={TEXT_COLORS}
+                onChange={(colorRu) => change({ colorRu })}
+              />
+              <LineVoice lang={settings.nativeLang} />
+            </Card>
+          </section>
+          <section id="set-window" class="settings-section">
+            <SectionTitle>{t('set_window')}</SectionTitle>
+            <Card>
+              <RangeRow
+                label={t('set_width')}
+                testid="bar-width"
+                min={BAR_WIDTH.min}
+                max={BAR_WIDTH.max}
+                step={BAR_WIDTH.step}
+                value={settings.barWidth}
+                suffix="%"
+                onChange={(barWidth) => change({ barWidth })}
+              />
+              <RangeRow
+                label={t('set_opacity')}
+                testid="bar-opacity"
+                min={BAR_OPACITY.min}
+                max={BAR_OPACITY.max}
+                step={BAR_OPACITY.step}
+                scale={100}
+                value={settings.barOpacity}
+                suffix="%"
+                onChange={(barOpacity) => change({ barOpacity })}
+              />
+              <div class="row">
+                <span class="grow label">{t('set_position')}</span>
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
-                  testid="forget-site"
-                  onClick={() => void forgetSite(site.origin)}
+                  testid="lines-lower"
+                  onClick={() =>
+                    change({ bottomOffset: settings.bottomOffset - BOTTOM_OFFSET.step })
+                  }
                 >
-                  {t('remove')}
+                  {t('set_lower')}
                 </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-        <MirrorsSwitch />
-      </Card>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  testid="lines-higher"
+                  onClick={() =>
+                    change({ bottomOffset: settings.bottomOffset + BOTTOM_OFFSET.step })
+                  }
+                >
+                  {t('set_higher')}
+                </Button>
+              </div>
+              <details class="more-styles">
+                <summary>{t('set_more_styles')}</summary>
+                <SelectRow
+                  label={t('set_font')}
+                  testid="font-family"
+                  value={settings.fontFamily}
+                  options={Object.entries(FONT_FAMILIES).map(([key, f]) => [key, t(f.label)])}
+                  onChange={(value) => change({ fontFamily: value as FontFamily })}
+                />
+                <SelectRow
+                  label={t('set_weight')}
+                  testid="font-weight"
+                  value={String(settings.fontWeight)}
+                  options={FONT_WEIGHTS.map((w) => [String(w), String(w)])}
+                  onChange={(value) => change({ fontWeight: Number(value) })}
+                />
+                <SelectRow
+                  label={t('set_effect')}
+                  testid="text-effect"
+                  value={settings.textEffect}
+                  options={Object.entries(TEXT_EFFECTS).map(([key, e]) => [key, t(e.label)])}
+                  onChange={(value) => change({ textEffect: value as TextEffect })}
+                />
+                <ColorRow
+                  label={t('set_glass')}
+                  testid="glass-tint"
+                  value={settings.glassTint}
+                  palette={GLASS_TINTS}
+                  onChange={(glassTint) => change({ glassTint })}
+                />
+                <RangeRow
+                  label={t('set_blur')}
+                  testid="glass-blur"
+                  min={GLASS_BLUR.min}
+                  max={GLASS_BLUR.max}
+                  step={GLASS_BLUR.step}
+                  value={settings.glassBlur}
+                  suffix=" px"
+                  onChange={(glassBlur) => change({ glassBlur })}
+                />
+                <RangeRow
+                  label={t('set_radius')}
+                  testid="glass-radius"
+                  min={GLASS_RADIUS.min}
+                  max={GLASS_RADIUS.max}
+                  step={GLASS_RADIUS.step}
+                  value={settings.glassRadius}
+                  suffix="%"
+                  onChange={(glassRadius) => change({ glassRadius })}
+                />
+              </details>
+            </Card>
+          </section>
+          <section id="set-sites" class="settings-section">
+            <SectionTitle>{t('set_sites')}</SectionTitle>
+            <Card>
+              {sites.length === 0 ? (
+                <p class="muted" data-testid="known-sites">
+                  {t('set_sites_empty')}
+                </p>
+              ) : (
+                <ul class="list" data-testid="known-sites">
+                  {sites.map((site) => (
+                    <li key={site.origin} data-testid="known-site">
+                      <span class="grow">{new URL(site.origin).host}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        testid="forget-site"
+                        onClick={() => void forgetSite(site.origin)}
+                      >
+                        {t('remove')}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <MirrorsSwitch />
+            </Card>
 
-      <SwitchedOffSites />
+            <SwitchedOffSites />
+          </section>
+          <section id="set-history" class="settings-section">
+            <SectionTitle>{t('set_history')}</SectionTitle>
+            <Card>
+              <SwitchRow
+                label={t('set_keep_history')}
+                hint={t('set_keep_history_hint')}
+                checked={settings.keepHistory}
+                testid="toggle-history"
+                onChange={(keepHistory) => change({ keepHistory })}
+              />
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={history.length === 0}
+                onClick={() => void clearHistory()}
+              >
+                {t('set_clear_history', history.length)}
+              </Button>
+            </Card>
+          </section>
+          {__DS_PROTOTYPES__ && (
+            <section id="set-dev" class="settings-section">
+              <Card>
+                <SwitchRow
+                  label="Pro (для разработки)"
+                  hint="Только в dev- и e2e-сборках: настоящий план придёт с сервера"
+                  testid="dev-pro"
+                  checked={isPro(entitlements)}
+                  onChange={(on) =>
+                    void saveEntitlements(on ? { plan: 'pro', proUntil: null } : FREE_PLAN)
+                  }
+                />
+              </Card>
+              {diagnostics && tabId !== null && (
+                <DiagnosticsView tabId={tabId} diagnostics={diagnostics} />
+              )}
+              <Button variant="secondary" block onClick={openTranslatorLab}>
+                Лаборатория перевода (прототип)
+              </Button>
+            </section>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      <SectionTitle>{t('set_history')}</SectionTitle>
-      <Card>
-        <SwitchRow
-          label={t('set_keep_history')}
-          hint={t('set_keep_history_hint')}
-          checked={settings.keepHistory}
-          testid="toggle-history"
-          onChange={(keepHistory) => change({ keepHistory })}
-        />
-        <Button
-          variant="secondary"
-          size="sm"
-          disabled={history.length === 0}
-          onClick={() => void clearHistory()}
+type SectionId = 'account' | 'subtitles' | 'window' | 'sites' | 'history' | 'dev';
+
+const SECTIONS: Array<{ id: SectionId; label: MessageKey; icon: JSX.Element }> = [
+  { id: 'account', label: 'nav_account', icon: Icons.user },
+  { id: 'subtitles', label: 'nav_subtitles', icon: Icons.subtitles },
+  { id: 'window', label: 'nav_window', icon: Icons.window },
+  { id: 'sites', label: 'nav_sites', icon: Icons.globe },
+  { id: 'history', label: 'nav_history', icon: Icons.history },
+  { id: 'dev', label: 'nav_dev', icon: Icons.tool },
+];
+
+const VISIBLE_SECTIONS = SECTIONS.filter((section) => section.id !== 'dev' || __DS_PROTOTYPES__);
+
+/**
+ * The contents of the settings: every section stays on the page, a click scrolls to it and the one
+ * being read is lit (followed on scroll). A rail on the left in a wide panel, a strip of chips in a narrow one (panel.css).
+ */
+function SettingsNav({ sections }: { sections: typeof SECTIONS }) {
+  const [current, setCurrent] = useState<SectionId>('account');
+
+  /** After a click the chosen section stays lit until the user scrolls by hand. */
+  const chosen = useRef(false);
+
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (chosen.current) return;
+      const ids = sections.map((section) => section.id);
+      const page = document.scrollingElement ?? document.documentElement;
+      // At the bottom a short last section never reaches the top: it is the one being read.
+      if (page.scrollTop + innerHeight >= page.scrollHeight - 4 && page.scrollTop > 0) {
+        setCurrent(ids[ids.length - 1]!);
+        return;
+      }
+      // Otherwise the last section whose top went under the sticky tabs and contents.
+      let reading = ids[0]!;
+      for (const id of ids) {
+        const top = document.getElementById(`set-${id}`)?.getBoundingClientRect().top;
+        if (top !== undefined && top <= 150) reading = id;
+      }
+      setCurrent(reading);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    const byHand = () => {
+      chosen.current = false;
+    };
+    const hand = ['wheel', 'touchstart', 'keydown', 'mousedown'] as const;
+    addEventListener('scroll', onScroll, { passive: true });
+    for (const type of hand) addEventListener(type, byHand, { passive: true });
+    return () => {
+      removeEventListener('scroll', onScroll);
+      for (const type of hand) removeEventListener(type, byHand);
+      cancelAnimationFrame(frame);
+    };
+  }, [sections]);
+
+  const go = (id: SectionId) => {
+    setCurrent(id);
+    chosen.current = true;
+    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document
+      .getElementById(`set-${id}`)
+      ?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  };
+
+  return (
+    <nav class="settings-nav" aria-label={t('set_nav_label')}>
+      {sections.map((section) => (
+        <button
+          key={section.id}
+          type="button"
+          aria-current={current === section.id ? 'true' : undefined}
+          data-testid={`settings-nav-${section.id}`}
+          onClick={() => go(section.id)}
         >
-          {t('set_clear_history', history.length)}
-        </Button>
-      </Card>
-
-      {__DS_PROTOTYPES__ && (
-        <Card>
-          <SwitchRow
-            label="Pro (для разработки)"
-            hint="Только в dev- и e2e-сборках: настоящий план придёт с сервера"
-            testid="dev-pro"
-            checked={isPro(entitlements)}
-            onChange={(on) =>
-              void saveEntitlements(on ? { plan: 'pro', proUntil: null } : FREE_PLAN)
-            }
-          />
-        </Card>
-      )}
-      {__DS_PROTOTYPES__ && diagnostics && tabId !== null && (
-        <DiagnosticsView tabId={tabId} diagnostics={diagnostics} />
-      )}
-      {__DS_PROTOTYPES__ && (
-        <Button variant="secondary" block onClick={openTranslatorLab}>
-          Лаборатория перевода (прототип)
-        </Button>
-      )}
-    </>
+          {section.icon}
+          <span>{t(section.label)}</span>
+        </button>
+      ))}
+    </nav>
   );
 }
 
@@ -470,9 +572,76 @@ function AccountCard() {
           {t('account_sign_out')}
         </Button>
       </Card>
+      <PlanCards pro={isPro(entitlements)} />
     </>
   );
 }
+
+const FREE_FEATURES: MessageKey[] = ['feat_dual', 'feat_sites', 'feat_hover', 'feat_history'];
+/** The Pro features; `soon` ones are promised, not there yet. */
+const PRO_FEATURES: Array<{ key: MessageKey; soon?: boolean }> = [
+  { key: 'feat_all_free' },
+  { key: 'feat_words' },
+  { key: 'feat_media', soon: true },
+  { key: 'feat_asr', soon: true },
+  { key: 'feat_smart_history', soon: true },
+];
+
+/** What each plan gives, the current one marked. There is no payment yet: the way to Pro says "soon". */
+function PlanCards({ pro }: { pro: boolean }) {
+  return (
+    <div class="plans">
+      <Card class="plan-card" testid="plan-free">
+        <div class="plan-head">
+          <h3>{t('plan_free_title')}</h3>
+          <span class="badge-free">FREE</span>
+        </div>
+        <p class="muted small">{t('plan_free_text')}</p>
+        <ul class="plan-list">
+          {FREE_FEATURES.map((key) => (
+            <li key={key}>
+              {Icons.check}
+              {t(key)}
+            </li>
+          ))}
+        </ul>
+        {!pro && <PlanCurrent />}
+      </Card>
+      <Card class="plan-card pro" testid="plan-pro">
+        <div class="plan-head">
+          <span class="crown">{Icons.crown}</span>
+          <h3>Pro</h3>
+          <span class="pro-badge">PRO</span>
+        </div>
+        <p class="muted small">{t('plan_pro_text')}</p>
+        <ul class="plan-list">
+          {PRO_FEATURES.map(({ key, soon }) => (
+            <li key={key}>
+              {Icons.check}
+              <span>
+                {t(key)}
+                {soon && <span class="soon">{t('plan_soon')}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+        {pro ? (
+          <PlanCurrent />
+        ) : (
+          <Button block disabled testid="plan-upgrade">
+            {t('plan_upgrade')} · {t('plan_soon')}
+          </Button>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+const PlanCurrent = () => (
+  <Button variant="secondary" block disabled testid="plan-current">
+    {t('plan_current')}
+  </Button>
+);
 
 /** The sites the user switched off, each with a button to turn it on again; nothing is shown while there are none. */
 function SwitchedOffSites() {
