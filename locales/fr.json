@@ -312,5 +312,16 @@
 "feat_words": "Enregistrement des mots et répétition espacée",
 "feat_media": "Exemples tirés de films et de mèmes",
 "feat_asr": "Reconnaissance vocale quand il n’y a pas de sous-titres",
-"feat_smart_history": "Historique intelligent : séries, épisodes, affiches"
+"feat_smart_history": "Historique intelligent : séries, épisodes, affiches",
+"tool_size": "Taille",
+"tool_colors": "Couleurs",
+"tool_window": "Fenêtre",
+"tool_style": "Style",
+"tool_more": "Plus",
+"toast_saved_title": "Mot enregistré",
+"toast_saved_text": "$1 — ajouté à la liste",
+"toast_pro_title": "Uniquement dans PRO",
+"toast_pro_text": "L’enregistrement et la révision des mots font partie de Pro.",
+"toast_learn_more": "En savoir plus",
+"toast_close": "Fermer"
 }

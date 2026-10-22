@@ -123,7 +123,8 @@ export function youtubeVideoId(url: string): string | null {
   try {
     const u = new URL(url);
     if (!/(^|\.)youtube\.com$/.test(u.hostname)) return null;
-    const id = u.searchParams.get('v') ?? u.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/)?.[1];
+    const id =
+      u.searchParams.get('v') ?? u.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/)?.[1];
     return id && /^[\w-]{6,20}$/.test(id) ? id : null;
   } catch {
     return null;

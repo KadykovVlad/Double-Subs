@@ -1,6 +1,6 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import type { Decision, Lang, TrackType } from '../../src/lib/analysis';
-import { displayUrl } from '../../src/lib/history';
+import { cleanTitle, displayUrl, formatDuration, historyId } from '../../src/lib/history';
 import {
   addKnownSite,
   addKnownSites,
@@ -30,11 +30,12 @@ import { requestAccess, retryTranslation, type PopupState } from '../../src/pane
 import {
   useDismissedOffers,
   useExcludedSites,
+  useHistory,
   useKnownSites,
   useMirrorsMode,
   useSettings,
 } from './hooks';
-import { Button, Card, Icons, Progress, SectionTitle, SelectRow, Spinner, SwitchRow } from './ui';
+import { Button, Card, Icons, Progress, SectionTitle, Spinner, SwitchRow, VideoThumb } from './ui';
 import { nameOf, t, titleOf, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 
 const STATUS_KEY: Record<string, MessageKey> = {
@@ -94,13 +95,25 @@ export interface NowProps {
   onCancelPick: () => void;
   onRetry: () => void;
   onReload: () => void;
+  /** Opens the settings at one of their sections (the tools of this tab lead there). */
+  onOpenSettings: (section: SettingsFocus) => void;
+}
+
+/** Where a tool of this tab leads in the settings; `styles` also opens "More styles". */
+export interface SettingsFocus {
+  section: 'account' | 'subtitles' | 'window';
+  styles?: boolean;
 }
 
 export function NowTab(props: NowProps) {
   return (
     <>
+      {props.state.kind === 'selected' && (
+        <VideoPreview tabId={props.tabId} pageUrl={props.state.pageUrl ?? props.state.origin} />
+      )}
       <ShowSwitch />
       <LanguagesCard />
+      <ToolGrid onOpen={props.onOpenSettings} />
       <RememberOffer state={props.state} />
       <StatusCard {...props} />
       {props.state.kind === 'selected' && <WatchingCard />}
@@ -499,7 +512,8 @@ export function MirrorsSwitch() {
 function ShowSwitch() {
   const [settings, change] = useSettings();
   return (
-    <Card>
+    <Card class="dual-card">
+      <span class="dual-icon">{Icons.subtitles}</span>
       <SwitchRow
         label={t('watch_show')}
         checked={settings.enabled}
@@ -507,6 +521,93 @@ function ShowSwitch() {
         onChange={(enabled) => change({ enabled })}
       />
     </Card>
+  );
+}
+
+/**
+ * The video the panel works with: its preview (YouTube's picture, or the site's letter), the title of
+ * the tab and, once the history has it, where the user is in it.
+ */
+function VideoPreview({ tabId, pageUrl }: { tabId: number | null; pageUrl: string }) {
+  const [title, setTitle] = useState('');
+  const history = useHistory();
+  let host = '';
+  try {
+    host = new URL(pageUrl).host;
+  } catch {
+    // not a web page: no host to show
+  }
+  useEffect(() => {
+    if (tabId === null) return;
+    let alive = true;
+    void browser.tabs
+      .get(tabId)
+      .then((tab) => alive && setTitle(cleanTitle(tab.title ?? '', host)))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [tabId, pageUrl]);
+  const entry = history.find((item) => item.id === historyId(pageUrl));
+
+  return (
+    <div class="video-preview" data-testid="video-preview">
+      <VideoThumb url={pageUrl} host={host} class="big" />
+      <div class="overlay-bar">
+        <span class="site-dot" aria-hidden="true">
+          {host
+            .replace(/^www\./, '')
+            .charAt(0)
+            .toUpperCase()}
+        </span>
+        <span class="grow title" data-testid="preview-title" title={title}>
+          {title || host}
+        </span>
+        {entry && entry.duration > 0 && (
+          <span class="time" data-testid="preview-time">
+            {formatDuration(entry.position)} / {formatDuration(entry.duration)}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const TOOLS: Array<{
+  id: string;
+  label: MessageKey;
+  icon: preact.JSX.Element;
+  focus: SettingsFocus;
+}> = [
+  { id: 'size', label: 'tool_size', icon: Icons.textSize, focus: { section: 'subtitles' } },
+  { id: 'colors', label: 'tool_colors', icon: Icons.palette, focus: { section: 'subtitles' } },
+  { id: 'window', label: 'tool_window', icon: Icons.window, focus: { section: 'window' } },
+  {
+    id: 'style',
+    label: 'tool_style',
+    icon: Icons.brush,
+    focus: { section: 'window', styles: true },
+  },
+  { id: 'more', label: 'tool_more', icon: Icons.more, focus: { section: 'account' } },
+];
+
+/** Shortcuts to the look of the subtitles: each opens the settings at its place. */
+function ToolGrid({ onOpen }: { onOpen: (focus: SettingsFocus) => void }) {
+  return (
+    <div class="tool-grid">
+      {TOOLS.map((tool) => (
+        <button
+          key={tool.id}
+          type="button"
+          class="tool"
+          data-testid={`tool-${tool.id}`}
+          onClick={() => onOpen(tool.focus)}
+        >
+          {tool.icon}
+          <span>{t(tool.label)}</span>
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -527,22 +628,24 @@ function LanguagesCard() {
     (a, b) => a[1].localeCompare(b[1], uiLanguage()),
   );
   return (
-    <Card>
-      <SelectRow
-        label={t('set_learning')}
-        testid="learn-lang"
-        value={settings.learnLang}
-        options={options}
-        onChange={(code) => change(choosePair('learn', code, settings))}
-      />
-      <SelectRow
-        label={t('set_native')}
-        testid="native-lang"
-        value={settings.nativeLang}
-        options={options}
-        onChange={(code) => change(choosePair('native', code, settings))}
-      />
-    </Card>
+    <div class="lang-grid">
+      {(['learn', 'native'] as const).map((role) => (
+        <label key={role} class="lang-box">
+          <span>{t(role === 'learn' ? 'set_learning' : 'set_native')}</span>
+          <select
+            data-testid={role === 'learn' ? 'learn-lang' : 'native-lang'}
+            value={role === 'learn' ? settings.learnLang : settings.nativeLang}
+            onChange={(event) => change(choosePair(role, event.currentTarget.value, settings))}
+          >
+            {options.map(([value, text]) => (
+              <option key={value} value={value}>
+                {text}
+              </option>
+            ))}
+          </select>
+        </label>
+      ))}
+    </div>
   );
 }
 

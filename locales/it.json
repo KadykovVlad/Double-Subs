@@ -312,5 +312,16 @@
 "feat_words": "Salvataggio delle parole e ripetizione dilazionata",
 "feat_media": "Esempi da film e meme",
 "feat_asr": "Riconoscimento vocale dove non ci sono sottotitoli",
-"feat_smart_history": "Cronologia intelligente: serie, episodi, locandine"
+"feat_smart_history": "Cronologia intelligente: serie, episodi, locandine",
+"tool_size": "Dimensione",
+"tool_colors": "Colori",
+"tool_window": "Finestra",
+"tool_style": "Stile",
+"tool_more": "Altro",
+"toast_saved_title": "Parola salvata",
+"toast_saved_text": "$1 — aggiunta all’elenco",
+"toast_pro_title": "Solo in PRO",
+"toast_pro_text": "Salvare e ripassare le parole fa parte di Pro.",
+"toast_learn_more": "Scopri di più",
+"toast_close": "Chiudi"
 }

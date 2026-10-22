@@ -312,5 +312,16 @@
 "feat_words": "儲存單字與間隔重複",
 "feat_media": "來自電影和迷因的例句",
 "feat_asr": "沒有字幕時的語音辨識",
-"feat_smart_history": "智慧記錄：影集、集數、海報"
+"feat_smart_history": "智慧記錄：影集、集數、海報",
+"tool_size": "大小",
+"tool_colors": "顏色",
+"tool_window": "視窗",
+"tool_style": "樣式",
+"tool_more": "更多",
+"toast_saved_title": "已儲存單字",
+"toast_saved_text": "$1 — 已加入清單",
+"toast_pro_title": "僅限 PRO",
+"toast_pro_text": "儲存與複習單字是 Pro 的功能。",
+"toast_learn_more": "了解更多",
+"toast_close": "關閉"
 }

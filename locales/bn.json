@@ -312,5 +312,16 @@
 "feat_words": "শব্দ সংরক্ষণ ও ব্যবধানে পুনরাবৃত্তি",
 "feat_media": "সিনেমা ও মিম থেকে উদাহরণ",
 "feat_asr": "সাবটাইটেল নেই এমন জায়গায় কথা শনাক্তকরণ",
-"feat_smart_history": "স্মার্ট ইতিহাস: সিরিজ, পর্ব, পোস্টার"
+"feat_smart_history": "স্মার্ট ইতিহাস: সিরিজ, পর্ব, পোস্টার",
+"tool_size": "আকার",
+"tool_colors": "রং",
+"tool_window": "উইন্ডো",
+"tool_style": "শৈলী",
+"tool_more": "আরও",
+"toast_saved_title": "শব্দ সংরক্ষিত",
+"toast_saved_text": "$1 — তালিকায় যোগ হয়েছে",
+"toast_pro_title": "শুধু PRO-তে",
+"toast_pro_text": "শব্দ সংরক্ষণ ও পুনরাবৃত্তি Pro-র অংশ।",
+"toast_learn_more": "আরও জানুন",
+"toast_close": "বন্ধ করুন"
 }

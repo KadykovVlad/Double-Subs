@@ -312,5 +312,16 @@
 "feat_words": "Lagre ord og repetisjon med mellomrom",
 "feat_media": "Eksempler fra filmer og memer",
 "feat_asr": "Talegjenkjenning der det ikke finnes undertekster",
-"feat_smart_history": "Smart logg: serier, episoder, plakater"
+"feat_smart_history": "Smart logg: serier, episoder, plakater",
+"tool_size": "Størrelse",
+"tool_colors": "Farger",
+"tool_window": "Vindu",
+"tool_style": "Stil",
+"tool_more": "Mer",
+"toast_saved_title": "Ord lagret",
+"toast_saved_text": "$1 — lagt til i listen",
+"toast_pro_title": "Bare i PRO",
+"toast_pro_text": "Å lagre og repetere ord er en del av Pro.",
+"toast_learn_more": "Les mer",
+"toast_close": "Lukk"
 }

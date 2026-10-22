@@ -312,5 +312,16 @@
 "feat_words": "Ukladanie slov a opakovanie v intervaloch",
 "feat_media": "Príklady z filmov a mémov",
 "feat_asr": "Rozpoznávanie reči tam, kde nie sú titulky",
-"feat_smart_history": "Inteligentná história: seriály, diely, plagáty"
+"feat_smart_history": "Inteligentná história: seriály, diely, plagáty",
+"tool_size": "Veľkosť",
+"tool_colors": "Farby",
+"tool_window": "Okno",
+"tool_style": "Štýl",
+"tool_more": "Ďalšie",
+"toast_saved_title": "Slovo uložené",
+"toast_saved_text": "$1 — pridané do zoznamu",
+"toast_pro_title": "Len v PRO",
+"toast_pro_text": "Ukladanie a opakovanie slov je súčasťou Pro.",
+"toast_learn_more": "Zistiť viac",
+"toast_close": "Zavrieť"
 }

@@ -312,5 +312,16 @@
 "feat_words": "Zapisywanie słów i powtórki w odstępach",
 "feat_media": "Przykłady z filmów i memów",
 "feat_asr": "Rozpoznawanie mowy tam, gdzie nie ma napisów",
-"feat_smart_history": "Inteligentna historia: seriale, odcinki, plakaty"
+"feat_smart_history": "Inteligentna historia: seriale, odcinki, plakaty",
+"tool_size": "Rozmiar",
+"tool_colors": "Kolory",
+"tool_window": "Okno",
+"tool_style": "Styl",
+"tool_more": "Więcej",
+"toast_saved_title": "Słowo zapisane",
+"toast_saved_text": "$1 — dodano do listy",
+"toast_pro_title": "Tylko w PRO",
+"toast_pro_text": "Zapisywanie i powtarzanie słów jest w wersji Pro.",
+"toast_learn_more": "Dowiedz się więcej",
+"toast_close": "Zamknij"
 }

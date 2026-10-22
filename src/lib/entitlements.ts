@@ -55,3 +55,13 @@ export function watchEntitlements(listener: (entitlements: Entitlements) => void
   browser.storage.onChanged.addListener(onChanged);
   return () => browser.storage.onChanged.removeListener(onChanged);
 }
+
+/**
+ * The page writes the time here when a free user clicks a word to save it: the panel, if open, says
+ * that saving is a Pro feature. Nothing else reads it.
+ */
+export const PRO_NUDGE_KEY = 'proNudge';
+
+export async function nudgePro(): Promise<void> {
+  await browser.storage.local.set({ [PRO_NUDGE_KEY]: Date.now() });
+}

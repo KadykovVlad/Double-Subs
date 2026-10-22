@@ -312,5 +312,16 @@
 "feat_words": "Szavak mentése és ismétlés időközönként",
 "feat_media": "Példák filmekből és mémekből",
 "feat_asr": "Beszédfelismerés, ahol nincs felirat",
-"feat_smart_history": "Okos előzmények: sorozatok, epizódok, plakátok"
+"feat_smart_history": "Okos előzmények: sorozatok, epizódok, plakátok",
+"tool_size": "Méret",
+"tool_colors": "Színek",
+"tool_window": "Ablak",
+"tool_style": "Stílus",
+"tool_more": "Továbbiak",
+"toast_saved_title": "Szó elmentve",
+"toast_saved_text": "$1 — hozzáadva a listához",
+"toast_pro_title": "Csak PRO-ban",
+"toast_pro_text": "A szavak mentése és ismétlése a Pro része.",
+"toast_learn_more": "További információ",
+"toast_close": "Bezárás"
 }

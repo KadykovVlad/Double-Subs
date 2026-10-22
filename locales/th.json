@@ -312,5 +312,16 @@
 "feat_words": "บันทึกคำและทบทวนแบบเว้นระยะ",
 "feat_media": "ตัวอย่างจากภาพยนตร์และมีม",
 "feat_asr": "รู้จำเสียงพูดในที่ที่ไม่มีคำบรรยาย",
-"feat_smart_history": "ประวัติอัจฉริยะ: ซีรีส์ ตอน โปสเตอร์"
+"feat_smart_history": "ประวัติอัจฉริยะ: ซีรีส์ ตอน โปสเตอร์",
+"tool_size": "ขนาด",
+"tool_colors": "สี",
+"tool_window": "หน้าต่าง",
+"tool_style": "สไตล์",
+"tool_more": "เพิ่มเติม",
+"toast_saved_title": "บันทึกคำแล้ว",
+"toast_saved_text": "$1 — เพิ่มในรายการแล้ว",
+"toast_pro_title": "เฉพาะใน PRO",
+"toast_pro_text": "การบันทึกและทบทวนคำเป็นส่วนหนึ่งของ Pro",
+"toast_learn_more": "ดูเพิ่มเติม",
+"toast_close": "ปิด"
 }

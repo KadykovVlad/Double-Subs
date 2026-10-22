@@ -271,6 +271,24 @@ test('words can be starred, filtered by favourites and status, and searched', as
 
 // ---------------------------------------------------------------- history
 
+test('the "Now" tab shows the video: its title, and where the user is once the history has it', async () => {
+  const page = await openPage('shadow-video.html');
+  await seek(page, 5);
+  const panel = await openPopupFor(session, page);
+  await expect(panel.getByTestId('status')).toHaveText('Субтитры найдены');
+  await expect(panel.getByTestId('preview-title')).toHaveText('Video inside an open shadow root');
+  await expect(panel.getByTestId('preview-time')).toContainText(' / ');
+});
+
+test('a tool of the "Now" tab opens the settings at its place', async () => {
+  const page = await openPage('shadow-video.html');
+  const panel = await openPopupFor(session, page);
+  await panel.getByTestId('tool-style').click();
+  await expect(panel.getByTestId('tab-settings')).toHaveAttribute('aria-selected', 'true');
+  await expect(panel.getByTestId('bar-width')).toBeInViewport();
+  await expect(panel.getByTestId('font-family')).toBeVisible(); // "More styles" is open
+});
+
 test('what is being watched goes to the history with its place, and can be removed', async () => {
   const page = await openPage('shadow-video.html');
   await seek(page, 5);

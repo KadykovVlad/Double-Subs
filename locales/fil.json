@@ -312,5 +312,16 @@
 "feat_words": "Pag-save ng salita at spaced repetition",
 "feat_media": "Mga halimbawa mula sa pelikula at meme",
 "feat_asr": "Pagkilala sa pananalita kapag walang subtitle",
-"feat_smart_history": "Matalinong history: serye, episode, poster"
+"feat_smart_history": "Matalinong history: serye, episode, poster",
+"tool_size": "Laki",
+"tool_colors": "Mga kulay",
+"tool_window": "Window",
+"tool_style": "Istilo",
+"tool_more": "Higit pa",
+"toast_saved_title": "Na-save ang salita",
+"toast_saved_text": "$1 — idinagdag sa listahan",
+"toast_pro_title": "Sa PRO lang",
+"toast_pro_text": "Bahagi ng Pro ang pag-save at pagbabalik-aral ng salita.",
+"toast_learn_more": "Alamin pa",
+"toast_close": "Isara"
 }

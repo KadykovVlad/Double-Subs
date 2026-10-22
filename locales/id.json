@@ -312,5 +312,16 @@
 "feat_words": "Menyimpan kata dan pengulangan berjarak",
 "feat_media": "Contoh dari film dan meme",
 "feat_asr": "Pengenalan ucapan saat tidak ada subtitel",
-"feat_smart_history": "Riwayat pintar: serial, episode, poster"
+"feat_smart_history": "Riwayat pintar: serial, episode, poster",
+"tool_size": "Ukuran",
+"tool_colors": "Warna",
+"tool_window": "Jendela",
+"tool_style": "Gaya",
+"tool_more": "Lainnya",
+"toast_saved_title": "Kata disimpan",
+"toast_saved_text": "$1 — ditambahkan ke daftar",
+"toast_pro_title": "Hanya di PRO",
+"toast_pro_text": "Menyimpan dan mengulang kata adalah bagian dari Pro.",
+"toast_learn_more": "Pelajari lebih lanjut",
+"toast_close": "Tutup"
 }

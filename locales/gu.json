@@ -312,5 +312,16 @@
 "feat_words": "શબ્દો સાચવવા અને અંતરે પુનરાવર્તન",
 "feat_media": "ફિલ્મો અને મીમ્સમાંથી ઉદાહરણો",
 "feat_asr": "જ્યાં સબટાઇટલ નથી ત્યાં વાણી ઓળખ",
-"feat_smart_history": "સ્માર્ટ ઇતિહાસ: સીરિઝ, એપિસોડ, પોસ્ટર"
+"feat_smart_history": "સ્માર્ટ ઇતિહાસ: સીરિઝ, એપિસોડ, પોસ્ટર",
+"tool_size": "કદ",
+"tool_colors": "રંગો",
+"tool_window": "વિન્ડો",
+"tool_style": "શૈલી",
+"tool_more": "વધુ",
+"toast_saved_title": "શબ્દ સાચવ્યો",
+"toast_saved_text": "$1 — સૂચિમાં ઉમેર્યું",
+"toast_pro_title": "ફક્ત PRO માં",
+"toast_pro_text": "શબ્દો સાચવવા અને પુનરાવર્તન Pro નો ભાગ છે.",
+"toast_learn_more": "વધુ જાણો",
+"toast_close": "બંધ કરો"
 }

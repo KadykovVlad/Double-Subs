@@ -312,5 +312,16 @@
 "feat_words": "Kelime kaydetme ve aralıklı tekrar",
 "feat_media": "Filmlerden ve memlerden örnekler",
 "feat_asr": "Altyazı olmayan yerde konuşma tanıma",
-"feat_smart_history": "Akıllı geçmiş: diziler, bölümler, afişler"
+"feat_smart_history": "Akıllı geçmiş: diziler, bölümler, afişler",
+"tool_size": "Boyut",
+"tool_colors": "Renkler",
+"tool_window": "Pencere",
+"tool_style": "Stil",
+"tool_more": "Daha fazla",
+"toast_saved_title": "Kelime kaydedildi",
+"toast_saved_text": "$1 — listeye eklendi",
+"toast_pro_title": "Yalnızca PRO’da",
+"toast_pro_text": "Kelime kaydetme ve tekrar Pro’nun parçasıdır.",
+"toast_learn_more": "Daha fazla bilgi",
+"toast_close": "Kapat"
 }

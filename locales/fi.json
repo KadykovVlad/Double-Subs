@@ -312,5 +312,16 @@
 "feat_words": "Sanojen tallennus ja kertaus aikavälein",
 "feat_media": "Esimerkkejä elokuvista ja meemeistä",
 "feat_asr": "Puheentunnistus, kun tekstitystä ei ole",
-"feat_smart_history": "Älykäs historia: sarjat, jaksot, julisteet"
+"feat_smart_history": "Älykäs historia: sarjat, jaksot, julisteet",
+"tool_size": "Koko",
+"tool_colors": "Värit",
+"tool_window": "Ikkuna",
+"tool_style": "Tyyli",
+"tool_more": "Lisää",
+"toast_saved_title": "Sana tallennettu",
+"toast_saved_text": "$1 — lisätty luetteloon",
+"toast_pro_title": "Vain PRO-versiossa",
+"toast_pro_text": "Sanojen tallennus ja kertaus kuuluvat Pro-versioon.",
+"toast_learn_more": "Lue lisää",
+"toast_close": "Sulje"
 }

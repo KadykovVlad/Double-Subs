@@ -8,11 +8,10 @@ import {
   historyHosts,
   removeHistoryEntry,
   resumeUrl,
-  youtubeVideoId,
   type HistoryEntry,
 } from '../../src/lib/history';
 import { useHistory, useSettings } from './hooks';
-import { Button, Card, Empty, Icons, Progress, SearchField } from './ui';
+import { Button, Card, Empty, Icons, Progress, SearchField, VideoThumb } from './ui';
 import { t, uiLanguage } from '../../src/lib/i18n';
 
 export function HistoryTab() {
@@ -92,38 +91,11 @@ function dayTitle(daysAgo: number, day: number): string {
   return new Date(day).toLocaleDateString(uiLanguage(), { day: 'numeric', month: 'long' });
 }
 
-/** The YouTube preview, or a tile with the first letter of the site when there is none (or it fails). */
-function Thumb({ entry }: { entry: HistoryEntry }) {
-  const video = youtubeVideoId(entry.url);
-  const [failed, setFailed] = useState(false);
-  if (video && !failed)
-    return (
-      <img
-        class="thumb"
-        src={`https://i.ytimg.com/vi/${video}/mqdefault.jpg`}
-        alt=""
-        loading="lazy"
-        referrerpolicy="no-referrer"
-        onError={() => setFailed(true)}
-      />
-    );
-  const letter =
-    entry.host
-      .replace(/^www\./, '')
-      .charAt(0)
-      .toUpperCase() || '▶';
-  return (
-    <span class="thumb tile" aria-hidden="true">
-      {letter}
-    </span>
-  );
-}
-
 function HistoryRow({ entry }: { entry: HistoryEntry }) {
   const progress = entry.duration > 0 ? Math.min(1, entry.position / entry.duration) : 0;
   return (
     <li class="history-item" data-testid="history-item">
-      <Thumb entry={entry} />
+      <VideoThumb url={entry.url} host={entry.host} />
       <span class="grow">
         <div class="title" title={entry.title}>
           {entry.title}

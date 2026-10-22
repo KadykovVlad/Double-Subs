@@ -312,5 +312,16 @@
 "feat_words": "Чување речи и понављање са размацима",
 "feat_media": "Примери из филмова и мемова",
 "feat_asr": "Препознавање говора где нема титлова",
-"feat_smart_history": "Паметна историја: серије, епизоде, постери"
+"feat_smart_history": "Паметна историја: серије, епизоде, постери",
+"tool_size": "Величина",
+"tool_colors": "Боје",
+"tool_window": "Прозор",
+"tool_style": "Стил",
+"tool_more": "Још",
+"toast_saved_title": "Реч сачувана",
+"toast_saved_text": "$1 — додато на листу",
+"toast_pro_title": "Само у PRO",
+"toast_pro_text": "Чување и понављање речи део је Pro верзије.",
+"toast_learn_more": "Сазнајте више",
+"toast_close": "Затвори"
 }

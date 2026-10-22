@@ -312,5 +312,16 @@
 "feat_words": "ذخیره واژه‌ها و مرور فاصله‌دار",
 "feat_media": "نمونه‌هایی از فیلم‌ها و میم‌ها",
 "feat_asr": "تشخیص گفتار جایی که زیرنویس نیست",
-"feat_smart_history": "تاریخچه هوشمند: سریال‌ها، قسمت‌ها، پوسترها"
+"feat_smart_history": "تاریخچه هوشمند: سریال‌ها، قسمت‌ها، پوسترها",
+"tool_size": "اندازه",
+"tool_colors": "رنگ‌ها",
+"tool_window": "پنجره",
+"tool_style": "سبک",
+"tool_more": "بیشتر",
+"toast_saved_title": "واژه ذخیره شد",
+"toast_saved_text": "$1 — به فهرست افزوده شد",
+"toast_pro_title": "فقط در PRO",
+"toast_pro_text": "ذخیره و مرور واژه‌ها بخشی از Pro است.",
+"toast_learn_more": "بیشتر بدانید",
+"toast_close": "بستن"
 }

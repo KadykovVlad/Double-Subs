@@ -312,5 +312,16 @@
 "feat_words": "Wörter speichern und verteilte Wiederholung",
 "feat_media": "Beispiele aus Filmen und Memes",
 "feat_asr": "Spracherkennung, wo es keine Untertitel gibt",
-"feat_smart_history": "Intelligenter Verlauf: Serien, Folgen, Poster"
+"feat_smart_history": "Intelligenter Verlauf: Serien, Folgen, Poster",
+"tool_size": "Größe",
+"tool_colors": "Farben",
+"tool_window": "Fenster",
+"tool_style": "Stil",
+"tool_more": "Mehr",
+"toast_saved_title": "Wort gespeichert",
+"toast_saved_text": "$1 — zur Liste hinzugefügt",
+"toast_pro_title": "Nur in PRO",
+"toast_pro_text": "Wörter speichern und wiederholen gehört zu Pro.",
+"toast_learn_more": "Mehr erfahren",
+"toast_close": "Schließen"
 }

@@ -312,5 +312,16 @@
 "feat_words": "शब्द सहेजना और अंतराल पर दोहराव",
 "feat_media": "फ़िल्मों और मीम्स से उदाहरण",
 "feat_asr": "जहाँ उपशीर्षक नहीं हैं वहाँ वाणी पहचान",
-"feat_smart_history": "स्मार्ट इतिहास: सीरीज़, एपिसोड, पोस्टर"
+"feat_smart_history": "स्मार्ट इतिहास: सीरीज़, एपिसोड, पोस्टर",
+"tool_size": "आकार",
+"tool_colors": "रंग",
+"tool_window": "विंडो",
+"tool_style": "शैली",
+"tool_more": "और",
+"toast_saved_title": "शब्द सहेजा गया",
+"toast_saved_text": "$1 — सूची में जोड़ा गया",
+"toast_pro_title": "केवल PRO में",
+"toast_pro_text": "शब्द सहेजना और दोहराना Pro का हिस्सा है।",
+"toast_learn_more": "और जानें",
+"toast_close": "बंद करें"
 }

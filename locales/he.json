@@ -312,5 +312,16 @@
 "feat_words": "שמירת מילים וחזרה מרווחת",
 "feat_media": "דוגמאות מסרטים וממים",
 "feat_asr": "זיהוי דיבור כשאין כתוביות",
-"feat_smart_history": "היסטוריה חכמה: סדרות, פרקים, פוסטרים"
+"feat_smart_history": "היסטוריה חכמה: סדרות, פרקים, פוסטרים",
+"tool_size": "גודל",
+"tool_colors": "צבעים",
+"tool_window": "חלון",
+"tool_style": "סגנון",
+"tool_more": "עוד",
+"toast_saved_title": "המילה נשמרה",
+"toast_saved_text": "$1 — נוספה לרשימה",
+"toast_pro_title": "רק ב-PRO",
+"toast_pro_text": "שמירת מילים וחזרה עליהן הן חלק מ-Pro.",
+"toast_learn_more": "מידע נוסף",
+"toast_close": "סגירה"
 }

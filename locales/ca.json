@@ -312,5 +312,16 @@
 "feat_words": "Desar paraules i repetició espaiada",
 "feat_media": "Exemples de pel·lícules i mems",
 "feat_asr": "Reconeixement de veu on no hi ha subtítols",
-"feat_smart_history": "Historial intel·ligent: sèries, episodis, cartells"
+"feat_smart_history": "Historial intel·ligent: sèries, episodis, cartells",
+"tool_size": "Mida",
+"tool_colors": "Colors",
+"tool_window": "Finestra",
+"tool_style": "Estil",
+"tool_more": "Més",
+"toast_saved_title": "Paraula desada",
+"toast_saved_text": "$1 — afegida a la llista",
+"toast_pro_title": "Només a PRO",
+"toast_pro_text": "Desar i repassar paraules forma part de Pro.",
+"toast_learn_more": "Més informació",
+"toast_close": "Tanca"
 }

@@ -312,5 +312,16 @@
 "feat_words": "Vārdu saglabāšana un intervāla atkārtošana",
 "feat_media": "Piemēri no filmām un mēmiem",
 "feat_asr": "Runas atpazīšana, kur nav subtitru",
-"feat_smart_history": "Gudra vēsture: seriāli, sērijas, plakāti"
+"feat_smart_history": "Gudra vēsture: seriāli, sērijas, plakāti",
+"tool_size": "Izmērs",
+"tool_colors": "Krāsas",
+"tool_window": "Logs",
+"tool_style": "Stils",
+"tool_more": "Vairāk",
+"toast_saved_title": "Vārds saglabāts",
+"toast_saved_text": "$1 — pievienots sarakstam",
+"toast_pro_title": "Tikai PRO",
+"toast_pro_text": "Vārdu saglabāšana un atkārtošana ir Pro daļa.",
+"toast_learn_more": "Uzzināt vairāk",
+"toast_close": "Aizvērt"
 }

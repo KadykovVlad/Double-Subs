@@ -312,5 +312,16 @@
 "feat_words": "Sõnade salvestamine ja vahedega kordamine",
 "feat_media": "Näited filmidest ja meemidest",
 "feat_asr": "Kõnetuvastus seal, kus subtiitreid pole",
-"feat_smart_history": "Nutikas ajalugu: sarjad, osad, plakatid"
+"feat_smart_history": "Nutikas ajalugu: sarjad, osad, plakatid",
+"tool_size": "Suurus",
+"tool_colors": "Värvid",
+"tool_window": "Aken",
+"tool_style": "Stiil",
+"tool_more": "Veel",
+"toast_saved_title": "Sõna salvestatud",
+"toast_saved_text": "$1 — lisatud loendisse",
+"toast_pro_title": "Ainult PRO-s",
+"toast_pro_text": "Sõnade salvestamine ja kordamine kuulub Pro-sse.",
+"toast_learn_more": "Loe lähemalt",
+"toast_close": "Sulge"
 }

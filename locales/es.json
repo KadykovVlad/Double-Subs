@@ -312,5 +312,16 @@
 "feat_words": "Guardar palabras y repetición espaciada",
 "feat_media": "Ejemplos de películas y memes",
 "feat_asr": "Reconocimiento de voz donde no hay subtítulos",
-"feat_smart_history": "Historial inteligente: series, episodios, carteles"
+"feat_smart_history": "Historial inteligente: series, episodios, carteles",
+"tool_size": "Tamaño",
+"tool_colors": "Colores",
+"tool_window": "Ventana",
+"tool_style": "Estilo",
+"tool_more": "Más",
+"toast_saved_title": "Palabra guardada",
+"toast_saved_text": "$1 — añadida a la lista",
+"toast_pro_title": "Solo en PRO",
+"toast_pro_text": "Guardar y repasar palabras es parte de Pro.",
+"toast_learn_more": "Más información",
+"toast_close": "Cerrar"
 }

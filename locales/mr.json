@@ -312,5 +312,16 @@
 "feat_words": "शब्द जतन करणे आणि अंतराने उजळणी",
 "feat_media": "चित्रपट आणि मीम्समधील उदाहरणे",
 "feat_asr": "उपशीर्षके नसतील तिथे भाषण ओळख",
-"feat_smart_history": "स्मार्ट इतिहास: मालिका, भाग, पोस्टर"
+"feat_smart_history": "स्मार्ट इतिहास: मालिका, भाग, पोस्टर",
+"tool_size": "आकार",
+"tool_colors": "रंग",
+"tool_window": "विंडो",
+"tool_style": "शैली",
+"tool_more": "अधिक",
+"toast_saved_title": "शब्द जतन केला",
+"toast_saved_text": "$1 — यादीत जोडले",
+"toast_pro_title": "फक्त PRO मध्ये",
+"toast_pro_text": "शब्द जतन करणे आणि उजळणी Pro चा भाग आहे.",
+"toast_learn_more": "अधिक जाणून घ्या",
+"toast_close": "बंद करा"
 }

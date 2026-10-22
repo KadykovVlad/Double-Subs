@@ -312,5 +312,16 @@
 "feat_words": "Spremanje riječi i ponavljanje s razmacima",
 "feat_media": "Primjeri iz filmova i memova",
 "feat_asr": "Prepoznavanje govora gdje nema titlova",
-"feat_smart_history": "Pametna povijest: serije, epizode, plakati"
+"feat_smart_history": "Pametna povijest: serije, epizode, plakati",
+"tool_size": "Veličina",
+"tool_colors": "Boje",
+"tool_window": "Prozor",
+"tool_style": "Stil",
+"tool_more": "Više",
+"toast_saved_title": "Riječ spremljena",
+"toast_saved_text": "$1 — dodano na popis",
+"toast_pro_title": "Samo u PRO",
+"toast_pro_text": "Spremanje i ponavljanje riječi dio je Pro verzije.",
+"toast_learn_more": "Saznajte više",
+"toast_close": "Zatvori"
 }

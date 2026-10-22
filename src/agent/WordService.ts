@@ -1,6 +1,7 @@
 import { lookupWord } from '../lib/dictionary-messages';
 import { shortDefinition, type WordInfo } from '../lib/dictionary';
 import { toggleSavedWord } from '../lib/saved-words';
+import { nudgePro } from '../lib/entitlements';
 import { speakWord } from '../lib/speech';
 import { extractMarked, wordKey, type WordLang } from '../lib/words';
 import type { WordTools, WordTranslation } from '../overlay/words-ui';
@@ -83,7 +84,10 @@ export class WordService implements WordTools {
     context,
     info,
   }: Parameters<WordTools['toggleSaved']>[0]): void {
-    if (!this.canSaveWords()) return;
+    if (!this.canSaveWords()) {
+      void nudgePro().catch(() => {});
+      return;
+    }
     const base = info?.inflected ? info.lemma : word;
     const entry = {
       key: wordKey(base, lang),

@@ -312,5 +312,16 @@
 "feat_words": "Gem ord og spredt repetition",
 "feat_media": "Eksempler fra film og memes",
 "feat_asr": "Talegenkendelse, hvor der ikke er undertekster",
-"feat_smart_history": "Smart historik: serier, afsnit, plakater"
+"feat_smart_history": "Smart historik: serier, afsnit, plakater",
+"tool_size": "Størrelse",
+"tool_colors": "Farver",
+"tool_window": "Vindue",
+"tool_style": "Stil",
+"tool_more": "Mere",
+"toast_saved_title": "Ord gemt",
+"toast_saved_text": "$1 — føjet til listen",
+"toast_pro_title": "Kun i PRO",
+"toast_pro_text": "At gemme og repetere ord er en del af Pro.",
+"toast_learn_more": "Få mere at vide",
+"toast_close": "Luk"
 }

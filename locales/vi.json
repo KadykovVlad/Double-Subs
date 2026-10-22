@@ -312,5 +312,16 @@
 "feat_words": "Lưu từ và ôn tập ngắt quãng",
 "feat_media": "Ví dụ từ phim và meme",
 "feat_asr": "Nhận dạng giọng nói khi không có phụ đề",
-"feat_smart_history": "Lịch sử thông minh: phim bộ, tập, áp phích"
+"feat_smart_history": "Lịch sử thông minh: phim bộ, tập, áp phích",
+"tool_size": "Cỡ chữ",
+"tool_colors": "Màu sắc",
+"tool_window": "Cửa sổ",
+"tool_style": "Kiểu",
+"tool_more": "Thêm",
+"toast_saved_title": "Đã lưu từ",
+"toast_saved_text": "$1 — đã thêm vào danh sách",
+"toast_pro_title": "Chỉ có trong PRO",
+"toast_pro_text": "Lưu và ôn tập từ là tính năng của Pro.",
+"toast_learn_more": "Tìm hiểu thêm",
+"toast_close": "Đóng"
 }

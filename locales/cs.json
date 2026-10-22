@@ -312,5 +312,16 @@
 "feat_words": "Ukládání slov a opakování v intervalech",
 "feat_media": "Příklady z filmů a memů",
 "feat_asr": "Rozpoznávání řeči tam, kde nejsou titulky",
-"feat_smart_history": "Chytrá historie: seriály, díly, plakáty"
+"feat_smart_history": "Chytrá historie: seriály, díly, plakáty",
+"tool_size": "Velikost",
+"tool_colors": "Barvy",
+"tool_window": "Okno",
+"tool_style": "Styl",
+"tool_more": "Další",
+"toast_saved_title": "Slovo uloženo",
+"toast_saved_text": "$1 — přidáno do seznamu",
+"toast_pro_title": "Jen v PRO",
+"toast_pro_text": "Ukládání a opakování slov je součástí Pro.",
+"toast_learn_more": "Zjistit více",
+"toast_close": "Zavřít"
 }

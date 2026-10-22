@@ -312,5 +312,16 @@
 "feat_words": "Simpan perkataan dan ulang kaji berjarak",
 "feat_media": "Contoh daripada filem dan meme",
 "feat_asr": "Pengecaman pertuturan apabila tiada sari kata",
-"feat_smart_history": "Sejarah pintar: siri, episod, poster"
+"feat_smart_history": "Sejarah pintar: siri, episod, poster",
+"tool_size": "Saiz",
+"tool_colors": "Warna",
+"tool_window": "Tetingkap",
+"tool_style": "Gaya",
+"tool_more": "Lagi",
+"toast_saved_title": "Perkataan disimpan",
+"toast_saved_text": "$1 — ditambah ke senarai",
+"toast_pro_title": "Hanya dalam PRO",
+"toast_pro_text": "Menyimpan dan mengulang kaji perkataan ialah sebahagian daripada Pro.",
+"toast_learn_more": "Ketahui lebih lanjut",
+"toast_close": "Tutup"
 }

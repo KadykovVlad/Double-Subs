@@ -151,6 +151,11 @@ test('free plan: the tip still translates, but nothing is offered, saved or unde
   await word.click();
   await expect(word).not.toHaveClass(/saved/);
   expect(await savedWords()).toEqual([]);
+  // The open panel says why nothing was saved, and leads to the plans.
+  await expect(popup.getByTestId('toast')).toContainText('Доступно только в PRO');
+  await popup.getByTestId('toast-action').click();
+  await expect(popup.getByTestId('plan-pro')).toBeInViewport();
+  await expect(popup.getByTestId('toast')).toHaveCount(0);
 
   await expect(popup.getByTestId('tab-history')).toBeVisible();
   await expect(popup.getByTestId('tab-words')).toHaveCount(0);
@@ -196,6 +201,10 @@ test('click saves the word, underlines it, lists it in the popup, and a second c
       context: 'Hello, Dexter.',
     }),
   ]);
+  await expect(popup.getByTestId('toast')).toContainText('Слово сохранено');
+  await expect(popup.getByTestId('toast')).toContainText('Hello — добавлено в список');
+  await popup.getByTestId('toast-close').click();
+  await expect(popup.getByTestId('toast')).toHaveCount(0);
 
   // The popup that was already open learns about it.
   await openPanelTab(popup, 'words');

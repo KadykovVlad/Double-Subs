@@ -312,5 +312,16 @@
 "feat_words": "Saving words and spaced repetition",
 "feat_media": "Examples from films and memes",
 "feat_asr": "Speech recognition where there are no subtitles",
-"feat_smart_history": "Smart history: series, episodes, posters"
+"feat_smart_history": "Smart history: series, episodes, posters",
+"tool_size": "Size",
+"tool_colors": "Colors",
+"tool_window": "Window",
+"tool_style": "Style",
+"tool_more": "More",
+"toast_saved_title": "Word saved",
+"toast_saved_text": "$1 — added to your list",
+"toast_pro_title": "Only in PRO",
+"toast_pro_text": "Saving words and repeating them is part of Pro.",
+"toast_learn_more": "Learn more",
+"toast_close": "Close"
 }

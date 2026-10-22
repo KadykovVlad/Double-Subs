@@ -312,5 +312,16 @@
 "feat_words": "Spara ord och repetition med mellanrum",
 "feat_media": "Exempel från filmer och memes",
 "feat_asr": "Taligenkänning där det saknas undertexter",
-"feat_smart_history": "Smart historik: serier, avsnitt, affischer"
+"feat_smart_history": "Smart historik: serier, avsnitt, affischer",
+"tool_size": "Storlek",
+"tool_colors": "Färger",
+"tool_window": "Fönster",
+"tool_style": "Stil",
+"tool_more": "Mer",
+"toast_saved_title": "Ordet sparat",
+"toast_saved_text": "$1 — tillagt i listan",
+"toast_pro_title": "Bara i PRO",
+"toast_pro_text": "Att spara och repetera ord ingår i Pro.",
+"toast_learn_more": "Läs mer",
+"toast_close": "Stäng"
 }

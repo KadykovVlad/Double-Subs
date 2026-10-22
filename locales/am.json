@@ -312,5 +312,16 @@
 "feat_words": "ቃላትን ማስቀመጥ እና በክፍተት መከለስ",
 "feat_media": "ከፊልሞች እና ሚሞች ምሳሌዎች",
 "feat_asr": "ንዑስ ርዕስ በሌለበት የንግግር ማወቂያ",
-"feat_smart_history": "ብልህ ታሪክ፦ ተከታታዮች፣ ክፍሎች፣ ፖስተሮች"
+"feat_smart_history": "ብልህ ታሪክ፦ ተከታታዮች፣ ክፍሎች፣ ፖስተሮች",
+"tool_size": "መጠን",
+"tool_colors": "ቀለሞች",
+"tool_window": "መስኮት",
+"tool_style": "ቅጥ",
+"tool_more": "ተጨማሪ",
+"toast_saved_title": "ቃሉ ተቀምጧል",
+"toast_saved_text": "$1 — ወደ ዝርዝሩ ታክሏል",
+"toast_pro_title": "በPRO ብቻ",
+"toast_pro_text": "ቃላትን ማስቀመጥ እና መከለስ የPro አካል ነው።",
+"toast_learn_more": "ተጨማሪ ይወቁ",
+"toast_close": "ዝጋ"
 }

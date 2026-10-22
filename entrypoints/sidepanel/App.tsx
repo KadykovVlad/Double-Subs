@@ -12,14 +12,17 @@ import {
   type PopupState,
 } from '../../src/panel/controller';
 import { HistoryTab } from './HistoryTab';
-import { NowTab } from './NowTab';
+import { NowTab, type SettingsFocus } from './NowTab';
 import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
 import { refreshPlan } from '../../src/lib/account';
 import { useAccount, useEntitlements, useSavedWords } from './hooks';
 import { Onboarding } from './Onboarding';
 import { hasFeature, isPro } from '../../src/lib/entitlements';
-import { Icons, Logo } from './ui';
+import { Icons, Logo, Toasts } from './ui';
+import { loadSavedWords, watchSavedWords } from '../../src/lib/saved-words';
+import { newKeys, showToast } from '../../src/panel/toasts';
+import { PRO_NUDGE_KEY } from '../../src/lib/entitlements';
 import { t, textDirection, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 import {
   chooseUiLanguage,
@@ -93,6 +96,8 @@ function Shell({ language, children }: { language: string; children?: ComponentC
 
 function SignedInApp({ language }: { language: string }) {
   const [chosenTab, setTab] = useState<TabId>('now');
+  /** Where the settings open when a tool of the "Now" tab leads there; a new object each time. */
+  const [settingsFocus, setSettingsFocus] = useState<SettingsFocus | null>(null);
   const [tabId, setTabId] = useState<number | null>(null);
   const [state, setState] = useState<PopupState>({
     kind: 'working',
@@ -108,6 +113,11 @@ function SignedInApp({ language }: { language: string }) {
   // The words belong to the Pro plan: without it there is no tab (a plan that ends on the tab sends the user back).
   const tabs = TABS.filter((item) => item.id !== 'words' || showWords);
   const tab = tabs.some((item) => item.id === chosenTab) ? chosenTab : 'now';
+  const openSettings = (focus: SettingsFocus) => {
+    setSettingsFocus({ ...focus });
+    setTab('settings');
+  };
+  useNotices(openSettings);
   /** The panel stays open while the user moves between tabs and pages: always the tab we are showing. */
   const current = useRef<number | null>(null);
 
@@ -264,12 +274,55 @@ function SignedInApp({ language }: { language: string }) {
             }}
             onRetry={() => tabId !== null && run(t('busy_find_player'), () => detect(tabId))}
             onReload={() => tabId !== null && run(t('busy_reload'), () => reloadAndDetect(tabId))}
+            onOpenSettings={openSettings}
           />
         )}
         {tab === 'words' && <WordsTab />}
         {tab === 'history' && <HistoryTab />}
-        {tab === 'settings' && <SettingsTab tabId={tabId} diagnostics={state.diagnostics} />}
+        {tab === 'settings' && (
+          <SettingsTab tabId={tabId} diagnostics={state.diagnostics} focus={settingsFocus} />
+        )}
       </div>
+      <Toasts />
     </div>
   );
+}
+
+/**
+ * The notifications that come from the page: a word saved by a click in the subtitles, and a click
+ * that would have saved one on the free plan. Only changes made while the panel is open count.
+ */
+function useNotices(openSettings: (focus: SettingsFocus) => void) {
+  useEffect(() => {
+    let known: string[] | null = null;
+    void loadSavedWords().then((list) => {
+      known ??= list.map((word) => word.key);
+    });
+    const stopWords = watchSavedWords((list) => {
+      const keys = list.map((word) => word.key);
+      const added = known ? newKeys(known, keys) : [];
+      known = keys;
+      const word = list.find((item) => item.key === added[0]);
+      if (word)
+        showToast({
+          tone: 'ok',
+          title: t('toast_saved_title'),
+          text: t('toast_saved_text', word.word),
+        });
+    });
+    const onNudge = (changes: Record<string, unknown>, area: string) => {
+      if (area !== 'local' || !(PRO_NUDGE_KEY in changes)) return;
+      showToast({
+        tone: 'pro',
+        title: t('toast_pro_title'),
+        text: t('toast_pro_text'),
+        action: { label: t('toast_learn_more'), run: () => openSettings({ section: 'account' }) },
+      });
+    };
+    browser.storage.onChanged.addListener(onNudge);
+    return () => {
+      stopWords();
+      browser.storage.onChanged.removeListener(onNudge);
+    };
+  }, []);
 }

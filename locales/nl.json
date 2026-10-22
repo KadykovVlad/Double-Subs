@@ -312,5 +312,16 @@
 "feat_words": "Woorden opslaan en gespreide herhaling",
 "feat_media": "Voorbeelden uit films en memes",
 "feat_asr": "Spraakherkenning waar geen ondertitels zijn",
-"feat_smart_history": "Slimme geschiedenis: series, afleveringen, posters"
+"feat_smart_history": "Slimme geschiedenis: series, afleveringen, posters",
+"tool_size": "Grootte",
+"tool_colors": "Kleuren",
+"tool_window": "Venster",
+"tool_style": "Stijl",
+"tool_more": "Meer",
+"toast_saved_title": "Woord opgeslagen",
+"toast_saved_text": "$1 — toegevoegd aan de lijst",
+"toast_pro_title": "Alleen in PRO",
+"toast_pro_text": "Woorden opslaan en herhalen hoort bij Pro.",
+"toast_learn_more": "Meer informatie",
+"toast_close": "Sluiten"
 }

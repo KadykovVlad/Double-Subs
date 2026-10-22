@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { AGAIN_DELAY_MS, gapLabel, grade, isDue, newSrs, normalizeSrs, wordStatus } from '../src/lib/srs';
+import {
+  AGAIN_DELAY_MS,
+  gapLabel,
+  grade,
+  isDue,
+  newSrs,
+  normalizeSrs,
+  wordStatus,
+} from '../src/lib/srs';
 
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = 1_000_000_000_000;

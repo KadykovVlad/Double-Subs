@@ -312,5 +312,16 @@
 "feat_words": "Shranjevanje besed in ponavljanje v presledkih",
 "feat_media": "Primeri iz filmov in memov",
 "feat_asr": "Prepoznavanje govora, kjer ni podnapisov",
-"feat_smart_history": "Pametna zgodovina: serije, epizode, plakati"
+"feat_smart_history": "Pametna zgodovina: serije, epizode, plakati",
+"tool_size": "Velikost",
+"tool_colors": "Barve",
+"tool_window": "Okno",
+"tool_style": "Slog",
+"tool_more": "Več",
+"toast_saved_title": "Beseda shranjena",
+"toast_saved_text": "$1 — dodano na seznam",
+"toast_pro_title": "Samo v PRO",
+"toast_pro_text": "Shranjevanje in ponavljanje besed je del paketa Pro.",
+"toast_learn_more": "Več o tem",
+"toast_close": "Zapri"
 }

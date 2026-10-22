@@ -312,5 +312,16 @@
 "feat_words": "حفظ الكلمات والمراجعة المتباعدة",
 "feat_media": "أمثلة من الأفلام والميمات",
 "feat_asr": "التعرّف على الكلام حيث لا توجد ترجمة",
-"feat_smart_history": "سجل ذكي: مسلسلات وحلقات وملصقات"
+"feat_smart_history": "سجل ذكي: مسلسلات وحلقات وملصقات",
+"tool_size": "الحجم",
+"tool_colors": "الألوان",
+"tool_window": "النافذة",
+"tool_style": "النمط",
+"tool_more": "المزيد",
+"toast_saved_title": "حُفظت الكلمة",
+"toast_saved_text": "$1 — أُضيفت إلى القائمة",
+"toast_pro_title": "في PRO فقط",
+"toast_pro_text": "حفظ الكلمات ومراجعتها جزء من Pro.",
+"toast_learn_more": "اعرف المزيد",
+"toast_close": "إغلاق"
 }

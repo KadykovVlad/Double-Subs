@@ -312,5 +312,16 @@
 "feat_words": "Salvarea cuvintelor și repetare spațiată",
 "feat_media": "Exemple din filme și meme",
 "feat_asr": "Recunoaștere vocală unde nu există subtitrări",
-"feat_smart_history": "Istoric inteligent: seriale, episoade, postere"
+"feat_smart_history": "Istoric inteligent: seriale, episoade, postere",
+"tool_size": "Mărime",
+"tool_colors": "Culori",
+"tool_window": "Fereastră",
+"tool_style": "Stil",
+"tool_more": "Mai mult",
+"toast_saved_title": "Cuvânt salvat",
+"toast_saved_text": "$1 — adăugat în listă",
+"toast_pro_title": "Doar în PRO",
+"toast_pro_text": "Salvarea și repetarea cuvintelor fac parte din Pro.",
+"toast_learn_more": "Află mai multe",
+"toast_close": "Închide"
 }

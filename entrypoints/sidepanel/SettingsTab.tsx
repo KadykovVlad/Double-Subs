@@ -38,7 +38,7 @@ import {
   probeTranslatorInFrames,
   type Diagnostics,
 } from '../../src/panel/controller';
-import { forgetSite, MirrorsSwitch } from './NowTab';
+import { forgetSite, MirrorsSwitch, type SettingsFocus } from './NowTab';
 import {
   useAccount,
   useEntitlements,
@@ -54,10 +54,20 @@ import type { JSX } from 'preact';
 export function SettingsTab({
   tabId,
   diagnostics,
+  focus = null,
 }: {
   tabId: number | null;
   diagnostics: Diagnostics | null;
+  /** The section to show first (a tool of the "Now" tab led here). */
+  focus?: SettingsFocus | null;
 }) {
+  useEffect(() => {
+    if (!focus) return;
+    const section = document.getElementById(`set-${focus.section}`);
+    if (focus.styles) section?.querySelector('details')?.setAttribute('open', '');
+    section?.scrollIntoView({ block: 'start' });
+  }, [focus]);
+
   const [settings, change] = useSettings();
   const sites = Object.values(useKnownSites());
   const history = useHistory();

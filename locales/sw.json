@@ -312,5 +312,16 @@
 "feat_words": "Kuhifadhi maneno na kurudia kwa vipindi",
 "feat_media": "Mifano kutoka filamu na meme",
 "feat_asr": "Utambuzi wa sauti pasipo manukuu",
-"feat_smart_history": "Historia mahiri: mfululizo, vipindi, mabango"
+"feat_smart_history": "Historia mahiri: mfululizo, vipindi, mabango",
+"tool_size": "Ukubwa",
+"tool_colors": "Rangi",
+"tool_window": "Dirisha",
+"tool_style": "Mtindo",
+"tool_more": "Zaidi",
+"toast_saved_title": "Neno limehifadhiwa",
+"toast_saved_text": "$1 — limeongezwa kwenye orodha",
+"toast_pro_title": "Katika PRO pekee",
+"toast_pro_text": "Kuhifadhi na kurudia maneno ni sehemu ya Pro.",
+"toast_learn_more": "Pata maelezo zaidi",
+"toast_close": "Funga"
 }

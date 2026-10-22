@@ -312,5 +312,16 @@
 "feat_words": "Žodžių išsaugojimas ir kartojimas intervalais",
 "feat_media": "Pavyzdžiai iš filmų ir memų",
 "feat_asr": "Kalbos atpažinimas ten, kur nėra subtitrų",
-"feat_smart_history": "Išmani istorija: serialai, serijos, plakatai"
+"feat_smart_history": "Išmani istorija: serialai, serijos, plakatai",
+"tool_size": "Dydis",
+"tool_colors": "Spalvos",
+"tool_window": "Langas",
+"tool_style": "Stilius",
+"tool_more": "Daugiau",
+"toast_saved_title": "Žodis išsaugotas",
+"toast_saved_text": "$1 — pridėta į sąrašą",
+"toast_pro_title": "Tik PRO",
+"toast_pro_text": "Žodžių išsaugojimas ir kartojimas yra Pro dalis.",
+"toast_learn_more": "Sužinoti daugiau",
+"toast_close": "Uždaryti"
 }

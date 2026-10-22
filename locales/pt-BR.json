@@ -312,5 +312,16 @@
 "feat_words": "Salvar palavras e repetição espaçada",
 "feat_media": "Exemplos de filmes e memes",
 "feat_asr": "Reconhecimento de fala onde não há legendas",
-"feat_smart_history": "Histórico inteligente: séries, episódios, pôsteres"
+"feat_smart_history": "Histórico inteligente: séries, episódios, pôsteres",
+"tool_size": "Tamanho",
+"tool_colors": "Cores",
+"tool_window": "Janela",
+"tool_style": "Estilo",
+"tool_more": "Mais",
+"toast_saved_title": "Palavra salva",
+"toast_saved_text": "$1 — adicionada à lista",
+"toast_pro_title": "Só no PRO",
+"toast_pro_text": "Salvar e revisar palavras faz parte do Pro.",
+"toast_learn_more": "Saiba mais",
+"toast_close": "Fechar"
 }

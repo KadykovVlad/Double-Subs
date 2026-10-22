@@ -312,5 +312,16 @@
 "feat_words": "単語の保存と間隔反復",
 "feat_media": "映画やミームからの例文",
 "feat_asr": "字幕がない動画の音声認識",
-"feat_smart_history": "スマート履歴：シリーズ、エピソード、ポスター"
+"feat_smart_history": "スマート履歴：シリーズ、エピソード、ポスター",
+"tool_size": "サイズ",
+"tool_colors": "色",
+"tool_window": "ウィンドウ",
+"tool_style": "スタイル",
+"tool_more": "その他",
+"toast_saved_title": "単語を保存しました",
+"toast_saved_text": "$1 — リストに追加しました",
+"toast_pro_title": "PRO のみ",
+"toast_pro_text": "単語の保存と復習は Pro の機能です。",
+"toast_learn_more": "詳しく見る",
+"toast_close": "閉じる"
 }

@@ -1,4 +1,7 @@
 import type { ComponentChildren, JSX } from 'preact';
+import { useEffect, useState } from 'preact/hooks';
+import { youtubeVideoId } from '../../src/lib/history';
+import { toasts as toastStore, type Toast } from '../../src/panel/toasts';
 import { t, uiLanguage } from '../../src/lib/i18n';
 
 /** Small building blocks of the panel: icons, switch, rows, buttons. Styles are in panel.css. */
@@ -104,6 +107,34 @@ export const Icons = {
     <path d="M14.5 6.5a4 4 0 0 0-5.3 5.3l-5 5 2 2 5-5a4 4 0 0 0 5.3-5.3l-2.4 2.4-2-2 2.4-2.4z" />,
   ),
   crown: icon(<path d="M4 8l4 4 4-6 4 6 4-4-1.5 10h-13L4 8z" />),
+  textSize: icon(
+    <>
+      <path d="M4 18l4.5-12L13 18M5.7 14h5.6" />
+      <path d="M14.5 18l3-8 3 8M15.4 15.6h4.2" />
+    </>,
+  ),
+  palette: icon(
+    <>
+      <path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.3-1.2-1.6-1.2-2.8 0-1 .8-1.7 1.8-1.7h2.1a3.5 3.5 0 0 0 3.5-3.5C20 6.6 16.4 3.5 12 3.5z" />
+      <circle cx="7.8" cy="11" r="1" />
+      <circle cx="10.5" cy="7.5" r="1" />
+      <circle cx="15" cy="7.8" r="1" />
+    </>,
+  ),
+  brush: icon(
+    <>
+      <path d="M19.5 4.5l-8 8" />
+      <path d="M11.5 12.5c-2.5-.3-4.5 1.3-4.5 4 0 1.2-.8 2.2-2.5 2.5 4 1.5 9 .5 9.3-3.5" />
+    </>,
+  ),
+  more: icon(
+    <>
+      <circle cx="6" cy="12" r="1.3" />
+      <circle cx="12" cy="12" r="1.3" />
+      <circle cx="18" cy="12" r="1.3" />
+    </>,
+  ),
+  close: icon(<path d="M7 7l10 10M17 7L7 17" />),
   tray: icon(
     <>
       <path d="M4 13l2.5-7h11L20 13v5H4v-5z" />
@@ -233,6 +264,94 @@ export function Progress({ value }: { value: number }) {
   return (
     <div class="progress" aria-hidden="true">
       <i style={{ width: `${Math.round(Math.min(1, Math.max(0, value)) * 100)}%` }} />
+    </div>
+  );
+}
+
+/** The YouTube preview of a page, or a tile with the first letter of its site (also when the picture fails). */
+export function VideoThumb({
+  url,
+  host,
+  class: className = '',
+}: {
+  url: string;
+  host: string;
+  class?: string;
+}) {
+  const video = youtubeVideoId(url);
+  const [failed, setFailed] = useState(false);
+  if (video && !failed)
+    return (
+      <img
+        class={`thumb ${className}`}
+        src={`https://i.ytimg.com/vi/${video}/mqdefault.jpg`}
+        alt=""
+        loading="lazy"
+        referrerpolicy="no-referrer"
+        onError={() => setFailed(true)}
+      />
+    );
+  const letter =
+    host
+      .replace(/^www\./, '')
+      .charAt(0)
+      .toUpperCase() || '▶';
+  return (
+    <span class={`thumb tile ${className}`} aria-hidden="true">
+      {letter}
+    </span>
+  );
+}
+
+const TOAST_ICON: Record<Toast['tone'], JSX.Element> = {
+  ok: Icons.check,
+  info: Icons.words,
+  pro: Icons.crown,
+};
+
+/** The notifications of the panel, in its corner (src/panel/toasts.ts holds them). */
+export function Toasts() {
+  const [list, setList] = useState<Toast[]>(toastStore.list());
+  useEffect(() => toastStore.subscribe(setList), []);
+  return (
+    <div class="toasts" role="status" aria-live="polite">
+      {list.map((toast) => (
+        <div
+          key={toast.id}
+          class={`toast ${toast.tone}`}
+          data-testid="toast"
+          onMouseEnter={() => toastStore.hold(toast.id)}
+          onMouseLeave={() => toastStore.release(toast.id)}
+        >
+          <span class="toast-icon">{TOAST_ICON[toast.tone]}</span>
+          <div class="grow">
+            <b>{toast.title}</b>
+            {toast.text && <p>{toast.text}</p>}
+            {toast.action && (
+              <button
+                type="button"
+                class="btn secondary sm"
+                data-testid="toast-action"
+                onClick={() => {
+                  toast.action!.run();
+                  toastStore.close(toast.id);
+                }}
+              >
+                {toast.action.label}
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            class="icon-btn sm"
+            aria-label={t('toast_close')}
+            data-testid="toast-close"
+            onClick={() => toastStore.close(toast.id)}
+          >
+            {Icons.close}
+          </button>
+        </div>
+      ))}
     </div>
   );
 }
