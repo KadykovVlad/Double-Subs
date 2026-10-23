@@ -16,7 +16,13 @@ import { NowTab, type SettingsFocus } from './NowTab';
 import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
 import { refreshPlan } from '../../src/lib/account';
-import { useAccount, useEntitlements, useSavedWords } from './hooks';
+import {
+  useAccessDismissed,
+  useAccount,
+  useAllSitesAllowed,
+  useEntitlements,
+  useSavedWords,
+} from './hooks';
 import { Onboarding } from './Onboarding';
 import { hasFeature, isPro } from '../../src/lib/entitlements';
 import { Icons, Logo, Toasts } from './ui';
@@ -70,9 +76,14 @@ export function App() {
   document.documentElement.dir = textDirection();
   useEffect(() => watchUiLanguage(setLanguage), []);
   const account = useAccount();
+  const allowed = useAllSitesAllowed();
+  const dismissed = useAccessDismissed();
 
-  if (account === undefined) return <Shell language={language} />; // the account is being read
-  if (account === null)
+  // The welcome: until somebody is signed in, and until the question about the sites is answered
+  // (allowed, or "not now"). Then the panel goes on to its tabs by itself.
+  if (account === undefined || (account && allowed === undefined))
+    return <Shell language={language} />; // the account and the access are being read
+  if (account === null || (!allowed && !dismissed))
     return (
       <Shell language={language}>
         <Onboarding />

@@ -149,41 +149,42 @@ test('the language of the card can be chosen before signing in', async () => {
   await expect(panel.getByTestId('sign-in')).toHaveText('Войти через Google');
 });
 
-/** The small window under the icon, opened as a page (Playwright cannot click the toolbar icon). */
-async function openOnboarding(): Promise<Page> {
-  // The sites question is open (the tests are seeded with it answered).
-  await session.worker.evaluate(() => chrome.storage.local.set({ accessBannerDismissed: false }));
-  const page = await session.context.newPage();
-  await page.goto(`chrome-extension://${session.extensionId}/onboarding.html`);
-  return page;
-}
+/** The sites question is open (the tests are seeded with it answered). */
+const openSitesQuestion = () =>
+  session.worker.evaluate(() => chrome.storage.local.set({ accessBannerDismissed: false }));
 
-test('the small window: language, access to the sites and the sign-in in one card; when all is answered it says so', async () => {
-  const window = await openOnboarding();
-  await expect(window.getByTestId('onboarding-language')).toBeVisible();
-  await expect(window.getByTestId('allow-access')).toBeVisible();
-  await expect(window.getByTestId('sign-in')).toBeVisible();
-  await expect(window.getByTestId('onboarding-done')).toHaveCount(0);
+test('the welcome in the panel: access to the sites and the sign-in; when both are answered the panel goes on to its tabs', async () => {
+  await openSitesQuestion();
+  const page = await openVideo();
+  const panel = await openPopupFor(session, page);
+  await expect(panel.getByTestId('gate')).toBeVisible();
+  await expect(panel.getByTestId('allow-access')).toBeVisible();
+  await expect(panel.getByTestId('sign-in')).toBeVisible();
 
-  await window.getByTestId('allow-access').click(); // the test build holds the access, so Chrome asks nothing
-  await expect(window.getByTestId('access-allowed')).toBeVisible();
-  await expect(window.getByTestId('onboarding-done')).toHaveCount(0); // not signed in yet
+  await panel.getByTestId('allow-access').click(); // the test build holds the access, so Chrome asks nothing
+  await expect(panel.getByTestId('access-allowed')).toBeVisible();
+  await expect(panel.getByTestId('tab-now')).toHaveCount(0); // not signed in yet
 
-  await window.getByTestId('sign-in').click();
-  await expect(window.getByTestId('onboarding-done')).toBeVisible();
+  await panel.getByTestId('sign-in').click();
+  await expect(panel.getByTestId('gate')).toHaveCount(0);
+  await expect(panel.getByTestId('tab-now')).toBeVisible();
 });
 
-test('"Not now" answers the question about the sites; the sign-in alone then finishes it', async () => {
-  const window = await openOnboarding();
-  await window.getByTestId('dismiss-access').click();
-  await expect(window.getByTestId('dismiss-access')).toHaveCount(0);
-  await expect(window.getByTestId('onboarding-done')).toHaveCount(0);
+test('signed in, but the sites not answered: the welcome stays with the access step, "Not now" lets the panel go on', async () => {
+  await signInDirectly();
+  await openSitesQuestion();
+  const page = await openVideo();
+  const panel = await openPopupFor(session, page);
+  await expect(panel.getByTestId('gate')).toBeVisible();
+  await expect(panel.getByTestId('account-email')).toBeVisible(); // the sign-in step is done
+  await expect(panel.getByTestId('sign-in')).toHaveCount(0);
 
-  await window.getByTestId('sign-in').click();
-  await expect(window.getByTestId('onboarding-done')).toBeVisible();
+  await panel.getByTestId('dismiss-access').click();
+  await expect(panel.getByTestId('gate')).toHaveCount(0);
+  await expect(panel.getByTestId('tab-now')).toBeVisible();
 });
 
-test('the icon opens the small window while there is something to do, the side panel when it is done', async () => {
+test('the icon always opens the side panel; the mark says there is something to do', async () => {
   const state = () =>
     session.worker.evaluate(async () => ({
       badge: await chrome.action.getBadgeText({}),
@@ -192,19 +193,19 @@ test('the icon opens the small window while there is something to do, the side p
     }));
   const fresh = async () => {
     const now = await state();
-    return { ...now, popup: now.popup.replace(/^chrome-extension:\/\/[^/]+\//, '') };
+    return { ...now, popup: now.popup.replace(/^chrome-extension:\/\/[^/]+\/?/, '') };
   };
 
-  // Nobody is signed in: the mark, the small window.
-  await expect.poll(fresh).toEqual({ badge: '!', popup: 'onboarding.html', panelOnClick: false });
+  // Nobody is signed in: the mark; no small window, a click opens the panel.
+  await expect.poll(fresh).toEqual({ badge: '!', popup: '', panelOnClick: true });
 
   // Signed in, and the question about the sites was answered ("not now" is the seed): nothing left.
   await signInDirectly();
   await expect.poll(fresh).toEqual({ badge: '', popup: '', panelOnClick: true });
 
-  // Signed in, but the sites were not answered yet: the small window again.
-  await session.worker.evaluate(() => chrome.storage.local.set({ accessBannerDismissed: false }));
-  await expect.poll(fresh).toEqual({ badge: '!', popup: 'onboarding.html', panelOnClick: false });
+  // Signed in, but the sites were not answered yet: the mark again.
+  await openSitesQuestion();
+  await expect.poll(fresh).toEqual({ badge: '!', popup: '', panelOnClick: true });
 
   // The user allowed all sites: done.
   await session.worker.evaluate(() => chrome.storage.local.set({ mirrorsMode: true }));

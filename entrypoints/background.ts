@@ -41,14 +41,13 @@ export default defineBackground(() => {
   const translation = new TranslationRelay();
 
   // A click on the toolbar icon opens the side panel; the same click gives us access to the page (activeTab).
-  // (While onboarding is not finished, the click opens the small window instead, see syncOnboarding.)
+  // A new user finds the welcome there: the access to the sites and the sign-in (the panel decides).
   void registry
     .seedYouTube()
     .then(() => registry.sync())
     .catch(() => {});
   // While something is left to do (sign in, answer the question about the sites) the icon wears a
-  // mark and a click on it opens the small onboarding window; when it is done a click opens the side
-  // panel. Chrome lets an extension open its small window by itself, but not the side panel.
+  // mark; the click on it always opens the side panel, which shows the welcome until it is done.
   const syncOnboarding = async (): Promise<boolean> => {
     const [account, everywhere, dismissed, granted] = await Promise.all([
       loadAccount(),
@@ -59,8 +58,7 @@ export default defineBackground(() => {
     const todo = !account || (!(everywhere && granted) && !dismissed);
     await browser.action.setBadgeText({ text: todo ? '!' : '' });
     if (todo) await browser.action.setBadgeBackgroundColor({ color: '#4a68f5' });
-    await browser.action.setPopup({ popup: todo ? 'onboarding.html' : '' });
-    await browser.sidePanel?.setPanelBehavior({ openPanelOnActionClick: !todo });
+    await browser.sidePanel?.setPanelBehavior({ openPanelOnActionClick: true });
     return todo;
   };
   const keepOnboardingInStep = () =>
@@ -72,11 +70,15 @@ export default defineBackground(() => {
 
   browser.runtime.onInstalled.addListener((details) => {
     void registry.sync();
-    // A new user is met by the small window under the icon; if Chrome refuses (no window in focus), the mark is there.
+    // A new user is met by the side panel with the welcome. Chrome opens the panel only on a gesture of
+    // the user, so this is a try (it works when Chrome counts the installation as one); if it is refused,
+    // the mark on the icon is there and one click opens the panel.
     if (details.reason === 'install' && !import.meta.env.VITE_DS_E2E)
       void syncOnboarding()
         .then(async (todo) => {
-          if (todo) await browser.action.openPopup();
+          if (!todo) return;
+          const window = await browser.windows.getLastFocused();
+          if (window.id !== undefined) await browser.sidePanel?.open({ windowId: window.id });
         })
         .catch(() => {});
     else keepOnboardingInStep();

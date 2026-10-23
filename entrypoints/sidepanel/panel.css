@@ -856,19 +856,6 @@ a.page-url:hover {
 .banner {
   margin-bottom: 12px;
 }
-/* The small window under the icon (onboarding): a fixed width, the card inside it. */
-.onboarding {
-  width: 380px;
-  padding-bottom: 8px;
-  color: var(--text);
-}
-.onboarding .content {
-  overflow: visible;
-}
-.onboarding .done {
-  margin: 12px;
-  padding: 14px;
-}
 
 /* ---------------------------------------------------------------- search, filters, lists of history and words */
 .toolbar {
