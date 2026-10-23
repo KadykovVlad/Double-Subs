@@ -307,6 +307,42 @@ test('the popup sliders change the translation size, width and glass of the bar 
   expect(await setting('barOpacity')).toBe(0.9);
 });
 
+test('the narrowest width suits a wide video but never makes a square of a vertical one', async () => {
+  const { page, popup } = await openPlayer();
+  const { bar: barEl } = bar(page);
+  await openPanelTab(popup, 'settings');
+  await popup.getByTestId('bar-width').fill('40');
+  await expect.poll(() => setting('barWidth')).toBe(40);
+  const size = async () => ({
+    bar: await barEl.evaluate((el) => el.getBoundingClientRect().width),
+    video: await page.locator('video').evaluate((el) => el.getBoundingClientRect().width),
+  });
+
+  // A wide video: the chosen 40 % of it (the readable minimum is smaller than that).
+  await page.locator('video').evaluate((v: HTMLVideoElement) => {
+    v.style.width = '960px';
+    v.style.height = '540px';
+  });
+  await expect
+    .poll(async () => {
+      const { bar, video } = await size();
+      return Math.round((bar / video) * 100);
+    })
+    .toBe(40);
+
+  // A vertical one: the bar is not narrower than a readable line, here the whole width of the video.
+  await page.locator('video').evaluate((v: HTMLVideoElement) => {
+    v.style.width = '270px';
+    v.style.height = '480px';
+  });
+  await expect
+    .poll(async () => {
+      const { bar, video } = await size();
+      return bar / video;
+    })
+    .toBeGreaterThan(0.9);
+});
+
 test('the bar keeps its width from line to line, so changing the width does not make it jump', async () => {
   const { page } = await openPlayer();
   const width = () => bar(page).bar.evaluate((el) => Math.round(el.getBoundingClientRect().width));

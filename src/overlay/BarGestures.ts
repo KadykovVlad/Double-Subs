@@ -101,7 +101,10 @@ export class BarGestures {
     const rect = this.videoSize();
     if (!rect) return;
     const side = edge.dataset.edge!;
+    // The width is followed from the one on screen (the bar never goes under a readable minimum).
+    const shown = (this.bar.offsetWidth / rect.width) * 100;
     const start = { x: event.clientX, y: event.clientY, ...this.host.settings() };
+    start.barWidth = shown;
     this.active = true;
     edge.classList.add('active');
     this.bar.classList.add('resizing');

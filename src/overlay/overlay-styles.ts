@@ -6,7 +6,9 @@ export const OVERLAY_STYLE = `
   .box { position: absolute; overflow: hidden; }
   .bar {
     position: absolute; display: flex; align-items: center; gap: 0.85em; box-sizing: border-box;
-    width: var(--bar-width, 70%); max-width: 100%; padding: 0.55em 0.8em 0.55em 0.5em;
+    /* The chosen share of the video, but never narrower than a readable line: a vertical video is narrow,
+       and the same percentage that suits a wide one would make a square of the bar. */
+    width: max(var(--bar-width, 70%), min(100%, 13em)); max-width: 100%; padding: 0.55em 0.8em 0.55em 0.5em;
     border-radius: calc(1.7em * var(--radius, 1)); color: #fff; pointer-events: auto;
     font-family: var(--font-family, system-ui, sans-serif);
     background: rgb(var(--tint-rgb, 72 72 80) / var(--bar-alpha, 0.5));

@@ -341,13 +341,14 @@ function revealSection(
       ? [...section.querySelectorAll<HTMLElement>('details')]
       : [...section.querySelectorAll<HTMLElement>('.card')];
   const smooth = !options.instant && !matchMedia('(prefers-reduced-motion: reduce)').matches;
-  (block ?? section).scrollIntoView({
-    behavior: smooth ? 'smooth' : 'auto',
-    block: block ? 'center' : 'start',
-  });
+  const scroll = (behavior: ScrollBehavior) =>
+    (block ?? section).scrollIntoView({ behavior, block: block ? 'center' : 'start' });
+  scroll(smooth ? 'smooth' : 'auto');
   // The blinking starts when the scroll has mostly arrived; blinking again restarts it.
   setTimeout(
     () => {
+      // A page that was still settling (fonts, lists) may have moved the block: put it back in view.
+      if (!smooth) scroll('auto');
       for (const element of blinking) {
         element.classList.remove('blink');
         void element.offsetWidth;
