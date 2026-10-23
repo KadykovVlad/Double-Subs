@@ -1,6 +1,6 @@
 import { boxInHost, placeHost, type OverlayAnchor } from './host';
 
-export type NoticeTone = 'ok' | 'info' | 'warn';
+export type NoticeTone = 'info' | 'warn';
 
 export interface Notice {
   /** Shows a short message in the corner of the video; it goes away by itself unless `sticky`. */
@@ -29,7 +29,6 @@ const STYLE = `
   .box.bottom .chip.on { transform: translate(-50%, 0); }
   .mark { flex: none; width: 20px; height: 20px; }
   .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #7d92ff; box-shadow: 0 0 0 3px rgba(125, 146, 255, 0.25); }
-  .dot.ok { background: #46c98b; box-shadow: 0 0 0 3px rgba(70, 201, 139, 0.25); }
   .dot.warn { background: #f0a63a; box-shadow: 0 0 0 3px rgba(240, 166, 58, 0.25); }
   .text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 `;

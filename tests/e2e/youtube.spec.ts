@@ -37,6 +37,8 @@ interface Timing {
   [key: string]: unknown;
 }
 
+const chipOf = (page: Page) => page.locator('double-sub-notice .chip');
+
 async function openVideo(videoId: string) {
   const page = await session.context.newPage();
   const reports = collectReports(page);
@@ -410,8 +412,8 @@ test("automatic subtitles whose YouTube translation needs the player's token: Yo
       ['English (auto-generated) (автосубтитры)', 'loaded'],
       ['English (auto-generated) (автоперевод YouTube → ru)', 'loaded'],
     ]);
-    // The chip says that subtitles are ready, not a translation stuck halfway.
-    await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+    // Ready is not announced, and no translation is left stuck halfway on the chip.
+    await expect(page.locator('double-sub-notice .chip')).toBeHidden();
   } finally {
     clearInterval(poll);
   }
@@ -448,9 +450,7 @@ test("YouTube's translation takes seconds: the line that came is shown at once, 
   });
   await expect(page.locator('double-sub-notice .text')).toHaveText('Загружаю субтитры YouTube…');
   // When YouTube's translation comes, it takes the line over without anything else to do.
-  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU', {
-    timeout: 6000,
-  });
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden({ timeout: 6000 }); // the loading chip is gone
 });
 
 test("the Russian track comes empty from YouTube: YouTube's translation of the English one is taken at once", async () => {
@@ -463,7 +463,7 @@ test("the Russian track comes empty from YouTube: YouTube's translation of the E
   await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.', {
     timeout: 1000,
   });
-  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden(); // ready is not announced
   expect(reports.at(-1)?.tracks.map((t) => [t.label, t.status])).toEqual([
     ['English (субтитры)', 'loaded'],
     ['English (автоперевод YouTube → ru)', 'loaded'],
@@ -488,7 +488,7 @@ test("YouTube's translation of the only line takes seconds: the device fills the
   await expect(page.locator('double-sub-overlay .en')).toHaveText('Hello, Dexter.', {
     timeout: 6000,
   });
-  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden(); // ready is not announced
 });
 
 test('a player that sent its request before it had its token: it is told to reload the track, and the lines come within two seconds', async () => {
@@ -548,13 +548,6 @@ test("a Short: our lines over it, its own captions and CC button hidden, our swi
   // As big as the Short's other buttons, so its icon sits in the middle of the row.
   expect(await toggle.boundingBox()).toMatchObject({ width: 48, height: 48 });
 
-  // The chip goes to the bottom centre: YouTube's buttons are at the top of a Short.
-  const [chip, video] = await Promise.all([
-    page.locator('double-sub-notice .chip').boundingBox(),
-    page.locator('#shorts-player video').boundingBox(),
-  ]);
-  expect(video!.y + video!.height - (chip!.y + chip!.height)).toBeCloseTo(12, 0);
-  expect(chip!.x + chip!.width / 2).toBeCloseTo(video!.x + video!.width / 2, 0);
   // CC was on already: nothing pressed, and the hidden watch player is never touched.
   expect(await clicksOn(page, 'ccClicks')).toBe(0);
   expect(await clicksOn(page, 'watchCcClicks')).toBe(0);
@@ -595,19 +588,42 @@ test('scrolling to the next Short: its lines replace the previous ones, nothing 
   await expect(page.getByTestId('yt-toggle')).toBeVisible();
 });
 
+test("the chip of a Short without subtitles: inside the Short, at the bottom centre, below YouTube's header; on a watch page at the top", async () => {
+  await makeKnown();
+  const watch = await openVideo('NONE');
+  await openPopupFor(session, watch.page);
+  const watchChip = chipOf(watch.page);
+  await expect(watchChip).toBeVisible();
+  const [chipBox, watchVideo] = await Promise.all([
+    watchChip.boundingBox(),
+    watch.page.locator('#movie_player video').boundingBox(),
+  ]);
+  expect(chipBox!.y - watchVideo!.y).toBeCloseTo(12, 0);
+
+  const { page } = await openShort('NONE');
+  await openPopupFor(session, page);
+  await expect(chipOf(page)).toBeVisible();
+  const [chip, video] = await Promise.all([
+    chipOf(page).boundingBox(),
+    page.locator('#shorts-player video').boundingBox(),
+  ]);
+  expect(video!.y + video!.height - (chip!.y + chip!.height)).toBeCloseTo(12, 0);
+  expect(chip!.x + chip!.width / 2).toBeCloseTo(video!.x + video!.width / 2, 0);
+  const notice = await page.evaluate(() => {
+    const reel = document.querySelector('ytd-reel-video-renderer')!;
+    const host = document.querySelector('double-sub-notice');
+    return { inReel: host?.parentElement === reel, z: Number(getComputedStyle(host!).zIndex) };
+  });
+  expect(notice.inReel).toBe(true);
+  expect(notice.z).toBeLessThan(2020);
+});
+
 test('from a video to Shorts without reloading: the lines move onto the Short, off the hidden player', async () => {
   await makeKnown();
   const page = await session.context.newPage();
   const reports = collectReports(page);
   await page.goto(`${server.origin}/watch?v=BOTH&test=${++counter}`);
   await expect.poll(() => statuses(reports)).toEqual(BOTH_LOADED);
-  // On the watch page the chip stays where it was, at the top.
-  const [watchChip, watchVideo] = await Promise.all([
-    page.locator('double-sub-notice .chip').boundingBox(),
-    page.locator('#movie_player video').boundingBox(),
-  ]);
-  expect(watchChip!.y - watchVideo!.y).toBeCloseTo(12, 0);
-
   await page.evaluate(() =>
     (window as unknown as { goToShorts: (id: string) => void }).goToShorts('ASR'),
   );
@@ -673,17 +689,13 @@ test("the bar and the chip live inside the Short, below YouTube's header, and mo
     const style = (el: Element | null) => (el ? getComputedStyle(el) : null);
     return {
       overlayInReel: document.querySelector('double-sub-overlay')?.parentElement === reel,
-      noticeInReel: document.querySelector('double-sub-notice')?.parentElement === reel,
       overlayZ: Number(style(document.querySelector('double-sub-overlay'))?.zIndex),
-      noticeZ: Number(style(document.querySelector('double-sub-notice'))?.zIndex),
     };
   });
   expect(where.overlayInReel).toBe(true);
-  expect(where.noticeInReel).toBe(true);
   // YouTube's header is 2020 and its controls in the reel reach 1001.
   expect(where.overlayZ).toBeGreaterThan(1001);
   expect(where.overlayZ).toBeLessThan(2020);
-  expect(where.noticeZ).toBeLessThan(2020);
 
   // The page scrolls the reel (the browser moves it, our script is not asked): the bar is carried
   // along in the very same frame, not put right afterwards.
@@ -728,7 +740,7 @@ test("another pair: English to learn and German as the own language, German from
   await expect(learnLine(page)).toHaveText('Hello, Dexter.');
   await expect(nativeLine(page)).toHaveText('Hallo, Dexter.');
   await expect(nativeLine(page)).toHaveAttribute('lang', 'de');
-  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + DE');
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden(); // ready is not announced
   await expect(popup.locator('.chips .chip')).toHaveText(['EN', 'DE']);
 });
 
@@ -766,5 +778,5 @@ test("the player's first request has no token: it is asked for the track, the ot
   expect(
     await page.evaluate(() => (window as unknown as { setOptionCalls: unknown[] }).setOptionCalls),
   ).toEqual([{ module: 'captions', option: 'track', value: { languageCode: 'en', kind: 'asr' } }]);
-  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden(); // ready is not announced
 });

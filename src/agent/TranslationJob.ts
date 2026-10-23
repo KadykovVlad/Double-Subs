@@ -12,18 +12,14 @@ import { directionOf } from '../lib/translator';
 export function translationNotice(
   status: TranslationStatus,
   target: string,
-): { text: string; tone: 'ok' | 'info' | 'warn'; sticky: boolean } {
+): { text: string; tone: 'info' | 'warn'; sticky: boolean } | null {
   switch (status.state) {
     case 'translating': {
       const percent = Math.round((status.done / Math.max(1, status.total)) * 100);
       return { text: t('tr_progress', nameOf(target), percent), tone: 'info', sticky: true };
     }
     case 'done':
-      return {
-        text: t(status.fromCache ? 'tr_done_cache' : 'tr_done', nameOf(target)),
-        tone: 'ok',
-        sticky: false,
-      };
+      return null; // a finished translation is just there: the line appears, nothing to announce
     case 'needs-model':
       return { text: t('tr_needs_model'), tone: 'warn', sticky: true };
     case 'unavailable':
@@ -84,8 +80,10 @@ export class TranslationJob {
         const silent =
           meanwhile || (quiet && (status.state === 'translating' || status.state === 'done'));
         if (!silent) {
-          const { text, tone, sticky } = translationNotice(status, targetLang);
-          this.target.notice.show(text, tone, { sticky });
+          const notice = translationNotice(status, targetLang);
+          // Done: the progress chip, if it is still up, goes away.
+          if (notice) this.target.notice.show(notice.text, notice.tone, { sticky: notice.sticky });
+          else this.target.notice.hide();
         }
         this.target.onProgress();
       },

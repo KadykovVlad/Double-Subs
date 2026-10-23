@@ -53,17 +53,9 @@ const chip = (page: Page) => page.locator('double-sub-notice .chip');
 
 // ---------------------------------------------------------------- the chip on the video
 
-test('the chip on the video says that both subtitle tracks were found, then goes away', async () => {
-  const page = await openPage('player-4tracks.html');
-  await openPopupFor(session, page);
-  await expect(chip(page)).toHaveText('Субтитры готовы · EN + RU');
-  await expect(chip(page)).toBeHidden({ timeout: 9000 });
-});
-
-test('with one language the chip says which one was found and that the other is translated', async () => {
-  const page = await openPage('shadow-video.html');
-  // The first message lasts only as long as the translation of three lines: every chip is recorded.
-  await page.evaluate(() => {
+/** Records every text the chip on the page shows, from now on, in `window.chips`. */
+const recordChips = (page: Page) =>
+  page.evaluate(() => {
     const seen: string[] = [];
     (window as unknown as { chips: string[] }).chips = seen;
     const look = () => {
@@ -75,11 +67,31 @@ test('with one language the chip says which one was found and that the other is 
     };
     look();
   });
-  await openPopupFor(session, page);
-  // Then it reports the translation, same place.
-  await expect(chip(page)).toContainText('Перевод на русский готов');
-  const chips = await page.evaluate(() => (window as unknown as { chips: string[] }).chips);
-  expect(chips[0]).toContain('Субтитры готовы · EN, русский переведу');
+const recordedChips = (page: Page) =>
+  page.evaluate(() => (window as unknown as { chips: string[] }).chips);
+
+test('ready subtitles raise no chip on the video: the lines are the news', async () => {
+  const page = await openPage('player-4tracks.html');
+  await recordChips(page);
+  const panel = await openPopupFor(session, page);
+  await expect(panel.getByTestId('status')).toHaveText('Субтитры найдены');
+  await page.waitForTimeout(1500);
+  await expect(chip(page)).toBeHidden();
+  expect(await recordedChips(page)).toEqual([]);
+});
+
+test('with one language the other is translated, and neither the subtitles nor the translation announce themselves', async () => {
+  const page = await openPage('shadow-video.html');
+  await recordChips(page);
+  const panel = await openPopupFor(session, page);
+  // The device translates; the panel says when it is done, the chip stays out of it.
+  await expect(panel.getByTestId('translation')).toContainText('Русский: перевод Chrome.', {
+    timeout: 15_000,
+  });
+  await page.waitForTimeout(1500);
+  await expect(chip(page)).toBeHidden();
+  const chips = await recordedChips(page);
+  expect(chips.filter((text) => /готов/.test(text))).toEqual([]);
 });
 
 test('without usable subtitles the chip says so', async () => {
@@ -89,7 +101,7 @@ test('without usable subtitles the chip says so', async () => {
 });
 
 test('the chip does not take the mouse: the player under it stays clickable', async () => {
-  const page = await openPage('player-4tracks.html');
+  const page = await openPage('player-single-forced.html'); // no full subtitles: a chip is shown
   await openPopupFor(session, page);
   await expect(chip(page)).toBeVisible();
   const pointer = await chip(page).evaluate(
@@ -422,11 +434,11 @@ test('one language only: the cut sentence is translated whole, not in halves', a
 // ---------------------------------------------------------------- where things are shown
 
 test('the chip is in the right corner of the video', async () => {
-  const page = await openPage('player-4tracks.html');
+  const page = await openPage('player-single-forced.html'); // no full subtitles: a chip is shown
   await openPopupFor(session, page);
   await expect(chip(page)).toBeVisible();
-  const video = (await page.locator('video#player').boundingBox())!;
-  const box = (await chip(page).boundingBox())!;
+  const box = (await chip(page).boundingBox())!; // first: the chip goes away after a few seconds
+  const video = (await page.locator('video').boundingBox())!;
   expect(box.x + box.width / 2).toBeGreaterThan(video.x + video.width / 2); // in the right half
   expect(video.x + video.width - (box.x + box.width)).toBeLessThan(24); // by the right edge
 });

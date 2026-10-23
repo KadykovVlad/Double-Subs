@@ -243,10 +243,8 @@ test('a mirror of a ticked site starts by itself with the switch for every site 
   const mirror = await openAt(asHost('new-lordfilm.localhost', '/shadow-video.html'));
   await seek(mirror, 1.5);
   await expect(lines(mirror).en).toHaveText('Hello, Dexter.');
-  // The chip tells that the subtitles are ready (and then, at once, that the translation is).
-  await expect(mirror.locator('double-sub-notice .chip')).toHaveText(
-    /Субтитры готовы|Перевод на русский готов/,
-  );
+  // Ready subtitles announce nothing: the lines are the news.
+  await expect(mirror.locator('double-sub-notice .chip')).toBeHidden();
 });
 
 test('with the switch for every site on, a site with another name starts by itself too', async () => {
@@ -301,6 +299,6 @@ test('an ad first, the film later: the chip waits, then the subtitles come by th
   await page.evaluate(() => (window as unknown as { startFilm: () => void }).startFilm());
   await seek(page, 1.5);
   await expect(lines(page).en).toHaveText('Hello, Dexter.', { timeout: 10_000 });
-  await expect(page.locator('double-sub-notice .text')).toHaveText('Субтитры готовы · EN + RU');
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden(); // ready is not announced
   await expect(lines(page).host).toHaveCount(1);
 });

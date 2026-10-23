@@ -64,9 +64,8 @@ test('English only: the Russian line is translated, then the same subtitles come
   const { en, ru, badge } = overlay(first);
   await expect(en).toHaveText('Hello, Dexter.');
   await expect(ru).toHaveText('Привет, Декстер.'); // the stand-in answers in lower case; polish capitalises
-  await expect(badge).toHaveText('Перевод на русский готов');
   await expect(popup.getByTestId('translation')).toContainText('Русский: перевод Chrome.');
-  await expect(badge).toBeHidden({ timeout: 8000 }); // a finished translation leaves the badge after a few seconds
+  await expect(badge).toBeHidden(); // a finished translation announces nothing and takes the progress badge away
 
   // All three cues were translated, not only the visible one.
   await seekTo(first, '#host video', 5);
@@ -78,7 +77,7 @@ test('English only: the Russian line is translated, then the same subtitles come
   await seekTo(second, '#host video', 1.5);
   const secondPopup = await openPopupFor(session, second);
   await expect(overlay(second).ru).toHaveText('Привет, Декстер.');
-  await expect(overlay(second).badge).toHaveText('Перевод на русский готов (из кэша)');
+  await expect(overlay(second).badge).toBeHidden(); // from the cache: no announcement either
   await expect(secondPopup.getByTestId('translation')).toContainText('(из кэша)');
 });
 
@@ -121,7 +120,7 @@ test('a slow translator: progress is shown on the video and in the popup, and th
   await expect(badge).toContainText('Перевожу на русский…');
   await expect(popup.getByTestId('translation')).toHaveAttribute('data-state', 'translating');
   await expect(ru).toHaveText('[ru] I know what you did last night.', { timeout: 10_000 }); // 3 lines at 250 ms each
-  await expect(badge).toHaveText('Перевод на русский готов');
+  await expect(badge).toBeHidden(); // done: the progress badge is gone, nothing takes its place
 });
 
 test('a player without tracks that fetched subtitle files itself: both lines come from the files', async () => {

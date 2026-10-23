@@ -1,13 +1,7 @@
 import { describeFrame } from '../lib/frame';
 import { phrasize } from '../lib/phrases';
 import { pairOf, updateSettings } from '../lib/settings';
-import {
-  DEFAULT_PAIR,
-  otherRole,
-  sameLanguage,
-  shortName,
-  type LanguagePair,
-} from '../lib/languages';
+import { DEFAULT_PAIR, otherRole, sameLanguage, type LanguagePair } from '../lib/languages';
 import { mayBeBeforeTheFilm, readPlayerFacts } from '../lib/player-state';
 import { fileLabel, loadSubtitleFiles } from '../lib/subtitle-files';
 import { inspectVideo } from '../lib/tracks';
@@ -25,29 +19,16 @@ import type { PanelLink } from './host';
 import { PlayerWatcher } from './PlayerWatcher';
 import { TranslationJob } from './TranslationJob';
 import type { UserData } from './UserData';
-import { nameOf, t } from '../lib/i18n';
+import { t } from '../lib/i18n';
 
-/** The first thing the user sees when subtitles are ready. */
-export function readyNotice(
-  report: VideoReport,
-  pair: LanguagePair,
-): { text: string; tone: 'ok' | 'warn' } {
-  const from = report.decision.translateFrom;
-  switch (report.decision.case) {
-    case 'A':
-      return {
-        text: t('chip_ready_a', shortName(pair.learn), shortName(pair.native)),
-        tone: 'ok',
-      };
-    case 'B':
-      return {
-        text: t('chip_ready_b', shortName(pair[from!]), nameOf(pair[otherRole(from!)])),
-        tone: 'ok',
-      };
-    case 'C':
-      if (youtubeBlocked(report)) return { text: t('chip_youtube_blocked'), tone: 'warn' };
-      return { text: t(report.tracks.length === 0 ? 'chip_none' : 'chip_no_full'), tone: 'warn' };
-  }
+/**
+ * What the chip says once the player has been looked at: nothing when the subtitles are there (the
+ * subtitles themselves are the news), and a warning when they are not.
+ */
+export function readyNotice(report: VideoReport): { text: string; tone: 'warn' } | null {
+  if (report.decision.case !== 'C') return null;
+  if (youtubeBlocked(report)) return { text: t('chip_youtube_blocked'), tone: 'warn' };
+  return { text: t(report.tracks.length === 0 ? 'chip_none' : 'chip_no_full'), tone: 'warn' };
 }
 
 /** Subtitle files the page fetched, in the shape the analysis reads. */
@@ -267,12 +248,14 @@ export class VideoSession {
         this.notice.show(t('chip_waiting_film'), 'info');
         // A short video that really has none: say so after a while.
         this.giveUpTimer = setTimeout(() => {
-          if (this.report?.decision.case === 'C')
-            this.notice.show(readyNotice(this.report, this.pair).text, 'warn');
+          const warning = this.report && readyNotice(this.report);
+          if (warning) this.notice.show(warning.text, warning.tone);
         }, WAIT_FOR_FILM_MS);
       } else {
-        const { text, tone } = readyNotice(report, this.pair);
-        this.notice.show(text, tone);
+        const notice = readyNotice(report);
+        // Nothing to warn about: a "loading" or "waiting" chip that is still up goes away.
+        if (notice) this.notice.show(notice.text, notice.tone);
+        else this.notice.hide();
       }
     }
   }
