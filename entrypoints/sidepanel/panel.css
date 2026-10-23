@@ -1315,9 +1315,12 @@ a.page-url:hover {
   line-height: 18px;
 }
 .plan-list {
+  flex: 1;
+  align-content: start;
   display: grid;
   gap: 8px;
-  margin: 0;
+  /* Room before the button, whatever the height of the column. */
+  margin: 0 0 18px;
   padding: 0;
   list-style: none;
   font-size: 13px;

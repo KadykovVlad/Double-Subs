@@ -29,6 +29,7 @@ export async function launchWithExtension(
   options: {
     userAgent?: string;
     headless?: boolean;
+    /** The language of the interface; 'auto' leaves it unchosen, for the tests of the browser's own language. */
     language?: string;
     plan?: 'free' | 'pro';
     /** Somebody is signed in (the extension works for signed-in users only). */
@@ -52,7 +53,7 @@ export async function launchWithExtension(
   const worker = context.serviceWorkers()[0] ?? (await context.waitForEvent('serviceworker'));
   // The interface is English until the user chooses; the tests choose their language the way the panel does.
   const messages =
-    language === 'en'
+    language === 'en' || language === 'auto'
       ? null
       : JSON.parse(
           await readFile(
@@ -64,7 +65,7 @@ export async function launchWithExtension(
     worker.evaluate(
       (stored) =>
         chrome.storage.local.set({
-          uiLanguage: stored.language,
+          ...(stored.language.code === 'auto' ? {} : { uiLanguage: stored.language }),
           entitlements: { plan: stored.plan, proUntil: null },
           // The banner that asks for access to all sites is not in the way of the tests that are not about it.
           accessBannerDismissed: true,

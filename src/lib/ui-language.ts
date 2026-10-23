@@ -45,6 +45,54 @@ function apply(stored: Stored | undefined): void {
   setUiLanguage(stored?.code ?? DEFAULT_UI_LANGUAGE, stored?.messages ?? null);
 }
 
+/** Spanish of the Americas has its own file; the rest of Spanish is the one of Spain. */
+const SPANISH_AMERICAS = new Set(
+  'AR BO CL CO CR CU DO EC GT HN MX NI PA PE PR PY SV US UY VE 419'.split(' '),
+);
+/** Codes a browser may report that the files of locales/ name differently. */
+const ALIASES: Record<string, string> = {
+  nb: 'no',
+  nn: 'no',
+  iw: 'he',
+  tl: 'fil',
+  pt: 'pt-BR',
+  zh: 'zh-CN',
+};
+
+/**
+ * The language of the interface for a user who has not chosen one: the language of the browser
+ * ("ru-RU" → "ru", "pt-PT" → "pt-PT", "es-MX" → "es-419"), English when it is not among ours.
+ */
+export function detectUiLanguage(browserLanguage: string): string {
+  const [base = '', region = ''] = browserLanguage.replace('_', '-').split('-');
+  const lower = base.toLowerCase();
+  const upper = region.toUpperCase();
+  const known = (code: string) => (UI_LANGUAGES as readonly string[]).includes(code);
+  if (lower === 'es' && SPANISH_AMERICAS.has(upper)) return 'es-419';
+  if (lower === 'zh' && (upper === 'TW' || upper === 'HK' || upper === 'MO')) return 'zh-TW';
+  const full = region ? `${lower}-${upper}` : lower;
+  if (known(full)) return full;
+  const alias = ALIASES[lower];
+  if (alias && known(alias)) return alias;
+  return known(lower) ? lower : DEFAULT_UI_LANGUAGE;
+}
+
+/**
+ * For the pages of the extension that show the interface: a user who has never chosen a language gets
+ * the one of the browser (saved, so the other pages and the page's agent follow). Only these pages ask,
+ * because only they may read the language files of the package.
+ */
+export async function ensureUiLanguage(): Promise<void> {
+  try {
+    const got = await browser.storage.local.get(KEY);
+    if (got[KEY]) return;
+    const code = detectUiLanguage(browser.i18n.getUILanguage());
+    if (code !== DEFAULT_UI_LANGUAGE) await chooseUiLanguage(code);
+  } catch {
+    // no language file or no storage: the interface stays English until the user chooses
+  }
+}
+
 /** At the start of a page of the extension or of the agent: from now on `t()` speaks the chosen language. */
 export async function loadUiLanguage(): Promise<void> {
   try {
