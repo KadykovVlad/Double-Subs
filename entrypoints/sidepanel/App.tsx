@@ -203,8 +203,11 @@ function SignedInApp({ language }: { language: string }) {
       if (message?.type === 'selected' || message?.type === 'status') refresh();
     };
     browser.runtime.onMessage.addListener(onMessage);
-    // A payment or a change on the server shows up when the panel opens; offline is no problem.
-    void refreshPlan().catch(() => {});
+    // A payment or a change on the server shows up when the panel opens; offline is no problem, the
+    // plan is asked again as soon as the network is back.
+    const askPlan = () => void refreshPlan().catch(() => {});
+    askPlan();
+    window.addEventListener('online', askPlan);
 
     const follow = (id: number) => {
       current.current = id;
@@ -240,6 +243,7 @@ function SignedInApp({ language }: { language: string }) {
     return () => {
       clearTimeout(timer);
       browser.runtime.onMessage.removeListener(onMessage);
+      window.removeEventListener('online', askPlan);
       browser.tabs.onActivated.removeListener(onActivated);
       browser.tabs.onUpdated.removeListener(onUpdated);
     };

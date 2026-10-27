@@ -132,7 +132,8 @@ async function call(path: string, body?: unknown, accessToken?: string): Promise
     });
   } catch (error) {
     // The panel only says "no connection"; the reason (DNS, CORS, a blocked address) is in its DevTools console.
-    console.warn('[Double Sub] request to the server failed:', path, error);
+    // Not a warning: being offline is normal, and a warning lands on the extension's error page.
+    console.info('[Double Sub] request to the server failed:', path, error);
     throw new AccountError('network');
   }
 }
