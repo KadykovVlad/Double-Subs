@@ -318,5 +318,13 @@
 "toast_pro_title": "Samo u PRO",
 "toast_pro_text": "Spremanje i ponavljanje riječi dio je Pro verzije.",
 "toast_learn_more": "Saznajte više",
-"toast_close": "Zatvori"
+"toast_close": "Zatvori",
+"nav_translation": "Prijevod",
+"set_translation": "Modeli prijevoda",
+"tm_why": "Nedostajući retci titlova prevode se izravno u pregledniku, pa nijedan tekst ne napušta vaše računalo. Chrome jednom preuzima mali jezični model za svaki par jezika.",
+"tm_from": "Prevedi s",
+"tm_ready": "$1: model je preuzet",
+"tm_needed": "$1: model još nije preuzet",
+"tm_busy": "$1: Chrome već preuzima ovaj model…",
+"tm_no_api": "Ugrađeni prevoditelj nije dostupan: potreban je Chrome 138 ili noviji."
 }

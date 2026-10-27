@@ -318,5 +318,13 @@
 "toast_pro_title": "Doar în PRO",
 "toast_pro_text": "Salvarea și repetarea cuvintelor fac parte din Pro.",
 "toast_learn_more": "Află mai multe",
-"toast_close": "Închide"
+"toast_close": "Închide",
+"nav_translation": "Traducere",
+"set_translation": "Modele de traducere",
+"tm_why": "Rândurile de subtitrare lipsă sunt traduse chiar în browser, deci niciun text nu părăsește computerul. Chrome descarcă o singură dată un mic model lingvistic pentru fiecare pereche.",
+"tm_from": "Traduce din",
+"tm_ready": "$1: modelul este descărcat",
+"tm_needed": "$1: modelul nu este încă descărcat",
+"tm_busy": "$1: Chrome descarcă deja acest model…",
+"tm_no_api": "Traducătorul integrat nu este disponibil: necesită Chrome 138 sau mai nou."
 }

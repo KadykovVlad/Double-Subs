@@ -318,5 +318,13 @@
 "toast_pro_title": "Tylko w PRO",
 "toast_pro_text": "Zapisywanie i powtarzanie słów jest w wersji Pro.",
 "toast_learn_more": "Dowiedz się więcej",
-"toast_close": "Zamknij"
+"toast_close": "Zamknij",
+"nav_translation": "Tłumaczenie",
+"set_translation": "Modele tłumaczenia",
+"tm_why": "Brakujące linie napisów są tłumaczone w samej przeglądarce, więc żaden tekst nie opuszcza komputera. Chrome pobiera raz mały model językowy dla każdej pary.",
+"tm_from": "Tłumacz z",
+"tm_ready": "$1: model pobrany",
+"tm_needed": "$1: model jeszcze nie pobrany",
+"tm_busy": "$1: Chrome już pobiera ten model…",
+"tm_no_api": "Wbudowany tłumacz jest niedostępny: wymaga Chrome 138 lub nowszego."
 }

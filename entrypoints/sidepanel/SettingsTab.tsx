@@ -39,6 +39,7 @@ import {
   type Diagnostics,
 } from '../../src/panel/controller';
 import { forgetSite, MirrorsSwitch, type SettingsFocus } from './NowTab';
+import { TranslationModels } from './TranslationModels';
 import {
   useAccount,
   useEntitlements,
@@ -143,6 +144,10 @@ export function SettingsTab({
               />
               <LineVoice lang={settings.nativeLang} />
             </Card>
+          </section>
+          <section id="set-translation" class="settings-section">
+            <SectionTitle>{t('set_translation')}</SectionTitle>
+            <TranslationModels />
           </section>
           <section id="set-window" class="settings-section">
             <SectionTitle>{t('set_window')}</SectionTitle>
@@ -362,11 +367,12 @@ function revealSection(
 
 const BLINK_MS = 1650;
 
-type SectionId = 'account' | 'subtitles' | 'window' | 'sites' | 'history' | 'dev';
+type SectionId = 'account' | 'subtitles' | 'translation' | 'window' | 'sites' | 'history' | 'dev';
 
 const SECTIONS: Array<{ id: SectionId; label: MessageKey; icon: JSX.Element }> = [
   { id: 'account', label: 'nav_account', icon: Icons.user },
   { id: 'subtitles', label: 'nav_subtitles', icon: Icons.subtitles },
+  { id: 'translation', label: 'nav_translation', icon: Icons.translate },
   { id: 'window', label: 'nav_window', icon: Icons.window },
   { id: 'sites', label: 'nav_sites', icon: Icons.globe },
   { id: 'history', label: 'nav_history', icon: Icons.history },
@@ -433,6 +439,7 @@ function SettingsNav({ sections }: { sections: typeof SECTIONS }) {
         <button
           key={section.id}
           type="button"
+          title={t(section.label)}
           aria-current={current === section.id ? 'true' : undefined}
           data-testid={`settings-nav-${section.id}`}
           onClick={() => go(section.id)}

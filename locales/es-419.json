@@ -318,5 +318,13 @@
 "toast_pro_title": "Solo en PRO",
 "toast_pro_text": "Guardar y repasar palabras es parte de Pro.",
 "toast_learn_more": "Más información",
-"toast_close": "Cerrar"
+"toast_close": "Cerrar",
+"nav_translation": "Traducción",
+"set_translation": "Modelos de traducción",
+"tm_why": "Las líneas de subtítulos que faltan se traducen en el propio navegador, así que ningún texto sale de tu computadora. Chrome descarga una vez un pequeño modelo de idioma para cada par.",
+"tm_from": "Traducir desde",
+"tm_ready": "$1: modelo descargado",
+"tm_needed": "$1: modelo aún sin descargar",
+"tm_busy": "$1: Chrome ya está descargando este modelo…",
+"tm_no_api": "El traductor integrado no está disponible: requiere Chrome 138 o posterior."
 }

@@ -318,5 +318,13 @@
 "toast_pro_title": "Vain PRO-versiossa",
 "toast_pro_text": "Sanojen tallennus ja kertaus kuuluvat Pro-versioon.",
 "toast_learn_more": "Lue lisää",
-"toast_close": "Sulje"
+"toast_close": "Sulje",
+"nav_translation": "Käännös",
+"set_translation": "Käännösmallit",
+"tm_why": "Puuttuvat tekstitysrivit käännetään suoraan selaimessa, joten tekstiä ei lähde tietokoneeltasi. Chrome lataa kutakin kielparia varten kerran pienen kielimallin.",
+"tm_from": "Käännä kielestä",
+"tm_ready": "$1: malli on ladattu",
+"tm_needed": "$1: mallia ei ole vielä ladattu",
+"tm_busy": "$1: Chrome lataa jo tätä mallia…",
+"tm_no_api": "Sisäänrakennettu kääntäjä ei ole käytettävissä: tarvitaan Chrome 138 tai uudempi."
 }

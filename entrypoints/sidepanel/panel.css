@@ -1166,25 +1166,28 @@ a.page-url:hover {
   top: 66px;
   z-index: 1;
   display: flex;
-  gap: 6px;
+  gap: 4px;
   margin: -14px -12px 0;
   padding: 14px 12px 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
   background: color-mix(in srgb, var(--bg) 78%, transparent);
   backdrop-filter: blur(12px);
 }
+/* Narrow panel: the sections share the width, icon over the name, so none of them is cut off. */
 .settings-nav button {
-  display: inline-flex;
-  flex: none;
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 1px 5px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 10px;
+  line-height: 1.2;
   font-weight: 560;
   cursor: pointer;
   transition:
@@ -1205,9 +1208,15 @@ a.page-url:hover {
   outline-offset: 2px;
 }
 .settings-nav svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   flex: none;
+}
+.settings-nav button span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .settings-body {
   display: flex;
@@ -1219,7 +1228,7 @@ a.page-url:hover {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  scroll-margin-top: 132px;
+  scroll-margin-top: 150px;
 }
 @container (min-width: 480px) {
   .settings-grid {
@@ -1240,8 +1249,14 @@ a.page-url:hover {
   }
   .settings-nav button {
     width: 100%;
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 6px 10px;
     border-color: transparent;
     background: transparent;
+    font-size: 12.5px;
     text-align: left;
   }
   .settings-body {
@@ -1612,4 +1627,62 @@ a.page-url:hover {
 }
 .row.blink {
   border-radius: 10px;
+}
+
+/* The translation models: a language, the button that downloads its model, and the state. */
+.models-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.models-pick select {
+  flex: 1;
+  max-width: none;
+  min-width: 0;
+}
+.download-btn {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: var(--grad);
+  color: #fff;
+  box-shadow: 0 8px 20px -10px rgba(99, 102, 241, 0.75);
+  cursor: pointer;
+  transition:
+    transform 0.12s var(--ease),
+    filter 0.18s var(--ease);
+}
+.download-btn svg {
+  width: 20px;
+  height: 20px;
+}
+.download-btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.download-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.download-btn:disabled {
+  background: var(--surface-2);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: default;
+}
+.download-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.models-status p {
+  font-size: 13px;
+}
+.models-status .progress {
+  margin-top: 8px;
+}
+.ok-text {
+  color: var(--ok);
+  font-weight: 600;
 }

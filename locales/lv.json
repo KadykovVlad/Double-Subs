@@ -318,5 +318,13 @@
 "toast_pro_title": "Tikai PRO",
 "toast_pro_text": "Vārdu saglabāšana un atkārtošana ir Pro daļa.",
 "toast_learn_more": "Uzzināt vairāk",
-"toast_close": "Aizvērt"
+"toast_close": "Aizvērt",
+"nav_translation": "Tulkošana",
+"set_translation": "Tulkošanas modeļi",
+"tm_why": "Trūkstošās subtitru rindas tiek tulkotas tieši pārlūkā, tāpēc neviens teksts neatstāj jūsu datoru. Chrome katram valodu pārim vienreiz lejupielādē nelielu valodas modeli.",
+"tm_from": "Tulkot no",
+"tm_ready": "$1: modelis ir lejupielādēts",
+"tm_needed": "$1: modelis vēl nav lejupielādēts",
+"tm_busy": "$1: Chrome jau lejupielādē šo modeli…",
+"tm_no_api": "Iebūvētais tulkotājs nav pieejams: nepieciešams Chrome 138 vai jaunāks."
 }

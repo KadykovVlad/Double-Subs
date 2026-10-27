@@ -110,6 +110,88 @@ test('the chip does not take the mouse: the player under it stays clickable', as
   expect(pointer).toBe('none');
 });
 
+// ---------------------------------------------------------------- translation models
+
+/** The panel alone, with a stand-in for Chrome's Translator API in which only English → Russian is downloaded. */
+async function openModelsPanel(width = 400): Promise<Page> {
+  const panel = await session.context.newPage();
+  await panel.setViewportSize({ width, height: 800 });
+  await panel.addInitScript(() => {
+    const have = new Set(['en-ru']);
+    (window as unknown as { Translator: unknown }).Translator = {
+      availability: async (o: { sourceLanguage: string; targetLanguage: string }) =>
+        have.has(`${o.sourceLanguage}-${o.targetLanguage}`) ? 'available' : 'downloadable',
+      create: async (o: {
+        sourceLanguage: string;
+        targetLanguage: string;
+        monitor?: (m: EventTarget) => void;
+      }) => {
+        const monitor = new EventTarget();
+        o.monitor?.(monitor);
+        for (const loaded of [0.3, 0.7, 1]) {
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          const event = new Event('downloadprogress');
+          (event as unknown as { loaded: number }).loaded = loaded;
+          monitor.dispatchEvent(event);
+        }
+        have.add(`${o.sourceLanguage}-${o.targetLanguage}`);
+        return { translate: async (text: string) => text, destroy() {} };
+      },
+    };
+  });
+  await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
+  await openPanelTab(panel, 'settings');
+  return panel;
+}
+
+test('translation models: pick a language, see whether its model is there, download it with progress', async () => {
+  const panel = await openModelsPanel();
+  const status = panel.getByTestId('models-status');
+  const language = panel.getByTestId('models-language');
+  const download = panel.getByTestId('models-download');
+
+  // The learnt language (English) has its model: marked in the list, nothing to download.
+  await expect(language).toHaveValue('en');
+  await expect(status).toHaveAttribute('data-state', 'available');
+  await expect(status).toContainText('модель скачана');
+  await expect(download).toBeDisabled();
+  await expect(language.locator('option[value="en"]')).toContainText('✓');
+
+  // Another language: not downloaded; the button wakes up; the click shows the progress, then the result.
+  await language.selectOption('ko');
+  await expect(status).toHaveAttribute('data-state', 'downloadable');
+  await expect(status).toContainText('Корейский → Русский: модель ещё не скачана');
+  await expect(download).toBeEnabled();
+  await download.click();
+  await expect(status).toContainText('Скачиваю модель…');
+  await expect(status).toHaveAttribute('data-state', 'available', { timeout: 5000 });
+  await expect(status).toContainText('Корейский → Русский: модель скачана');
+  await expect(download).toBeDisabled();
+  await expect(language.locator('option[value="ko"]')).toContainText('✓');
+});
+
+test('translation models: without the Translator API of Chrome the section says so', async () => {
+  const panel = await session.context.newPage();
+  await panel.addInitScript(() => {
+    delete (window as unknown as { Translator?: unknown }).Translator;
+  });
+  await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('models-status')).toHaveAttribute('data-state', 'no-api');
+});
+
+test('the contents of the settings fit a narrow panel: every section is on screen, none is cut off', async () => {
+  const panel = await openModelsPanel(340);
+  const buttons = panel.locator('.settings-nav button');
+  const count = await buttons.count();
+  expect(count).toBeGreaterThanOrEqual(6);
+  for (let i = 0; i < count; i++) {
+    const box = (await buttons.nth(i).boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(340);
+  }
+});
+
 // ---------------------------------------------------------------- the panel
 
 test('the panel has four sections and moves between them', async () => {

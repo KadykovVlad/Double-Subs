@@ -318,5 +318,13 @@
 "toast_pro_title": "Len v PRO",
 "toast_pro_text": "Ukladanie a opakovanie slov je súčasťou Pro.",
 "toast_learn_more": "Zistiť viac",
-"toast_close": "Zavrieť"
+"toast_close": "Zavrieť",
+"nav_translation": "Preklad",
+"set_translation": "Prekladové modely",
+"tm_why": "Chýbajúce riadky titulkov sa prekladajú priamo v prehliadači, takže žiadny text neopustí váš počítač. Chrome si pre každú dvojicu jazykov raz stiahne malý jazykový model.",
+"tm_from": "Prekladať z",
+"tm_ready": "$1: model je stiahnutý",
+"tm_needed": "$1: model ešte nie je stiahnutý",
+"tm_busy": "$1: Chrome už tento model sťahuje…",
+"tm_no_api": "Vstavaný prekladač nie je dostupný: vyžaduje Chrome 138 alebo novší."
 }

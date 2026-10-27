@@ -318,5 +318,13 @@
 "toast_pro_title": "PRO 전용",
 "toast_pro_text": "단어 저장과 복습은 Pro 기능입니다.",
 "toast_learn_more": "자세히 보기",
-"toast_close": "닫기"
+"toast_close": "닫기",
+"nav_translation": "번역",
+"set_translation": "번역 모델",
+"tm_why": "없는 자막 줄은 브라우저 안에서 바로 번역되므로 어떤 텍스트도 컴퓨터 밖으로 나가지 않습니다. Chrome은 언어 쌍마다 작은 언어 모델을 한 번만 내려받습니다.",
+"tm_from": "번역할 언어",
+"tm_ready": "$1: 모델을 내려받음",
+"tm_needed": "$1: 모델을 아직 내려받지 않음",
+"tm_busy": "$1: Chrome이 이미 이 모델을 내려받는 중…",
+"tm_no_api": "내장 번역기를 사용할 수 없습니다. Chrome 138 이상이 필요합니다."
 }

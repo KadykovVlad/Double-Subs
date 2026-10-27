@@ -318,5 +318,13 @@
 "toast_pro_title": "Sa PRO lang",
 "toast_pro_text": "Bahagi ng Pro ang pag-save at pagbabalik-aral ng salita.",
 "toast_learn_more": "Alamin pa",
-"toast_close": "Isara"
+"toast_close": "Isara",
+"nav_translation": "Pagsasalin",
+"set_translation": "Mga modelo ng pagsasalin",
+"tm_why": "Ang mga nawawalang linya ng subtitle ay isinasalin mismo sa browser, kaya walang tekstong lumalabas sa computer mo. Isang beses nagda-download ang Chrome ng maliit na modelo ng wika para sa bawat pares.",
+"tm_from": "Isalin mula sa",
+"tm_ready": "$1: na-download na ang modelo",
+"tm_needed": "$1: hindi pa na-download ang modelo",
+"tm_busy": "$1: dina-download na ng Chrome ang modelong ito…",
+"tm_no_api": "Hindi available ang built-in na tagasalin: kailangan ng Chrome 138 o mas bago."
 }

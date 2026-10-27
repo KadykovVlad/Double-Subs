@@ -318,5 +318,13 @@
 "toast_pro_title": "Només a PRO",
 "toast_pro_text": "Desar i repassar paraules forma part de Pro.",
 "toast_learn_more": "Més informació",
-"toast_close": "Tanca"
+"toast_close": "Tanca",
+"nav_translation": "Traducció",
+"set_translation": "Models de traducció",
+"tm_why": "Les línies de subtítols que falten es tradueixen dins del navegador, de manera que cap text surt del teu ordinador. Chrome descarrega una vegada un petit model d’idioma per a cada parell.",
+"tm_from": "Tradueix des de",
+"tm_ready": "$1: model descarregat",
+"tm_needed": "$1: model encara no descarregat",
+"tm_busy": "$1: Chrome ja està descarregant aquest model…",
+"tm_no_api": "El traductor integrat no està disponible: cal Chrome 138 o posterior."
 }

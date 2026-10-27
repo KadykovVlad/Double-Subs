@@ -318,5 +318,13 @@
 "toast_pro_title": "Alleen in PRO",
 "toast_pro_text": "Woorden opslaan en herhalen hoort bij Pro.",
 "toast_learn_more": "Meer informatie",
-"toast_close": "Sluiten"
+"toast_close": "Sluiten",
+"nav_translation": "Vertaling",
+"set_translation": "Vertaalmodellen",
+"tm_why": "Ontbrekende ondertitelregels worden direct in de browser vertaald, dus er verlaat geen tekst je computer. Chrome downloadt eenmalig een klein taalmodel per taalpaar.",
+"tm_from": "Vertalen uit",
+"tm_ready": "$1: model gedownload",
+"tm_needed": "$1: model nog niet gedownload",
+"tm_busy": "$1: Chrome downloadt dit model al…",
+"tm_no_api": "De ingebouwde vertaler is niet beschikbaar: Chrome 138 of nieuwer is nodig."
 }

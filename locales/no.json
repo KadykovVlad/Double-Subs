@@ -318,5 +318,13 @@
 "toast_pro_title": "Bare i PRO",
 "toast_pro_text": "Å lagre og repetere ord er en del av Pro.",
 "toast_learn_more": "Les mer",
-"toast_close": "Lukk"
+"toast_close": "Lukk",
+"nav_translation": "Oversettelse",
+"set_translation": "Oversettelsesmodeller",
+"tm_why": "Manglende tekstlinjer oversettes direkte i nettleseren, så ingen tekst forlater datamaskinen din. Chrome laster ned en liten språkmodell én gang for hvert språkpar.",
+"tm_from": "Oversett fra",
+"tm_ready": "$1: modellen er lastet ned",
+"tm_needed": "$1: modellen er ikke lastet ned ennå",
+"tm_busy": "$1: Chrome laster allerede ned denne modellen…",
+"tm_no_api": "Den innebygde oversetteren er ikke tilgjengelig: den krever Chrome 138 eller nyere."
 }

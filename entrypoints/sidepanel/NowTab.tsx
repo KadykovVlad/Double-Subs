@@ -101,7 +101,7 @@ export interface NowProps {
 
 /** Where a tool of this tab leads in the settings; `styles` also opens "More styles". */
 export interface SettingsFocus {
-  section: 'account' | 'subtitles' | 'window';
+  section: 'account' | 'subtitles' | 'translation' | 'window';
   styles?: boolean;
   /** A block inside the section to scroll to and blink, by a selector of something in it. */
   target?: string;

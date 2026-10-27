@@ -134,6 +134,18 @@ export const Icons = {
       <circle cx="18" cy="12" r="1.3" />
     </>,
   ),
+  download: icon(
+    <>
+      <path d="M12 4v11M7.5 10.5L12 15l4.5-4.5" />
+      <path d="M5 19h14" />
+    </>,
+  ),
+  translate: icon(
+    <>
+      <path d="M4 6h9M8.5 4v2M6 6c.5 3 2.5 5.5 5.5 7M12 6c-.7 3-3 5.5-6.5 7" />
+      <path d="M12.5 20l3.7-8.5 3.8 8.5M13.8 17.5h4.8" />
+    </>,
+  ),
   close: icon(<path d="M7 7l10 10M17 7L7 17" />),
   tray: icon(
     <>

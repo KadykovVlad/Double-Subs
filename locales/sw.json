@@ -318,5 +318,13 @@
 "toast_pro_title": "Katika PRO pekee",
 "toast_pro_text": "Kuhifadhi na kurudia maneno ni sehemu ya Pro.",
 "toast_learn_more": "Pata maelezo zaidi",
-"toast_close": "Funga"
+"toast_close": "Funga",
+"nav_translation": "Tafsiri",
+"set_translation": "Miundo ya tafsiri",
+"tm_why": "Mistari ya manukuu inayokosekana hutafsiriwa moja kwa moja kwenye kivinjari, kwa hivyo hakuna maandishi yanayoondoka kwenye kompyuta yako. Chrome hupakua mara moja mfumo mdogo wa lugha kwa kila jozi.",
+"tm_from": "Tafsiri kutoka",
+"tm_ready": "$1: mfumo umepakuliwa",
+"tm_needed": "$1: mfumo bado haujapakuliwa",
+"tm_busy": "$1: Chrome tayari inapakua mfumo huu…",
+"tm_no_api": "Mfasiri aliyejengewa ndani hapatikani: unahitaji Chrome 138 au mpya zaidi."
 }
