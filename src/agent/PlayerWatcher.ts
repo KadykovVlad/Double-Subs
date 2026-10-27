@@ -2,7 +2,13 @@ import { playerChanged, readPlayerFacts, type PlayerFacts } from '../lib/player-
 
 const SETTLE_MS = import.meta.env.VITE_DS_E2E ? 150 : 800;
 
-const VIDEO_EVENTS = ['loadstart', 'loadedmetadata', 'durationchange', 'emptied'] as const;
+const VIDEO_EVENTS = [
+  'loadstart',
+  'loadedmetadata',
+  'loadeddata',
+  'durationchange',
+  'emptied',
+] as const;
 
 /**
  * Notices that the player is not what it was when its subtitles were read: another source (the film

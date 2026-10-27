@@ -9,8 +9,12 @@ export interface PlayerFacts {
   /** Subtitle tracks the player has, and how many cues all of them hold now. */
   tracks: number;
   cues: number;
-  /** Subtitle files the page has requested (players that draw their own subtitles). */
-  files: number;
+  /**
+   * Subtitle files the page has requested (players that draw their own subtitles), the newest first.
+   * The addresses, not their number: the list is capped, so once it is full a file of the next
+   * episode would leave a count unchanged.
+   */
+  files: string;
 }
 
 export function readPlayerFacts(video: HTMLVideoElement): PlayerFacts {
@@ -20,7 +24,7 @@ export function readPlayerFacts(video: HTMLVideoElement): PlayerFacts {
     durationSec: Number.isFinite(video.duration) && video.duration > 0 ? video.duration : null,
     tracks: tracks.length,
     cues: tracks.reduce((sum, track) => sum + (track.cues?.length ?? 0), 0),
-    files: subtitleFileUrls().length,
+    files: subtitleFileUrls().join('\n'),
   };
 }
 

@@ -6,7 +6,7 @@ const facts = (patch: Partial<PlayerFacts> = {}): PlayerFacts => ({
   durationSec: 5400,
   tracks: 2,
   cues: 800,
-  files: 0,
+  files: '',
   ...patch,
 });
 
@@ -22,6 +22,16 @@ describe('playerChanged', () => {
   it('a track added late, and cues that arrived later', () => {
     expect(playerChanged(facts({ tracks: 0, cues: 0 }), facts())).toBe(true);
     expect(playerChanged(facts({ cues: 0 }), facts())).toBe(true);
+  });
+
+  it('a new subtitle file counts even when the list of files is as long as before (it is capped)', () => {
+    const six = (last: string) => ['a', 'b', 'c', 'd', 'e', last].join('\n');
+    expect(playerChanged(facts({ files: six('ep1.vtt') }), facts({ files: six('ep2.vtt') }))).toBe(
+      true,
+    );
+    expect(playerChanged(facts({ files: six('ep1.vtt') }), facts({ files: six('ep1.vtt') }))).toBe(
+      false,
+    );
   });
 
   it('the length that became known counts, a refinement of a fraction of a second does not', () => {

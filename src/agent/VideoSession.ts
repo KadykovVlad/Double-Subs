@@ -38,6 +38,8 @@ const subtitleFilesAsTracks = async () =>
 /** How long the chip waits for the film to start before it says that there are no subtitles. */
 const WAIT_FOR_FILM_MS = 30_000;
 /** YouTube without its token yet, or after a server error: the fallback look again, no more often, no more times than this. */
+/** A player held with no lines on screen is looked at again this often, in case its episode changed unnoticed. */
+const IDLE_LOOK_EVERY_MS = import.meta.env.VITE_DS_E2E ? 2000 : 10_000;
 const YOUTUBE_RETRY_EVERY_MS = import.meta.env.VITE_DS_E2E ? 300 : 5000;
 const YOUTUBE_RETRIES = 4;
 
@@ -77,6 +79,8 @@ export class VideoSession {
   private stopFollowing: Array<() => void> = [];
   private watcher: PlayerWatcher | null = null;
   private loading = false;
+  /** When the last look at the player began. */
+  private lastLookAt = 0;
   /** The player changed (a new source, tracks) while a look at it was running: look again when it is over. */
   private changedWhileLoading = false;
   /** Counts the looks: a look that a newer one has overtaken (another video) is thrown away. */
@@ -142,8 +146,21 @@ export class VideoSession {
 
   /** The owner's own timer: reads the subtitles again if the player has changed since (cues added by a script, a new source). */
   recheck(): void {
-    if (this.youtube) this.retryYouTube(false);
-    else this.watcher?.check();
+    if (this.youtube) return this.retryYouTube(false);
+    this.watcher?.check();
+    // The safety net for a change no event or fact told of (the next episode in the same player):
+    // a player held with nothing on screen is looked at again now and then.
+    if (
+      !this.closed &&
+      !this.loading &&
+      this.overlay === null &&
+      this.video.isConnected &&
+      Date.now() - this.lastLookAt >= IDLE_LOOK_EVERY_MS
+    ) {
+      void this.load(true)
+        .then(() => this.deps.panel.selected())
+        .catch(() => {});
+    }
   }
 
   retryTranslation(): void {
@@ -188,6 +205,7 @@ export class VideoSession {
   private async load(quiet: boolean): Promise<VideoReport> {
     const generation = ++this.generation;
     this.loading = true;
+    this.lastLookAt = Date.now();
     const factsBefore = readPlayerFacts(this.video);
     try {
       await this.deps.data.ready; // the language of the texts (track labels, notes) is known from here on
