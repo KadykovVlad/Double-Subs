@@ -319,12 +319,15 @@
 "toast_pro_text": "At gemme og repetere ord er en del af Pro.",
 "toast_learn_more": "Få mere at vide",
 "toast_close": "Luk",
-"nav_translation": "Oversættelse",
 "set_translation": "Oversættelsesmodeller",
 "tm_why": "Manglende undertekstlinjer oversættes direkte i browseren, så ingen tekst forlader din computer. Chrome henter én gang en lille sprogmodel for hvert sprogpar.",
 "tm_from": "Oversæt fra",
 "tm_ready": "$1: modellen er hentet",
 "tm_needed": "$1: modellen er ikke hentet endnu",
 "tm_busy": "$1: Chrome henter allerede denne model…",
-"tm_no_api": "Den indbyggede oversætter er ikke tilgængelig: den kræver Chrome 138 eller nyere."
+"tm_no_api": "Den indbyggede oversætter er ikke tilgængelig: den kræver Chrome 138 eller nyere.",
+"theme_label": "Tema: $1",
+"theme_system": "som i systemet",
+"theme_light": "lyst",
+"theme_dark": "mørkt"
 }

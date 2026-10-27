@@ -35,6 +35,7 @@ import {
   useMirrorsMode,
   useSettings,
 } from './hooks';
+import { TranslationModels } from './TranslationModels';
 import { Button, Card, Icons, Progress, SectionTitle, Spinner, SwitchRow, VideoThumb } from './ui';
 import { nameOf, t, titleOf, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 
@@ -101,7 +102,7 @@ export interface NowProps {
 
 /** Where a tool of this tab leads in the settings; `styles` also opens "More styles". */
 export interface SettingsFocus {
-  section: 'account' | 'subtitles' | 'translation' | 'window';
+  section: 'account' | 'subtitles' | 'window';
   styles?: boolean;
   /** A block inside the section to scroll to and blink, by a selector of something in it. */
   target?: string;
@@ -115,6 +116,8 @@ export function NowTab(props: NowProps) {
       )}
       <ShowSwitch />
       <LanguagesCard />
+      <SectionTitle>{t('set_translation')}</SectionTitle>
+      <TranslationModels />
       <ToolGrid onOpen={props.onOpenSettings} />
       <RememberOffer state={props.state} />
       <StatusCard {...props} />

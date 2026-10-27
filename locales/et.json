@@ -319,12 +319,15 @@
 "toast_pro_text": "Sõnade salvestamine ja kordamine kuulub Pro-sse.",
 "toast_learn_more": "Loe lähemalt",
 "toast_close": "Sulge",
-"nav_translation": "Tõlge",
 "set_translation": "Tõlkemudelid",
 "tm_why": "Puuduvad subtiitriread tõlgitakse otse brauseris, nii et ükski tekst ei lahku su arvutist. Chrome laeb iga keelepaari jaoks korra alla väikese keelemudeli.",
 "tm_from": "Tõlgi keelest",
 "tm_ready": "$1: mudel on alla laaditud",
 "tm_needed": "$1: mudelit pole veel alla laaditud",
 "tm_busy": "$1: Chrome laeb seda mudelit juba alla…",
-"tm_no_api": "Sisseehitatud tõlkija pole saadaval: vaja on Chrome 138 või uuemat."
+"tm_no_api": "Sisseehitatud tõlkija pole saadaval: vaja on Chrome 138 või uuemat.",
+"theme_label": "Teema: $1",
+"theme_system": "nagu süsteemis",
+"theme_light": "hele",
+"theme_dark": "tume"
 }

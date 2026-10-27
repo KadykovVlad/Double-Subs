@@ -319,12 +319,15 @@
 "toast_pro_text": "Salvare e ripassare le parole fa parte di Pro.",
 "toast_learn_more": "Scopri di più",
 "toast_close": "Chiudi",
-"nav_translation": "Traduzione",
 "set_translation": "Modelli di traduzione",
 "tm_why": "Le righe di sottotitoli mancanti vengono tradotte direttamente nel browser, quindi nessun testo lascia il tuo computer. Chrome scarica una volta un piccolo modello linguistico per ogni coppia.",
 "tm_from": "Traduci da",
 "tm_ready": "$1: modello scaricato",
 "tm_needed": "$1: modello non ancora scaricato",
 "tm_busy": "$1: Chrome sta già scaricando questo modello…",
-"tm_no_api": "Il traduttore integrato non è disponibile: serve Chrome 138 o successivo."
+"tm_no_api": "Il traduttore integrato non è disponibile: serve Chrome 138 o successivo.",
+"theme_label": "Tema: $1",
+"theme_system": "come il sistema",
+"theme_light": "chiaro",
+"theme_dark": "scuro"
 }

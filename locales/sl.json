@@ -319,12 +319,15 @@
 "toast_pro_text": "Shranjevanje in ponavljanje besed je del paketa Pro.",
 "toast_learn_more": "Več o tem",
 "toast_close": "Zapri",
-"nav_translation": "Prevod",
 "set_translation": "Prevajalski modeli",
 "tm_why": "Manjkajoče vrstice podnapisov se prevajajo kar v brskalniku, zato nobeno besedilo ne zapusti vašega računalnika. Chrome za vsak par jezikov enkrat prenese majhen jezikovni model.",
 "tm_from": "Prevajaj iz",
 "tm_ready": "$1: model je prenesen",
 "tm_needed": "$1: model še ni prenesen",
 "tm_busy": "$1: Chrome ta model že prenaša …",
-"tm_no_api": "Vgrajeni prevajalnik ni na voljo: potrebuje Chrome 138 ali novejši."
+"tm_no_api": "Vgrajeni prevajalnik ni na voljo: potrebuje Chrome 138 ali novejši.",
+"theme_label": "Tema: $1",
+"theme_system": "kot v sistemu",
+"theme_light": "svetla",
+"theme_dark": "temna"
 }

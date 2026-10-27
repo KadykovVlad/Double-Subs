@@ -319,12 +319,15 @@
 "toast_pro_text": "Att spara och repetera ord ingår i Pro.",
 "toast_learn_more": "Läs mer",
 "toast_close": "Stäng",
-"nav_translation": "Översättning",
 "set_translation": "Översättningsmodeller",
 "tm_why": "Saknade undertextrader översätts direkt i webbläsaren, så ingen text lämnar din dator. Chrome laddar ner en liten språkmodell en gång för varje språkpar.",
 "tm_from": "Översätt från",
 "tm_ready": "$1: modellen är nedladdad",
 "tm_needed": "$1: modellen är inte nedladdad än",
 "tm_busy": "$1: Chrome laddar redan ner den här modellen…",
-"tm_no_api": "Den inbyggda översättaren är inte tillgänglig: den kräver Chrome 138 eller senare."
+"tm_no_api": "Den inbyggda översättaren är inte tillgänglig: den kräver Chrome 138 eller senare.",
+"theme_label": "Tema: $1",
+"theme_system": "som i systemet",
+"theme_light": "ljust",
+"theme_dark": "mörkt"
 }

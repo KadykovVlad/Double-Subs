@@ -319,12 +319,15 @@
 "toast_pro_text": "A szavak mentése és ismétlése a Pro része.",
 "toast_learn_more": "További információ",
 "toast_close": "Bezárás",
-"nav_translation": "Fordítás",
 "set_translation": "Fordítási modellek",
 "tm_why": "A hiányzó feliratsorokat közvetlenül a böngésző fordítja, így semmilyen szöveg nem hagyja el a számítógépét. A Chrome nyelvpáronként egyszer letölt egy kis nyelvi modellt.",
 "tm_from": "Fordítás innen",
 "tm_ready": "$1: a modell letöltve",
 "tm_needed": "$1: a modell még nincs letöltve",
 "tm_busy": "$1: a Chrome már tölti le ezt a modellt…",
-"tm_no_api": "A beépített fordító nem érhető el: Chrome 138 vagy újabb kell hozzá."
+"tm_no_api": "A beépített fordító nem érhető el: Chrome 138 vagy újabb kell hozzá.",
+"theme_label": "Téma: $1",
+"theme_system": "mint a rendszerben",
+"theme_light": "világos",
+"theme_dark": "sötét"
 }

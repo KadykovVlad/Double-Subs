@@ -140,10 +140,17 @@ export const Icons = {
       <path d="M5 19h14" />
     </>,
   ),
-  translate: icon(
+  sun: icon(
     <>
-      <path d="M4 6h9M8.5 4v2M6 6c.5 3 2.5 5.5 5.5 7M12 6c-.7 3-3 5.5-6.5 7" />
-      <path d="M12.5 20l3.7-8.5 3.8 8.5M13.8 17.5h4.8" />
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" />
+    </>,
+  ),
+  moon: icon(<path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" />),
+  monitor: icon(
+    <>
+      <rect x="3.5" y="5" width="17" height="11" rx="2" />
+      <path d="M9 20h6M12 16v4" />
     </>,
   ),
   close: icon(<path d="M7 7l10 10M17 7L7 17" />),

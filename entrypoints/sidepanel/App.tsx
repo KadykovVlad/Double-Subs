@@ -22,10 +22,12 @@ import {
   useAllSitesAllowed,
   useEntitlements,
   useSavedWords,
+  useTheme,
 } from './hooks';
 import { Onboarding } from './Onboarding';
 import { hasFeature, isPro } from '../../src/lib/entitlements';
 import { Icons, Logo, Toasts } from './ui';
+import { nextTheme, saveTheme } from '../../src/lib/theme';
 import { loadSavedWords, watchSavedWords } from '../../src/lib/saved-words';
 import { newKeys, showToast } from '../../src/panel/toasts';
 import { PRO_NUDGE_KEY } from '../../src/lib/entitlements';
@@ -69,6 +71,27 @@ function LanguagePicker({ code }: { code: string }) {
   );
 }
 
+/** The theme of the panel (as in the system, light, dark), one button that goes round them. */
+function ThemeButton() {
+  const theme = useTheme();
+  const name = t(
+    theme === 'system' ? 'theme_system' : theme === 'light' ? 'theme_light' : 'theme_dark',
+  );
+  return (
+    <button
+      type="button"
+      class="icon-btn theme-btn"
+      data-testid="theme-toggle"
+      data-theme-value={theme}
+      title={t('theme_label', name)}
+      aria-label={t('theme_label', name)}
+      onClick={() => void saveTheme(nextTheme(theme))}
+    >
+      {theme === 'system' ? Icons.monitor : theme === 'light' ? Icons.sun : Icons.moon}
+    </button>
+  );
+}
+
 /** The panel shows its work only to a signed-in user; before that nothing reads or touches the page. */
 export function App() {
   const [language, setLanguage] = useState(uiLanguage());
@@ -98,6 +121,7 @@ function Shell({ language, children }: { language: string; children?: ComponentC
       <header class="header">
         <Logo />
         <span class="brand">Double Sub</span>
+        <ThemeButton />
         <LanguagePicker code={language} />
       </header>
       {children}
@@ -244,6 +268,7 @@ function SignedInApp({ language }: { language: string }) {
         <span class="site" title={site}>
           {site}
         </span>
+        <ThemeButton />
         <LanguagePicker code={language} />
       </header>
       <nav class="tabs" role="tablist" aria-label={t('tabs_label')}>

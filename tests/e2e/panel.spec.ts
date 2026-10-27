@@ -140,8 +140,7 @@ async function openModelsPanel(width = 400): Promise<Page> {
     };
   });
   await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
-  await openPanelTab(panel, 'settings');
-  return panel;
+  return panel; // the models are on the "Now" tab
 }
 
 test('translation models: pick a language, see whether its model is there, download it with progress', async () => {
@@ -170,21 +169,60 @@ test('translation models: pick a language, see whether its model is there, downl
   await expect(language.locator('option[value="ko"]')).toContainText('✓');
 });
 
+test('the theme: system, light, dark; the choice is kept and changes the colours of the panel', async () => {
+  const panel = await session.context.newPage();
+  await panel.emulateMedia({ colorScheme: 'dark' });
+  await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
+  const toggle = panel.getByTestId('theme-toggle');
+  const background = () => panel.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  const luminance = (rgb: string) =>
+    rgb
+      .match(/\d+/g)!
+      .slice(0, 3)
+      .reduce((sum, n) => sum + Number(n), 0) / 3;
+
+  // As in the system (dark here): dark; the page has no theme of its own.
+  await expect(toggle).toHaveAttribute('data-theme-value', 'system');
+  expect(luminance(await background())).toBeLessThan(60);
+  await expect(panel.locator('html')).not.toHaveAttribute('data-theme', /.*/);
+
+  // Light by hand, although the system is dark.
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('data-theme-value', 'light');
+  await expect(panel.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expect.poll(async () => luminance(await background())).toBeGreaterThan(200);
+  expect(await stored<string>('panelTheme')).toBe('light');
+
+  // Dark by hand, and back to the system.
+  await toggle.click();
+  await expect(panel.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect.poll(async () => luminance(await background())).toBeLessThan(60);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('data-theme-value', 'system');
+
+  // A choice made earlier is on the page when it opens, whatever the system says.
+  await session.worker.evaluate(() => chrome.storage.local.set({ panelTheme: 'light' }));
+  const again = await session.context.newPage();
+  await again.emulateMedia({ colorScheme: 'dark' });
+  await again.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
+  await expect(again.locator('html')).toHaveAttribute('data-theme', 'light');
+});
+
 test('translation models: without the Translator API of Chrome the section says so', async () => {
   const panel = await session.context.newPage();
   await panel.addInitScript(() => {
     delete (window as unknown as { Translator?: unknown }).Translator;
   });
   await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
-  await openPanelTab(panel, 'settings');
   await expect(panel.getByTestId('models-status')).toHaveAttribute('data-state', 'no-api');
 });
 
 test('the contents of the settings fit a narrow panel: every section is on screen, none is cut off', async () => {
   const panel = await openModelsPanel(340);
+  await openPanelTab(panel, 'settings');
   const buttons = panel.locator('.settings-nav button');
   const count = await buttons.count();
-  expect(count).toBeGreaterThanOrEqual(6);
+  expect(count).toBeGreaterThanOrEqual(5);
   for (let i = 0; i < count; i++) {
     const box = (await buttons.nth(i).boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);

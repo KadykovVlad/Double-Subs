@@ -6,6 +6,7 @@ import {
   watchEntitlements,
   type Entitlements,
 } from '../../src/lib/entitlements';
+import { applyTheme, DEFAULT_THEME, loadTheme, watchTheme, type Theme } from '../../src/lib/theme';
 import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/history';
 import {
   loadDismissed,
@@ -141,4 +142,15 @@ export function useDismissedOffers(): string[] {
     return watchDismissed(setOrigins);
   }, []);
   return origins;
+}
+
+/** The theme of the panel; every change is applied to the page at once. */
+export function useTheme(): Theme {
+  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+  useEffect(() => {
+    void loadTheme().then(setTheme);
+    return watchTheme(setTheme);
+  }, []);
+  useEffect(() => applyTheme(theme), [theme]);
+  return theme;
 }

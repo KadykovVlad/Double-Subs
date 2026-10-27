@@ -319,12 +319,15 @@
 "toast_pro_text": "Menyimpan dan mengulang kata adalah bagian dari Pro.",
 "toast_learn_more": "Pelajari lebih lanjut",
 "toast_close": "Tutup",
-"nav_translation": "Terjemahan",
 "set_translation": "Model terjemahan",
 "tm_why": "Baris subtitel yang hilang diterjemahkan langsung di browser, jadi tidak ada teks yang keluar dari komputer Anda. Chrome mengunduh satu kali model bahasa kecil untuk setiap pasangan bahasa.",
 "tm_from": "Terjemahkan dari",
 "tm_ready": "$1: model sudah diunduh",
 "tm_needed": "$1: model belum diunduh",
 "tm_busy": "$1: Chrome sudah mengunduh model ini…",
-"tm_no_api": "Penerjemah bawaan tidak tersedia: perlu Chrome 138 atau lebih baru."
+"tm_no_api": "Penerjemah bawaan tidak tersedia: perlu Chrome 138 atau lebih baru.",
+"theme_label": "Tema: $1",
+"theme_system": "seperti sistem",
+"theme_light": "terang",
+"theme_dark": "gelap"
 }

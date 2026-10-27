@@ -319,12 +319,15 @@
 "toast_pro_text": "Lưu và ôn tập từ là tính năng của Pro.",
 "toast_learn_more": "Tìm hiểu thêm",
 "toast_close": "Đóng",
-"nav_translation": "Dịch",
 "set_translation": "Mô hình dịch",
 "tm_why": "Các dòng phụ đề còn thiếu được dịch ngay trong trình duyệt, nên không có văn bản nào rời khỏi máy tính của bạn. Chrome tải một lần mô hình ngôn ngữ nhỏ cho mỗi cặp ngôn ngữ.",
 "tm_from": "Dịch từ",
 "tm_ready": "$1: đã tải mô hình",
 "tm_needed": "$1: chưa tải mô hình",
 "tm_busy": "$1: Chrome đang tải mô hình này…",
-"tm_no_api": "Trình dịch tích hợp không khả dụng: cần Chrome 138 trở lên."
+"tm_no_api": "Trình dịch tích hợp không khả dụng: cần Chrome 138 trở lên.",
+"theme_label": "Giao diện: $1",
+"theme_system": "như hệ thống",
+"theme_light": "sáng",
+"theme_dark": "tối"
 }
