@@ -1,6 +1,11 @@
 import { playerChanged, readPlayerFacts, type PlayerFacts } from '../lib/player-state';
 
 const SETTLE_MS = import.meta.env.VITE_DS_E2E ? 150 : 800;
+/**
+ * Cues of a track that was just pointed at another file arrive after every event is over, and nothing
+ * announces them: the facts are compared now and then, which costs a few property reads.
+ */
+const POLL_MS = import.meta.env.VITE_DS_E2E ? 300 : 2000;
 
 const VIDEO_EVENTS = [
   'loadstart',
@@ -19,6 +24,7 @@ export class PlayerWatcher {
   private seen: PlayerFacts;
   private timer: ReturnType<typeof setTimeout> | undefined;
   private readonly stops: Array<() => void> = [];
+  private observer: MutationObserver | null = null;
 
   constructor(
     private readonly video: HTMLVideoElement,
@@ -36,7 +42,18 @@ export class PlayerWatcher {
     const tracks = this.video.textTracks;
     tracks.addEventListener('addtrack', poke);
     tracks.addEventListener('removetrack', poke);
+    // A player that swaps its <track> elements or their addresses in place, with no event of its own.
+    this.observer = new MutationObserver(poke);
+    this.observer.observe(this.video, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['src'],
+    });
+    const poll = setInterval(() => this.check(), POLL_MS);
     this.stops.push(
+      () => clearInterval(poll),
+      () => this.observer?.disconnect(),
       () => tracks.removeEventListener('addtrack', poke),
       () => tracks.removeEventListener('removetrack', poke),
     );

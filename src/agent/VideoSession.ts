@@ -2,7 +2,7 @@ import { describeFrame } from '../lib/frame';
 import { phrasize } from '../lib/phrases';
 import { pairOf, updateSettings } from '../lib/settings';
 import { DEFAULT_PAIR, otherRole, sameLanguage, type LanguagePair } from '../lib/languages';
-import { mayBeBeforeTheFilm, readPlayerFacts } from '../lib/player-state';
+import { factsAfterReading, mayBeBeforeTheFilm, readPlayerFacts } from '../lib/player-state';
 import { fileLabel, loadSubtitleFiles } from '../lib/subtitle-files';
 import { inspectVideo } from '../lib/tracks';
 import { youtubeBlocked } from '../lib/youtube';
@@ -217,7 +217,7 @@ export class VideoSession {
       // YouTube switched to another video meanwhile: these lines are of the old one, the newer look shows its own.
       if (generation !== this.generation) return inspection.report;
       this.pair = pair;
-      this.watcher?.markSeen(factsBefore);
+      this.watcher?.markSeen(factsAfterReading(factsBefore, readPlayerFacts(this.video)));
       this.announce(inspection, quiet);
       await this.show(inspection);
       if (this.youtube && missesLines(inspection.report)) {

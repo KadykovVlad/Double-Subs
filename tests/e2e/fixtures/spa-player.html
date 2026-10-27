@@ -25,6 +25,11 @@
     video.src = 'clip.webm?episode=2';
     video.load();
   };
+  // A player that keeps the <video> and its <track> and only points the track at another file: the
+  // number of tracks and cues, and the video's own source, stay what they were.
+  window.nextEpisodeTrackInPlace = function () {
+    document.querySelector('video track').src = 'en-slow.vtt';
+  };
   window.swap = mount;
   mount();
 </script>

@@ -182,6 +182,22 @@ test('another episode loaded into the same <video> gets its own lines', async ()
   await expect(lines(page).host).toHaveCount(1);
 });
 
+test("a player that only points its <track> at another file gets that episode's lines too", async () => {
+  const page = await open('spa-player.html');
+  const popup = await openPopupFor(session, page);
+  await seek(page, 1.5);
+  await expect(lines(page).en).toHaveText('Hello, Dexter.');
+  void popup;
+
+  // No event, no new source, the same number of tracks and cues: only the file behind the track changes.
+  await page.evaluate(() =>
+    (window as unknown as { nextEpisodeTrackInPlace: () => void }).nextEpisodeTrackInPlace(),
+  );
+  await seek(page, 1.5);
+  await expect(lines(page).en).toHaveText('I know what you did last night.', { timeout: 10_000 });
+  await expect(lines(page).host).toHaveCount(1);
+});
+
 test('soak: dozens of episodes in a row leave no overlays, nodes or listeners behind', async () => {
   test.setTimeout(120_000);
   const first = await open('spa-player.html');
