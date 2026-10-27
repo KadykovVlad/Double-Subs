@@ -1671,16 +1671,25 @@ a.page-url:hover {
   border-radius: 10px;
 }
 
-/* The translation models: a language, the button that downloads its model, and the state. */
-.models-pick {
+/* The models of the chosen pair that are not there yet: the line, the download button, the progress. */
+.models-row {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--grad-soft), var(--surface);
+}
+.model-line {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.models-pick select {
-  flex: 1;
-  max-width: none;
-  min-width: 0;
+.model-line p {
+  font-size: 13px;
+}
+.model-line .progress {
+  margin-top: 6px;
 }
 .download-btn {
   display: grid;
@@ -1698,9 +1707,14 @@ a.page-url:hover {
     transform 0.12s var(--ease),
     filter 0.18s var(--ease);
 }
+.download-btn.sm {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
 .download-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
 }
 .download-btn:hover:not(:disabled) {
   filter: brightness(1.08);
@@ -1717,28 +1731,4 @@ a.page-url:hover {
 .download-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
-}
-.models-status p {
-  font-size: 13px;
-}
-.models-status .progress {
-  margin-top: 8px;
-}
-.ok-text {
-  color: var(--ok);
-  font-weight: 600;
-}
-
-.theme-btn {
-  flex: none;
-  margin-left: auto;
-  color: var(--muted);
-}
-.header .site + .theme-btn,
-.theme-btn + .lang {
-  margin-left: 0;
-}
-.theme-btn svg {
-  width: 18px;
-  height: 18px;
 }

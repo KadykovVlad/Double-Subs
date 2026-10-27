@@ -35,7 +35,7 @@ import {
   useMirrorsMode,
   useSettings,
 } from './hooks';
-import { TranslationModels } from './TranslationModels';
+import { MODEL_MARK, ModelsRow, useTranslationModels } from './models';
 import { Button, Card, Icons, Progress, SectionTitle, Spinner, SwitchRow, VideoThumb } from './ui';
 import { nameOf, t, titleOf, uiLanguage, type MessageKey } from '../../src/lib/i18n';
 
@@ -115,9 +115,13 @@ export function NowTab(props: NowProps) {
         <VideoPreview tabId={props.tabId} pageUrl={props.state.pageUrl ?? props.state.origin} />
       )}
       <ShowSwitch />
-      <LanguagesCard />
-      <SectionTitle>{t('set_translation')}</SectionTitle>
-      <TranslationModels />
+      <LanguagesCard
+        onModelsReady={() => {
+          // A video that waited for a model starts translating at once.
+          if (props.state.kind === 'selected' && props.tabId !== null)
+            void retryTranslation(props.tabId, props.state.frameId);
+        }}
+      />
       <ToolGrid onOpen={props.onOpenSettings} />
       <RememberOffer state={props.state} />
       <StatusCard {...props} />
@@ -636,31 +640,45 @@ function choosePair(role: Role, code: string, settings: Settings): Partial<Setti
   return { nativeLang: code, learnLang: code === learn ? native : learn };
 }
 
-function LanguagesCard() {
+function LanguagesCard({ onModelsReady }: { onModelsReady: () => void }) {
   const [settings, change] = useSettings();
+  const pair = pairOf(settings);
+  const models = useTranslationModels(pair, onModelsReady);
   // The languages by their names in the language of the interface, in its alphabetical order.
   const options = SUBTITLE_LANGUAGES.map((code): [string, string] => [code, titleOf(code)]).sort(
     (a, b) => a[1].localeCompare(b[1], uiLanguage()),
   );
   return (
-    <div class="lang-grid">
-      {(['learn', 'native'] as const).map((role) => (
-        <label key={role} class="lang-box">
-          <span>{t(role === 'learn' ? 'set_learning' : 'set_native')}</span>
-          <select
-            data-testid={role === 'learn' ? 'learn-lang' : 'native-lang'}
-            value={role === 'learn' ? settings.learnLang : settings.nativeLang}
-            onChange={(event) => change(choosePair(role, event.currentTarget.value, settings))}
-          >
-            {options.map(([value, text]) => (
-              <option key={value} value={value}>
-                {text}
-              </option>
-            ))}
-          </select>
-        </label>
-      ))}
-    </div>
+    <>
+      <div class="lang-grid">
+        {(['learn', 'native'] as const).map((role) => (
+          <label key={role} class="lang-box">
+            <span>{t(role === 'learn' ? 'set_learning' : 'set_native')}</span>
+            <select
+              data-testid={role === 'learn' ? 'learn-lang' : 'native-lang'}
+              value={role === 'learn' ? settings.learnLang : settings.nativeLang}
+              onChange={(event) => {
+                const patch = choosePair(role, event.currentTarget.value, settings);
+                change(patch);
+                // The choice is the gesture: what the new pair lacks starts downloading at once.
+                void models.download(pairOf({ ...settings, ...patch }));
+              }}
+            >
+              {options.map(([value, text]) => {
+                const mark = models.marks[role][value];
+                return (
+                  <option key={value} value={value}>
+                    {text}
+                    {mark ? MODEL_MARK[mark] : ''}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+        ))}
+      </div>
+      <ModelsRow pair={pair} models={models} />
+    </>
   );
 }
 

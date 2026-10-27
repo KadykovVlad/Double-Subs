@@ -21,18 +21,24 @@ const DICTIONARY: Record<string, string> = {
 
 const SLOW_DELAY_MS = 250;
 
-const instance = (delayMs: number): TranslatorInstance => ({
+/**
+ * `target`: the language the translator was made for. Into Russian and English the answers are the
+ * ones the older tests know; into any other language the stand-in marks the answer with that language
+ * ("[ko] text"), so a test can see that the line was translated into the right one.
+ */
+const instance = (delayMs: number, target = 'ru'): TranslatorInstance => ({
   async translate(text) {
     if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
+    if (target !== 'ru' && target !== 'en') return `[${target}] ${text}`;
     return DICTIONARY[text] ?? `[ru] ${text}`;
   },
   destroy() {},
 });
 
-const api = (availability: 'available' | 'downloadable', delayMs = 0): TranslatorStatic => {
-  const translator = instance(delayMs);
-  return { availability: async () => availability, create: async () => translator };
-};
+const api = (availability: 'available' | 'downloadable', delayMs = 0): TranslatorStatic => ({
+  availability: async () => availability,
+  create: async (options) => instance(delayMs, options.targetLanguage),
+});
 
 const APIS = {
   fake: api('available'),

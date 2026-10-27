@@ -109,3 +109,23 @@ describe('the language of a track on a site', () => {
     });
   });
 });
+
+describe('the translator for every pair of languages', () => {
+  it('has an option set for every ordered pair of the languages of the lists', async () => {
+    const { directionOf, translatorOptions, pairDirections, pairAvailability } =
+      await import('../src/lib/translator');
+    for (const a of SUBTITLE_LANGUAGES)
+      for (const b of SUBTITLE_LANGUAGES) {
+        if (a === b) continue;
+        expect(translatorOptions(directionOf(a, b)), `${a}→${b}`).toEqual({
+          sourceLanguage: a,
+          targetLanguage: b,
+        });
+        expect(pairDirections(a, b)).toEqual([`${a}-${b}`, `${b}-${a}`]);
+      }
+    expect(pairAvailability(['available', 'available'])).toBe('available');
+    expect(pairAvailability(['available', 'downloadable'])).toBe('downloadable');
+    expect(pairAvailability(['downloading', 'available'])).toBe('downloading');
+    expect(pairAvailability(['downloadable', 'unavailable'])).toBe('unavailable');
+  });
+});

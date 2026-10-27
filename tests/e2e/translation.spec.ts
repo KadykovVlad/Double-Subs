@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { launchWithExtension, openPopupFor, type ExtensionSession } from './extension';
+import { SUBTITLE_LANGUAGES } from '../../src/lib/languages';
 import { startFixtureServer, type FixtureServer } from './server';
 
 /**
@@ -132,4 +133,34 @@ test('a player without tracks that fetched subtitle files itself: both lines com
   const { en, ru } = overlay(page);
   await expect(en).toHaveText('Hello, Dexter.');
   await expect(ru).toHaveText('Привет, Декстер.'); // read from the file, not translated by the stand-in
+});
+
+// ---------------------------------------------------------------- every language
+
+/** The languages of the lists but Russian (the own language here) and English (the tests above). */
+const OTHER_LANGUAGES = SUBTITLE_LANGUAGES.filter((code) => code !== 'ru' && code !== 'en');
+
+// The page has one line only: Russian in one test, English in the other. The other line is made by the
+// translator, into the language chosen; each language of the lists is chosen once, in turn as the
+// learnt one (the missing line is translated from the Russian one) and as the own one (from English).
+OTHER_LANGUAGES.forEach((code, index) => {
+  const asLearnt = index % 2 === 0;
+  test(`${code} as the ${asLearnt ? 'learnt' : 'own'} language: the missing line is translated into it`, async () => {
+    await setTranslatorMode('fake');
+    await session.worker.evaluate(
+      (settings) => chrome.storage.local.set({ settings }),
+      asLearnt ? { learnLang: code, nativeLang: 'ru' } : { learnLang: 'en', nativeLang: code },
+    );
+    const page = await open(asLearnt ? '/ru-only.html' : '/shadow-video.html');
+    await seekTo(page, 'video', 1.5);
+    await openPopupFor(session, page);
+    const { en, ru } = overlay(page);
+    if (asLearnt) {
+      await expect(ru).toHaveText('Привет, Декстер.'); // the own line is the page's
+      await expect(en).toHaveText(`[${code}] Привет, Декстер.`); // the learnt line is made by the translator
+    } else {
+      await expect(en).toHaveText('Hello, Dexter.');
+      await expect(ru).toHaveText(`[${code}] Hello, Dexter.`);
+    }
+  });
 });

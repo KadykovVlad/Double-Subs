@@ -112,24 +112,40 @@ test('the chip does not take the mouse: the player under it stays clickable', as
 
 // ---------------------------------------------------------------- translation models
 
-/** The panel alone, with a stand-in for Chrome's Translator API in which only English → Russian is downloaded. */
-async function openModelsPanel(width = 400): Promise<Page> {
+type TranslatorCall = { sourceLanguage: string; targetLanguage: string };
+
+/**
+ * The panel alone, with a stand-in for Chrome's Translator API: only English ↔ Russian is downloaded,
+ * `unavailable` pairs are not offered, and every download is recorded in `window.translatorCalls`.
+ */
+async function openPanelWithTranslator(
+  options: { unavailable?: string[]; width?: number } = {},
+): Promise<Page> {
   const panel = await session.context.newPage();
-  await panel.setViewportSize({ width, height: 800 });
-  await panel.addInitScript(() => {
-    const have = new Set(['en-ru']);
+  await panel.setViewportSize({ width: options.width ?? 400, height: 900 });
+  await panel.addInitScript((unavailable: string[]) => {
+    const have = new Set(['en-ru', 'ru-en']);
+    const calls: Array<{ sourceLanguage: string; targetLanguage: string }> = [];
+    (window as unknown as { translatorCalls: typeof calls }).translatorCalls = calls;
     (window as unknown as { Translator: unknown }).Translator = {
-      availability: async (o: { sourceLanguage: string; targetLanguage: string }) =>
-        have.has(`${o.sourceLanguage}-${o.targetLanguage}`) ? 'available' : 'downloadable',
+      availability: async (o: { sourceLanguage: string; targetLanguage: string }) => {
+        const pair = `${o.sourceLanguage}-${o.targetLanguage}`;
+        return unavailable.includes(pair)
+          ? 'unavailable'
+          : have.has(pair)
+            ? 'available'
+            : 'downloadable';
+      },
       create: async (o: {
         sourceLanguage: string;
         targetLanguage: string;
         monitor?: (m: EventTarget) => void;
       }) => {
+        calls.push({ sourceLanguage: o.sourceLanguage, targetLanguage: o.targetLanguage });
         const monitor = new EventTarget();
         o.monitor?.(monitor);
         for (const loaded of [0.3, 0.7, 1]) {
-          await new Promise((resolve) => setTimeout(resolve, 150));
+          await new Promise((resolve) => setTimeout(resolve, 20));
           const event = new Event('downloadprogress');
           (event as unknown as { loaded: number }).loaded = loaded;
           monitor.dispatchEvent(event);
@@ -138,35 +154,91 @@ async function openModelsPanel(width = 400): Promise<Page> {
         return { translate: async (text: string) => text, destroy() {} };
       },
     };
+  }, options.unavailable ?? []);
+  await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
+  await expect(panel.getByTestId('learn-lang')).toBeVisible();
+  return panel;
+}
+const translatorCalls = (panel: Page) =>
+  panel.evaluate(
+    () => (window as unknown as { translatorCalls: TranslatorCall[] }).translatorCalls,
+  );
+
+test('a language chosen in the list downloads what its pair lacks, shows the progress, and the row goes away', async () => {
+  const panel = await openPanelWithTranslator();
+  const status = panel.getByTestId('models-status');
+  // English and Russian are there: nothing to say.
+  await expect(panel.getByTestId('learn-lang').locator('option[value="en"]')).toContainText('✓');
+  await expect(status).toHaveCount(0);
+
+  await panel.getByTestId('learn-lang').selectOption('ko');
+  await expect(status).toBeVisible();
+  await expect(status).toContainText('Скачиваю модель…');
+  await expect(status).toHaveCount(0, { timeout: 5000 });
+  expect(await translatorCalls(panel)).toEqual([
+    { sourceLanguage: 'ko', targetLanguage: 'ru' },
+    { sourceLanguage: 'ru', targetLanguage: 'ko' },
+  ]);
+  await expect(panel.getByTestId('learn-lang').locator('option[value="ko"]')).toContainText('✓');
+});
+
+test('every language of the lists: chosen to learn or as the own one, both directions of its pair are downloaded', async () => {
+  test.setTimeout(180_000);
+  const panel = await openPanelWithTranslator();
+  const learn = panel.getByTestId('learn-lang');
+  const native = panel.getByTestId('native-lang');
+  const codes = await learn
+    .locator('option')
+    .evaluateAll((els) => els.map((el) => (el as HTMLOptionElement).value));
+  expect(codes.length).toBeGreaterThanOrEqual(38);
+
+  // Learnt language: every one, with Russian as the own one.
+  for (const code of codes.filter((c) => c !== 'ru' && c !== 'en')) {
+    const before = (await translatorCalls(panel)).length;
+    await learn.selectOption(code);
+    await expect
+      .poll(async () => (await translatorCalls(panel)).length, { timeout: 8000, message: code })
+      .toBe(before + 2);
+    await expect(panel.getByTestId('models-status')).toHaveCount(0, { timeout: 8000 });
+    const calls = (await translatorCalls(panel)).slice(before);
+    expect(calls, code).toEqual([
+      { sourceLanguage: code, targetLanguage: 'ru' },
+      { sourceLanguage: 'ru', targetLanguage: code },
+    ]);
+  }
+
+  // Own language: every one, with English to learn.
+  await learn.selectOption('en');
+  for (const code of codes.filter((c) => c !== 'en' && c !== 'ru')) {
+    const before = (await translatorCalls(panel)).length;
+    await native.selectOption(code);
+    // The pair English + code was never downloaded: both directions, now.
+    await expect
+      .poll(async () => (await translatorCalls(panel)).length, { timeout: 8000, message: code })
+      .toBe(before + 2);
+    await expect(panel.getByTestId('models-status')).toHaveCount(0, { timeout: 8000 });
+    await expect(native.locator(`option[value="${code}"]`)).toContainText('✓');
+  }
+});
+
+test('a pair Chrome does not offer is said so, without a download button', async () => {
+  const panel = await openPanelWithTranslator({ unavailable: ['ko-ru'] });
+  await panel.getByTestId('learn-lang').selectOption('ko');
+  const status = panel.getByTestId('models-status');
+  await expect(status).toContainText('встроенный переводчик Chrome недоступен');
+  await expect(panel.getByTestId('models-download')).toHaveCount(0);
+  await expect(panel.getByTestId('learn-lang').locator('option[value="ko"]')).toContainText('✕');
+});
+
+test('without the Translator API of Chrome the lists work and no row is shown', async () => {
+  const panel = await session.context.newPage();
+  await panel.addInitScript(() => {
+    delete (window as unknown as { Translator?: unknown }).Translator;
   });
   await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
-  return panel; // the models are on the "Now" tab
-}
-
-test('translation models: pick a language, see whether its model is there, download it with progress', async () => {
-  const panel = await openModelsPanel();
-  const status = panel.getByTestId('models-status');
-  const language = panel.getByTestId('models-language');
-  const download = panel.getByTestId('models-download');
-
-  // The learnt language (English) has its model: marked in the list, nothing to download.
-  await expect(language).toHaveValue('en');
-  await expect(status).toHaveAttribute('data-state', 'available');
-  await expect(status).toContainText('модель скачана');
-  await expect(download).toBeDisabled();
-  await expect(language.locator('option[value="en"]')).toContainText('✓');
-
-  // Another language: not downloaded; the button wakes up; the click shows the progress, then the result.
-  await language.selectOption('ko');
-  await expect(status).toHaveAttribute('data-state', 'downloadable');
-  await expect(status).toContainText('Корейский → Русский: модель ещё не скачана');
-  await expect(download).toBeEnabled();
-  await download.click();
-  await expect(status).toContainText('Скачиваю модель…');
-  await expect(status).toHaveAttribute('data-state', 'available', { timeout: 5000 });
-  await expect(status).toContainText('Корейский → Русский: модель скачана');
-  await expect(download).toBeDisabled();
-  await expect(language.locator('option[value="ko"]')).toContainText('✓');
+  await panel.getByTestId('learn-lang').selectOption('ko');
+  await expect(panel.getByTestId('learn-lang')).toHaveValue('ko');
+  await expect(panel.getByTestId('models-status')).toHaveCount(0);
 });
 
 test('the theme: system, light, dark; the choice is kept and changes the colours of the panel', async () => {
@@ -208,17 +280,8 @@ test('the theme: system, light, dark; the choice is kept and changes the colours
   await expect(again.locator('html')).toHaveAttribute('data-theme', 'light');
 });
 
-test('translation models: without the Translator API of Chrome the section says so', async () => {
-  const panel = await session.context.newPage();
-  await panel.addInitScript(() => {
-    delete (window as unknown as { Translator?: unknown }).Translator;
-  });
-  await panel.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
-  await expect(panel.getByTestId('models-status')).toHaveAttribute('data-state', 'no-api');
-});
-
 test('the contents of the settings fit a narrow panel: every section is on screen, none is cut off', async () => {
-  const panel = await openModelsPanel(340);
+  const panel = await openPanelWithTranslator({ width: 340 });
   await openPanelTab(panel, 'settings');
   const buttons = panel.locator('.settings-nav button');
   const count = await buttons.count();

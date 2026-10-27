@@ -223,3 +223,23 @@ export function downloadModel(
     })
     .then((translator) => translator.destroy());
 }
+
+// ---------------------------------------------------------------- models of a pair
+
+/**
+ * The two directions of the pair of languages the user chose: the translator needs a model for each
+ * one it may be asked for (the learnt line translated into the own language, and the other way round,
+ * whichever of the two the video has).
+ */
+export const pairDirections = (learn: string, native: string): [Direction, Direction] => [
+  directionOf(learn, native),
+  directionOf(native, learn),
+];
+
+/** What the pair needs, judged by the state of each direction: the worst one decides. */
+export function pairAvailability(states: Availability[]): Availability {
+  if (states.includes('unavailable')) return 'unavailable';
+  if (states.includes('downloadable')) return 'downloadable';
+  if (states.includes('downloading')) return 'downloading';
+  return 'available';
+}
