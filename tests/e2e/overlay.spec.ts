@@ -260,3 +260,23 @@ test('the language of the interface is chosen in the panel, in the page too', as
   await picker.selectOption('ru');
   await expect(popup.getByTestId('tab-settings')).toHaveText('Настройки');
 });
+
+test('two tracks that cut the speech a little differently: the lines come and go together', async () => {
+  const page = await open('/offset-tracks.html');
+  await select(page);
+  const video = page.locator('video#player');
+  const { en, ru } = lines(page);
+
+  // The Russian cue starts 0.4 s before the English one and ends 0.4 s after it: the English line does
+  // not lag behind (at 0.8 s) and the Russian one does not stay alone at the end (at 3.2 s).
+  for (const time of [0.8, 3.2]) {
+    await video.evaluate((v: HTMLVideoElement) => v.pause());
+    await seek(video, time);
+    await expect(en).toHaveText('Hello, Dexter.');
+    await expect(ru).toHaveText('Привет, Декстер.');
+  }
+  // After both are over, both are gone.
+  await seek(video, 3.5);
+  await expect(en).toBeHidden();
+  await expect(ru).toBeHidden();
+});

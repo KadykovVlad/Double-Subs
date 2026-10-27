@@ -65,3 +65,21 @@ describe('createLineResolver', () => {
     });
   });
 });
+
+describe('createLineResolver: lines that come and go together', () => {
+  it('a line that the other track starts a fraction earlier does not show alone', () => {
+    const learn = [cue(10, 12, 'Hello')];
+    const native = [cue(9.7, 12.4, 'Привет')];
+    const resolve = createLineResolver({ learn, native });
+    expect(resolve(9.8)).toEqual({ learn: 'Hello', native: 'Привет' }); // not the Russian alone
+    expect(resolve(12.2)).toEqual({ learn: 'Hello', native: 'Привет' }); // not the Russian alone at the end
+    expect(resolve(12.5)).toEqual({ learn: null, native: null });
+  });
+
+  it('the learnt line that ends first stays while the own one is still on', () => {
+    const learn = [cue(1, 2.5, 'Hello')];
+    const native = [cue(1, 3, 'Привет')];
+    const resolve = createLineResolver({ learn, native });
+    expect(resolve(2.8)).toEqual({ learn: 'Hello', native: 'Привет' });
+  });
+});

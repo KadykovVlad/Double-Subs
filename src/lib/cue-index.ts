@@ -1,4 +1,4 @@
-import { alignByTime } from './align';
+import { alignByTime, unifyTiming } from './align';
 import type { Cue, SubtitleLines } from './types';
 
 /** How far back to look for a cue that started earlier but is still on screen (overlapping cues). */
@@ -35,9 +35,13 @@ export interface LineTexts {
  * Between those cues the native line follows its own timing.
  */
 export function createLineResolver(lines: SubtitleLines): (time: number) => LineTexts {
-  const learn = lines.learn ?? [];
-  const native = lines.native ?? [];
-  const pairs = learn.length > 0 && native.length > 0 ? alignByTime(learn, native) : null;
+  // Two tracks cut the same speech a little differently: pairs that say the same thing are given one
+  // timing first, so the lines come and go together.
+  const both = (lines.learn?.length ?? 0) > 0 && (lines.native?.length ?? 0) > 0;
+  const unified = both ? unifyTiming(lines.learn!, lines.native!) : null;
+  const learn = unified?.learn ?? lines.learn ?? [];
+  const native = unified?.native ?? lines.native ?? [];
+  const pairs = both ? alignByTime(learn, native) : null;
   const nativeAt = (time: number) => {
     const i = activeCueIndex(native, time);
     return i >= 0 ? native[i]!.text : null;
