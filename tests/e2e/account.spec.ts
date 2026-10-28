@@ -225,6 +225,7 @@ test('a wait for Telegram can be cancelled: the button comes back and nothing is
   await panel.getByTestId('telegram-sign-in').click();
   await panel.getByTestId('telegram-cancel').click();
   await expect(panel.getByTestId('telegram-sign-in')).toBeVisible();
+  await panel.waitForTimeout(500); // a poll that was already on its way may still land
   const asked = api.requests.length;
   await panel.waitForTimeout(800);
   expect(api.requests.length).toBe(asked);

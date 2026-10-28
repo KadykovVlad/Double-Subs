@@ -83,3 +83,95 @@ describe('createLineResolver: lines that come and go together', () => {
     expect(resolve(2.8)).toEqual({ learn: 'Hello', native: 'Привет' });
   });
 });
+
+// ------------------------------------------------------------ the two lines never go separate ways
+
+/** A small seeded generator: the same "random" tracks on every run. */
+function random(seed: number) {
+  let state = seed;
+  return () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** The speech of a film as two tracks: the same utterances, cut a little (or very) differently. */
+function tracksOf(seed: number, jitter: number) {
+  const rand = random(seed);
+  const between = (a: number, b: number) => a + rand() * (b - a);
+  type Track = Array<{ start: number; end: number; text: string }>;
+  const learn: Track = [];
+  const native: Track = [];
+  const lastEnd = { L: 0, N: 0 };
+  let at = 5;
+  for (let n = 0; n < 80; n++) {
+    const start = at;
+    const end = start + between(1, 5);
+    const track = (list: Track, name: 'L' | 'N') => {
+      // A track's own cues come one after another, whatever the cut.
+      const s = Math.max(start + between(-jitter, jitter), lastEnd[name]);
+      const e = Math.max(s + 0.6, end + between(-jitter, jitter));
+      if (rand() < 0.3) {
+        // This track cuts the utterance in two, with a pause of its own.
+        const middle = between(s + 0.2, e - 0.3);
+        const resume = Math.min(middle + between(0.05, 0.9), e - 0.1);
+        list.push({ start: s, end: middle, text: `${name}${n}a` });
+        list.push({ start: resume, end: e, text: `${name}${n}b` });
+      } else list.push({ start: s, end: e, text: `${name}${n}` });
+      lastEnd[name] = e;
+    };
+    track(learn, 'L');
+    track(native, 'N');
+    // A pause between utterances; sometimes none at all (the next begins at once).
+    at = Math.max(end, lastEnd.L, lastEnd.N) + (rand() < 0.2 ? 0 : between(0.4, 4));
+  }
+  return { learn, native };
+}
+
+describe('createLineResolver: never one line alone while the other track has its half of the speech', () => {
+  // Edges of the two tracks a second apart or less: what two sources of one film really differ by.
+  for (const jitter of [0.3, 0.6, 1]) {
+    it(`tracks cut with edges apart by up to ${jitter} s`, () => {
+      for (let seed = 1; seed <= 25; seed++) {
+        const { learn, native } = tracksOf(seed * 7919 + Math.round(jitter * 10), jitter);
+        const resolve = createLineResolver({ learn, native });
+        const overlapping: Array<[number, number]> = [];
+        for (const l of learn)
+          for (const n of native)
+            if (Math.min(l.end, n.end) > Math.max(l.start, n.start))
+              overlapping.push([Math.min(l.start, n.start), Math.max(l.end, n.end)]);
+        const end = Math.max(learn.at(-1)!.end, native.at(-1)!.end);
+        for (let t = 0; t < end + 1; t += 0.01) {
+          const lines = resolve(t);
+          if ((lines.learn === null) === (lines.native === null)) continue;
+          // Exactly one line is on: it must not be a stretch where the two tracks speak together.
+          const together = overlapping.find(([from, to]) => t >= from && t < to);
+          expect(
+            together,
+            `seed ${seed}, jitter ${jitter}: at ${t.toFixed(2)} only ${lines.learn ? 'learn' : 'native'} is on`,
+          ).toBeUndefined();
+        }
+      }
+    });
+  }
+});
+
+describe('createLineResolver: the case of a real film', () => {
+  it('the own cue of two speakers outlasts the two learnt ones: both leave together', () => {
+    const learn = [
+      cue(10, 12, '- I have never seen white crows.'),
+      cue(12.2, 13.4, '- Look harder.'),
+    ];
+    const native = [cue(10.1, 14.6, '- Я не видела белых ворон. - Смотрите лучше.')];
+    const resolve = createLineResolver({ learn, native });
+    for (const t of [10.05, 11, 12.1, 13, 14.5]) {
+      const lines = resolve(t);
+      expect(lines.learn, `learn at ${t}`).not.toBeNull();
+      expect(lines.native, `native at ${t}`).not.toBeNull();
+    }
+    expect(resolve(14.7)).toEqual({ learn: null, native: null });
+    expect(resolve(9.9)).toEqual({ learn: null, native: null });
+  });
+});
