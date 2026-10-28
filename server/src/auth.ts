@@ -7,6 +7,7 @@ import {
 } from 'jose';
 import type { Env } from './env';
 import { HttpError } from './http';
+import type { Identity } from './identities';
 
 const GOOGLE_ISSUERS = ['https://accounts.google.com', 'accounts.google.com'];
 const ACCESS_TTL_S = 60 * 60;
@@ -21,13 +22,8 @@ function keysOf(env: Env): JWTVerifyGetKey {
   return googleKeys;
 }
 
-export interface GoogleIdentity {
-  sub: string;
-  email: string;
-}
-
 /** The account behind a Google ID token, or 401: wrong signature, issuer, audience, expired, unverified email. */
-export async function verifyGoogleToken(idToken: string, env: Env): Promise<GoogleIdentity> {
+export async function verifyGoogleToken(idToken: string, env: Env): Promise<Identity> {
   try {
     const { payload } = await jwtVerify(idToken, keysOf(env), {
       issuer: GOOGLE_ISSUERS,
@@ -36,7 +32,7 @@ export async function verifyGoogleToken(idToken: string, env: Env): Promise<Goog
     if (typeof payload.sub !== 'string' || typeof payload.email !== 'string')
       throw new Error('no identity');
     if (payload.email_verified !== true) throw new Error('email not verified');
-    return { sub: payload.sub, email: payload.email };
+    return { provider: 'google', subject: payload.sub, label: payload.email, email: payload.email };
   } catch {
     throw new HttpError(401, 'bad_google_token');
   }
@@ -64,6 +60,14 @@ export async function authenticate(request: Request, env: Env): Promise<string> 
     if (error instanceof HttpError) throw error;
     throw new HttpError(401, 'bad_token');
   }
+}
+
+/**
+ * The user of a request that carries an access token, or null when it carries none: a sign-in that
+ * comes with one adds the new way in to that user instead of signing in. A bad token is still 401.
+ */
+export async function optionalUser(request: Request, env: Env): Promise<string | null> {
+  return request.headers.has('authorization') ? authenticate(request, env) : null;
 }
 
 export interface Tokens {
@@ -98,22 +102,6 @@ async function accessToken(userId: string, env: Env, now: number) {
     .setExpirationTime(Math.floor(expiresAt / 1000))
     .sign(secretKey(env));
   return { token, expiresAt };
-}
-
-/** Finds the user of a Google account, creating it on the first sign-in; the email follows Google. */
-export async function userFor(
-  identity: GoogleIdentity,
-  env: Env,
-  now = Date.now(),
-): Promise<string> {
-  const row = await env.DB.prepare(
-    `INSERT INTO users (id, google_sub, email, created_at) VALUES (?, ?, ?, ?)
-     ON CONFLICT (google_sub) DO UPDATE SET email = excluded.email
-     RETURNING id`,
-  )
-    .bind(crypto.randomUUID(), identity.sub, identity.email, now)
-    .first<{ id: string }>();
-  return row!.id;
 }
 
 /** A new session (a browser signs in). */

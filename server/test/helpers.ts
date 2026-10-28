@@ -25,7 +25,13 @@ export function call(
     headers?: Record<string, string>;
   } = {},
 ) {
-  const headers: Record<string, string> = { origin: ORIGIN, ...options.headers };
+  // A new network address for every request unless a test names one: the limits per address stay
+  // out of tests that are not about them.
+  const headers: Record<string, string> = {
+    origin: ORIGIN,
+    'cf-connecting-ip': `198.51.100.${Math.floor(Math.random() * 250)}-${crypto.randomUUID()}`,
+    ...options.headers,
+  };
   if (options.body !== undefined) headers['content-type'] = 'application/json';
   if (options.token) headers.authorization = `Bearer ${options.token}`;
   return (exports as unknown as { default: Fetcher }).default.fetch(
@@ -54,3 +60,46 @@ export async function signIn(sub: string = crypto.randomUUID()): Promise<Tokens>
   if (response.status !== 200) throw new Error(`sign-in failed: ${response.status}`);
   return response.json();
 }
+
+/** The code in the last letter to an address (the test Worker keeps letters in dev_outbox). */
+export async function lastCode(to: string): Promise<string> {
+  const { env } = await import('cloudflare:workers');
+  const letter = await env.DB.prepare(
+    'SELECT body FROM dev_outbox WHERE to_address = ? ORDER BY id DESC LIMIT 1',
+  )
+    .bind(to)
+    .first<{ body: string }>();
+  const code = /\b(\d{6})\b/.exec(letter?.body ?? '')?.[1];
+  if (!code) throw new Error(`no code sent to ${to}`);
+  return code;
+}
+
+/** A message to the bot, as Telegram's webhook delivers it. */
+export function botUpdate(
+  text: string,
+  from: Record<string, unknown> = {},
+  secret = 'test-webhook-secret',
+) {
+  return call('/telegram/webhook', {
+    headers: { 'x-telegram-bot-api-secret-token': secret },
+    body: {
+      update_id: 1,
+      message: {
+        message_id: 1,
+        text,
+        chat: { id: 42, type: 'private' },
+        from: {
+          id: 777,
+          is_bot: false,
+          first_name: 'Vlad',
+          username: 'vlad',
+          language_code: 'ru',
+          ...from,
+        },
+      },
+    },
+  });
+}
+
+/** A fresh address each time, so the limits of one test do not reach another. */
+export const freshEmail = () => `user-${crypto.randomUUID().slice(0, 8)}@example.com`;

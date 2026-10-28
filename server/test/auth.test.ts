@@ -7,7 +7,13 @@ describe('sign-in with Google', () => {
     expect(tokens.accessToken).toBeTruthy();
     expect(tokens.refreshToken).toMatch(/^[\w-]+\.[\w-]+$/);
     const me = await call('/me', { token: tokens.accessToken });
-    expect(await me.json()).toEqual({ email: 'learner@example.com', plan: 'free', proUntil: null });
+    expect(await me.json()).toEqual({
+      email: 'learner@example.com',
+      name: 'learner@example.com',
+      plan: 'free',
+      proUntil: null,
+      methods: [{ provider: 'google', label: 'learner@example.com' }],
+    });
   });
 
   it('the same Google account is the same user on a second browser', async () => {
