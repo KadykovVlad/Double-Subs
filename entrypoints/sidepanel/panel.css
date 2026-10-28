@@ -1732,3 +1732,87 @@ a.page-url:hover {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* ---------------------------------------------------------------- sign-in: Google, a code by email, Telegram */
+.auth {
+  display: grid;
+  gap: 8px;
+}
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.auth-or::before,
+.auth-or::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--border);
+}
+.auth-row {
+  display: flex;
+  gap: 8px;
+}
+.auth-row .field {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--field);
+  color: var(--text);
+  font: inherit;
+  outline: 0;
+  transition: border-color 0.18s var(--ease);
+}
+.auth-row .field:focus {
+  border-color: var(--accent-line);
+}
+.auth-row .btn {
+  flex: none;
+}
+.auth-code,
+.auth-wait {
+  display: grid;
+  gap: 8px;
+}
+.auth-code p,
+.auth-wait p {
+  margin: 0;
+}
+.auth-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.auth .link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-text);
+  font: inherit;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.auth .link:hover {
+  text-decoration: underline;
+}
+.auth .link:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+.small.error {
+  margin: 0;
+  color: var(--danger, #e5484d);
+}
+.add-method summary {
+  cursor: pointer;
+  color: var(--accent-text);
+  font-size: 13px;
+}
+.add-method[open] summary {
+  margin-bottom: 8px;
+}

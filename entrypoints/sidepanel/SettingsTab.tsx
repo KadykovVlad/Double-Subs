@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { signOut } from '../../src/lib/account';
+import { PROVIDERS, removeMethod, signOut, type Provider } from '../../src/lib/account';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
 import { setSiteExcluded } from '../../src/lib/known-sites';
@@ -39,6 +39,7 @@ import {
   type Diagnostics,
 } from '../../src/panel/controller';
 import { forgetSite, MirrorsSwitch, type SettingsFocus } from './NowTab';
+import { errorText, providerName, SignInForm } from './SignIn';
 import {
   useAccount,
   useEntitlements,
@@ -604,6 +605,53 @@ function DiagnosticsView({ tabId, diagnostics }: { tabId: number; diagnostics: D
   );
 }
 
+/** The ways in of the account; one can be removed while another is left. */
+function MethodsCard({ methods }: { methods: Array<{ provider: Provider; label: string }> }) {
+  const [error, setError] = useState<string | null>(null);
+  const missing = PROVIDERS.filter((provider) => !methods.some((m) => m.provider === provider));
+  return (
+    <Card>
+      <div class="row">
+        <span class="grow label">{t('auth_methods_title')}</span>
+      </div>
+      {methods.map((method) => (
+        <div class="row method" key={method.provider} data-testid={`method-${method.provider}`}>
+          <span class="grow">
+            <span class="label">{providerName(method.provider)}</span>
+            <span class="hint"> · {method.label}</span>
+          </span>
+          {methods.length > 1 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              testid={`method-remove-${method.provider}`}
+              onClick={() => {
+                setError(null);
+                void removeMethod(method.provider).catch((failure: unknown) =>
+                  setError(errorText(failure)),
+                );
+              }}
+            >
+              {t('auth_method_remove')}
+            </Button>
+          )}
+        </div>
+      ))}
+      {error && (
+        <p class="small error" role="alert" data-testid="method-error">
+          {error}
+        </p>
+      )}
+      {missing.length > 0 && (
+        <details class="add-method" data-testid="add-method">
+          <summary>{t('auth_add_method')}</summary>
+          <SignInForm link providers={missing} />
+        </details>
+      )}
+    </Card>
+  );
+}
+
 /** Who is signed in and on which plan; the sign-in itself is the gate before the panel (App). */
 function AccountCard() {
   const account = useAccount();
@@ -615,7 +663,7 @@ function AccountCard() {
       <SectionTitle>{t('account_title')}</SectionTitle>
       <Card>
         <div class="row" data-testid="account-email">
-          <span class="grow label">{t('account_signed_in', account.email)}</span>
+          <span class="grow label">{t('account_signed_in', account.name)}</span>
         </div>
         <div class="row" data-testid="account-plan">
           <span class="grow hint">
@@ -626,6 +674,7 @@ function AccountCard() {
           {t('account_sign_out')}
         </Button>
       </Card>
+      {account.methods.length > 0 && <MethodsCard methods={account.methods} />}
       <PlanCards pro={isPro(entitlements)} />
     </>
   );

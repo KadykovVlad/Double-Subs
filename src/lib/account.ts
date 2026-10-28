@@ -1,10 +1,24 @@
 import { apiBase, GOOGLE_CLIENT_ID } from './account-config';
 import { FREE_PLAN, normalizeEntitlements, saveEntitlements } from './entitlements';
+import { uiLanguage } from './i18n';
 import type { SignInMessage } from './messages';
+
+/** The ways in: Google, a code by email, the Telegram bot. */
+export type Provider = 'google' | 'email' | 'telegram';
+export const PROVIDERS: readonly Provider[] = ['google', 'email', 'telegram'];
+
+/** One way in of the account, as the server knows it (label: the address, or the Telegram name). */
+export interface Method {
+  provider: Provider;
+  label: string;
+}
 
 /** A signed-in browser: the tokens of the server (never Google's), and whose they are. */
 export interface Account {
-  email: string;
+  /** Who is signed in, as the user sees it: the address, or the name in Telegram. */
+  name: string;
+  /** The ways in of the account; empty until the server was asked. */
+  methods: Method[];
   accessToken: string;
   refreshToken: string;
   /** When the access token ends, ms since the epoch. */
@@ -17,7 +31,16 @@ export type AccountErrorCode =
   | 'bad_nonce' // the token is not the one this sign-in asked for
   | 'network' // the server could not be reached
   | 'server' // the server refused or failed
-  | 'signed_out'; // the session is gone (ended elsewhere, or the refresh token was refused)
+  | 'signed_out' // the session is gone (ended elsewhere, or the refresh token was refused)
+  | 'bad_email' // not an address
+  | 'too_many' // too many letters or tries for now
+  | 'bad_code' // the code is not the one in the letter
+  | 'code_expired' // the code is old or was tried too often: a new letter is needed
+  | 'login_expired' // the Telegram link is old or was used
+  | 'identity_taken' // this Google, address or Telegram belongs to another account
+  | 'provider_taken' // the account has another Google, address or Telegram already
+  | 'last_method' // the only way in cannot be removed
+  | 'not_configured'; // the server has no mail or bot set up yet
 
 export class AccountError extends Error {
   constructor(readonly code: AccountErrorCode) {
@@ -29,17 +52,33 @@ const KEY = 'account';
 /** A token that ends within this time is renewed before it is used. */
 const RENEW_BEFORE_MS = 60_000;
 
+function normalizeMethods(value: unknown): Method[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (method): method is Method =>
+      typeof method === 'object' &&
+      method !== null &&
+      PROVIDERS.includes((method as Method).provider) &&
+      typeof (method as Method).label === 'string',
+  );
+}
+
+/** A stored account, checked; one kept before there were three ways in has `email` for its name. */
 export function normalizeAccount(value: unknown): Account | null {
   if (typeof value !== 'object' || value === null) return null;
-  const { email, accessToken, refreshToken, expiresAt } = value as Record<string, unknown>;
+  const { name, email, methods, accessToken, refreshToken, expiresAt } = value as Record<
+    string,
+    unknown
+  >;
+  const shown = typeof name === 'string' ? name : email;
   if (
-    typeof email !== 'string' ||
+    typeof shown !== 'string' ||
     typeof accessToken !== 'string' ||
     typeof refreshToken !== 'string' ||
     typeof expiresAt !== 'number'
   )
     return null;
-  return { email, accessToken, refreshToken, expiresAt };
+  return { name: shown, methods: normalizeMethods(methods), accessToken, refreshToken, expiresAt };
 }
 
 export async function loadAccount(): Promise<Account | null> {
@@ -120,10 +159,15 @@ async function googleIdToken(): Promise<string> {
 
 // ---------------------------------------------------------------- the server
 
-async function call(path: string, body?: unknown, accessToken?: string): Promise<Response> {
+async function call(
+  path: string,
+  body?: unknown,
+  accessToken?: string,
+  method?: 'DELETE',
+): Promise<Response> {
   try {
     return await fetch(`${await apiBase()}${path}`, {
-      method: body === undefined && accessToken ? 'GET' : 'POST',
+      method: method ?? (body === undefined && accessToken ? 'GET' : 'POST'),
       headers: {
         ...(body === undefined ? {} : { 'content-type': 'application/json' }),
         ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}),
@@ -144,8 +188,28 @@ interface TokensAnswer {
   expiresAt: number;
 }
 
+/** Refusals of the server the user is told about in their own words; the rest is "server". */
+const TOLD: Partial<Record<string, AccountErrorCode>> = {
+  bad_email: 'bad_email',
+  too_many: 'too_many',
+  bad_code: 'bad_code',
+  code_expired: 'code_expired',
+  login_expired: 'login_expired',
+  identity_taken: 'identity_taken',
+  provider_taken: 'provider_taken',
+  last_method: 'last_method',
+  mail_not_configured: 'not_configured',
+  telegram_not_configured: 'not_configured',
+};
+
+async function refusal(response: Response): Promise<AccountError> {
+  const answer = (await response.json().catch(() => null)) as { error?: unknown } | null;
+  const code = typeof answer?.error === 'string' ? TOLD[answer.error] : undefined;
+  return new AccountError(code ?? 'server');
+}
+
 async function tokensFrom(response: Response): Promise<TokensAnswer> {
-  if (!response.ok) throw new AccountError('server');
+  if (!response.ok) throw await refusal(response);
   const tokens = (await response.json().catch(() => null)) as Partial<TokensAnswer> | null;
   if (
     typeof tokens?.accessToken !== 'string' ||
@@ -156,36 +220,53 @@ async function tokensFrom(response: Response): Promise<TokensAnswer> {
   return tokens as TokensAnswer;
 }
 
-/** The email behind the tokens, from the server (the first thing asked after a sign-in). */
-async function emailAndPlan(accessToken: string) {
-  const response = await call('/me', undefined, accessToken);
-  if (!response.ok) throw new AccountError('server');
+/** Who the tokens belong to, their ways in and their plan: the server's /me. */
+async function aboutMe(response: Response) {
+  if (!response.ok) throw await refusal(response);
   const me = (await response.json().catch(() => null)) as {
+    name?: unknown;
     email?: unknown;
+    methods?: unknown;
     plan?: unknown;
     proUntil?: unknown;
   } | null;
-  if (typeof me?.email !== 'string') throw new AccountError('server');
-  return { email: me.email, entitlements: normalizeEntitlements(me) };
+  const name = typeof me?.name === 'string' ? me.name : me?.email;
+  if (typeof name !== 'string') throw new AccountError('server');
+  return { name, methods: normalizeMethods(me?.methods), entitlements: normalizeEntitlements(me) };
 }
 
-export async function signIn(): Promise<Account> {
-  const idToken = await googleIdToken();
-  const tokens = await tokensFrom(await call('/auth/google', { idToken }));
-  const { email, entitlements } = await emailAndPlan(tokens.accessToken);
-  const account = { email, ...tokens };
+/** The end of every sign-in: the tokens are kept with whose they are, and the plan. */
+async function finishSignIn(tokens: TokensAnswer): Promise<Account> {
+  const { name, methods, entitlements } = await aboutMe(
+    await call('/me', undefined, tokens.accessToken),
+  );
+  const account = { name, methods, ...tokens };
   await saveAccount(account);
   await saveEntitlements(entitlements);
   return account;
 }
 
 /**
+ * Signs in with Google (in the background, see requestSignIn). `link`: the signed-in user adds their
+ * Google to the account instead.
+ */
+export async function signIn(options: { link?: boolean } = {}): Promise<Account> {
+  const idToken = await googleIdToken();
+  if (options.link) {
+    const response = await authedCall('/auth/google', { idToken });
+    if (!response.ok) throw await refusal(response);
+    return refreshAccount();
+  }
+  return finishSignIn(await tokensFrom(await call('/auth/google', { idToken })));
+}
+
+/**
  * Signs in by asking the background to do it (see SignInMessage). If the window that asked closes on
  * the way, the sign-in still ends in the background and the account shows up in the storage.
  */
-export async function requestSignIn(): Promise<void> {
+export async function requestSignIn(options: { link?: boolean } = {}): Promise<void> {
   const answer = (await browser.runtime
-    .sendMessage({ type: 'sign-in' } satisfies SignInMessage)
+    .sendMessage({ type: 'sign-in', link: options.link === true } satisfies SignInMessage)
     .catch(() => undefined)) as { ok: boolean; code?: AccountErrorCode } | undefined;
   if (answer && !answer.ok) throw new AccountError(answer.code ?? 'server');
 }
@@ -194,6 +275,7 @@ export async function requestSignIn(): Promise<void> {
 export async function signOut(): Promise<void> {
   const account = await loadAccount();
   await saveAccount(null);
+  await browser.storage.local.remove(TELEGRAM_KEY);
   await saveEntitlements(FREE_PLAN);
   if (account) await call('/auth/logout', { refreshToken: account.refreshToken }).catch(() => {});
 }
@@ -218,29 +300,185 @@ async function renew(stale: Account): Promise<Account> {
       await saveEntitlements(FREE_PLAN);
       throw new AccountError('signed_out');
     }
-    const next = { email: current.email, ...(await tokensFrom(response)) };
+    const next = { ...current, ...(await tokensFrom(response)) };
     await saveAccount(next);
     return next;
   });
 }
 
 /** A request with the access token; an expired token is renewed first, a refused one once more. */
-export async function authedCall(path: string, body?: unknown): Promise<Response> {
+export async function authedCall(
+  path: string,
+  body?: unknown,
+  method?: 'DELETE',
+): Promise<Response> {
   let account = await loadAccount();
   if (!account) throw new AccountError('signed_out');
   if (account.expiresAt - RENEW_BEFORE_MS < Date.now()) account = await renew(account);
-  let response = await call(path, body, account.accessToken);
+  let response = await call(path, body, account.accessToken, method);
   if (response.status === 401) {
     account = await renew(account);
-    response = await call(path, body, account.accessToken);
+    response = await call(path, body, account.accessToken, method);
   }
   return response;
 }
 
-/** Asks the server for the plan and keeps it (the panel does this when it opens, so a payment shows up). */
-export async function refreshPlan(): Promise<void> {
-  if (!(await loadAccount())) return;
-  const response = await authedCall('/me');
-  if (!response.ok) throw new AccountError('server');
-  await saveEntitlements(normalizeEntitlements(await response.json().catch(() => null)));
+/**
+ * Asks the server who is signed in, by which ways and on which plan, and keeps it (the panel does this
+ * when it opens, so a payment or a way in added elsewhere shows up).
+ */
+export async function refreshAccount(): Promise<Account> {
+  if (!(await loadAccount())) throw new AccountError('signed_out');
+  const { name, methods, entitlements } = await aboutMe(await authedCall('/me'));
+  // The tokens may have been renewed on the way: the latest ones are kept.
+  const current = await loadAccount();
+  if (!current) throw new AccountError('signed_out');
+  const account = { ...current, name, methods };
+  await saveAccount(account);
+  await saveEntitlements(entitlements);
+  return account;
+}
+
+/** Removes a way in of the account; the last one cannot be removed (last_method). */
+export async function removeMethod(provider: Provider): Promise<Account> {
+  const response = await authedCall(`/me/methods/${provider}`, undefined, 'DELETE');
+  if (!response.ok) throw await refusal(response);
+  return refreshAccount();
+}
+
+// ---------------------------------------------------------------- a code by email
+
+/**
+ * Sends a letter with a sign-in code (in the language of the interface). `link`: the signed-in user
+ * adds this address to the account; the code must then be entered while still signed in.
+ */
+export async function sendEmailCode(email: string, options: { link?: boolean } = {}) {
+  const body = { email: email.trim(), lang: uiLanguage() };
+  const response = options.link
+    ? await authedCall('/auth/email/start', body)
+    : await call('/auth/email/start', body);
+  if (!response.ok) throw await refusal(response);
+}
+
+/** Signs in with the code from the letter (or, with `link`, adds the address to the account). */
+export async function verifyEmailCode(
+  email: string,
+  code: string,
+  options: { link?: boolean } = {},
+): Promise<Account> {
+  const body = { email: email.trim(), code: code.replace(/\s/g, '') };
+  if (options.link) {
+    const response = await authedCall('/auth/email/verify', body);
+    if (!response.ok) throw await refusal(response);
+    return refreshAccount();
+  }
+  return finishSignIn(await tokensFrom(await call('/auth/email/verify', body)));
+}
+
+// ---------------------------------------------------------------- the Telegram bot
+
+/**
+ * A sign-in through the bot that waits for the user to press Start in Telegram. It is kept in the
+ * storage, so a panel closed and opened again (Telegram took the focus) goes on waiting for it.
+ */
+export interface TelegramLogin {
+  loginId: string;
+  secret: string;
+  /** t.me/<bot>?start=<loginId>: opens the bot. */
+  link: string;
+  expiresAt: number;
+  /** The signed-in user adds Telegram to the account (true), or somebody signs in (false). */
+  linking: boolean;
+}
+
+const TELEGRAM_KEY = 'telegramLogin';
+
+function normalizeTelegramLogin(value: unknown): TelegramLogin | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const { loginId, secret, link, expiresAt, linking } = value as Record<string, unknown>;
+  if (
+    typeof loginId !== 'string' ||
+    typeof secret !== 'string' ||
+    typeof link !== 'string' ||
+    typeof expiresAt !== 'number'
+  )
+    return null;
+  return { loginId, secret, link, expiresAt, linking: linking === true };
+}
+
+/** A sign-in through the bot that is still waiting, if any (an old one is dropped). */
+export async function pendingTelegramLogin(): Promise<TelegramLogin | null> {
+  const login = normalizeTelegramLogin(
+    (await browser.storage.local.get(TELEGRAM_KEY))[TELEGRAM_KEY],
+  );
+  if (login && login.expiresAt > Date.now()) return login;
+  if (login) await browser.storage.local.remove(TELEGRAM_KEY);
+  return null;
+}
+
+export async function cancelTelegramSignIn(): Promise<void> {
+  await browser.storage.local.remove(TELEGRAM_KEY);
+}
+
+/** Asks the server for a new sign-in through the bot; the caller opens its link. */
+export async function startTelegramSignIn(
+  options: { link?: boolean } = {},
+): Promise<TelegramLogin> {
+  const response = options.link
+    ? await authedCall('/auth/telegram/start', {})
+    : await call('/auth/telegram/start', {});
+  if (!response.ok) throw await refusal(response);
+  const login = normalizeTelegramLogin({
+    ...((await response.json().catch(() => null)) as object | null),
+    linking: options.link === true,
+  });
+  if (!login) throw new AccountError('server');
+  await browser.storage.local.set({ [TELEGRAM_KEY]: login });
+  return login;
+}
+
+/**
+ * One question to the server: has the user pressed Start? 'done' signs in (or adds Telegram to the
+ * account) and forgets the login; an old or used login is login_expired.
+ */
+export async function pollTelegramSignIn(login: TelegramLogin): Promise<'pending' | 'done'> {
+  const body = { loginId: login.loginId, secret: login.secret };
+  const response = login.linking
+    ? await authedCall('/auth/telegram/poll', body)
+    : await call('/auth/telegram/poll', body);
+  if (!response.ok) {
+    await cancelTelegramSignIn();
+    throw await refusal(response);
+  }
+  const answer = (await response
+    .clone()
+    .json()
+    .catch(() => null)) as { pending?: unknown } | null;
+  if (answer?.pending === true) return 'pending';
+  await cancelTelegramSignIn();
+  if (login.linking) await refreshAccount();
+  else await finishSignIn(await tokensFrom(response));
+  return 'done';
+}
+
+const TELEGRAM_POLL_MS = import.meta.env.VITE_DS_E2E ? 200 : 2000;
+
+/**
+ * Asks until the user has pressed Start in the bot, the link is old, or `signal` stops it. A server
+ * that cannot be reached for a moment is asked again: the user is in another app meanwhile.
+ */
+export async function waitForTelegram(login: TelegramLogin, signal: AbortSignal): Promise<void> {
+  while (!signal.aborted) {
+    if (login.expiresAt <= Date.now()) {
+      await cancelTelegramSignIn();
+      throw new AccountError('login_expired');
+    }
+    try {
+      if ((await pollTelegramSignIn(login)) === 'done') return;
+    } catch (error) {
+      if (!(error instanceof AccountError) || error.code !== 'network') throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, TELEGRAM_POLL_MS));
+  }
+  throw new AccountError('cancelled');
 }

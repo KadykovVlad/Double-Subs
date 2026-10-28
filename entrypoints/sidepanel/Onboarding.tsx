@@ -86,7 +86,7 @@ export function Onboarding() {
           <h3>{t('welcome_signin_title')}</h3>
           {account ? (
             <span class="done" data-testid="account-email">
-              {t('account_signed_in', account.email)}
+              {t('account_signed_in', account.name)}
             </span>
           ) : (
             <>

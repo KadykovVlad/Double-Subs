@@ -112,7 +112,7 @@ export default defineBackground(() => {
         return false;
       }
       case 'sign-in':
-        void signIn()
+        void signIn({ link: message.link === true })
           .then(() => sendResponse({ ok: true }))
           .catch((error: unknown) =>
             sendResponse({

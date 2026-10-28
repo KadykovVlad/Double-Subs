@@ -155,3 +155,113 @@ test('the plan is asked again when the panel opens: a payment made elsewhere sho
   await expect(panel.getByTestId('tab-words')).toBeVisible();
   expect(await planOf()).toMatchObject({ plan: 'pro' });
 });
+
+// ---------------------------------------------------------------- a code by email, the Telegram bot, the ways in
+
+test('a code by email: the letter is asked for in the language of the panel, the code signs in', async () => {
+  const panel = await openPanel();
+  await expect(panel.getByTestId('telegram-sign-in')).toHaveText('Войти через Telegram');
+  await panel.getByTestId('email-input').fill('reader@example.com');
+  await panel.getByTestId('email-send').click();
+  await expect(panel.getByTestId('email-sent')).toHaveText(
+    'Мы отправили код на reader@example.com. Введите его здесь:',
+  );
+  expect(api.requests.find((r) => r.path === '/auth/email/start')!.body).toEqual({
+    email: 'reader@example.com',
+    lang: 'ru',
+  });
+
+  // A wrong code is said so, and the form stays for another try.
+  await panel.getByTestId('email-code').fill('000000');
+  await panel.getByTestId('email-verify').click();
+  await expect(panel.getByTestId('account-error')).toHaveText(
+    'Неверный код. Проверьте письмо и попробуйте ещё раз.',
+  );
+  await expect(panel.getByTestId('gate')).toBeVisible();
+
+  await panel.getByTestId('email-code').fill('123 456');
+  await panel.getByTestId('email-verify').click();
+  await expect(panel.getByTestId('gate')).toHaveCount(0);
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как reader@example.com');
+  await expect(panel.getByTestId('method-email')).toContainText('reader@example.com');
+});
+
+test('the Telegram bot: its link opens in a tab, the panel waits, and signs in once Start is pressed', async () => {
+  const panel = await openPanel();
+  const bot = session.context.waitForEvent('page');
+  await panel.getByTestId('telegram-sign-in').click();
+  expect((await bot).url()).toBe(`${api.origin}/bot?start=${'L'.repeat(32)}`);
+  await expect(panel.getByTestId('telegram-waiting')).toContainText('нажмите «Запустить» (Start)');
+  // Asked again and again while the user is in Telegram.
+  await expect
+    .poll(() => api.requests.filter((r) => r.path === '/auth/telegram/poll').length)
+    .toBeGreaterThan(2);
+  expect(api.requests.find((r) => r.path === '/auth/telegram/poll')!.body).toEqual({
+    loginId: 'L'.repeat(32),
+    secret: 'S',
+  });
+
+  api.telegramConfirmed = true;
+  await expect(panel.getByTestId('gate')).toHaveCount(0);
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как @learner');
+});
+
+test('waiting for Telegram goes on in a panel opened again (Telegram took the focus and it closed)', async () => {
+  const first = await openPanel();
+  await first.getByTestId('telegram-sign-in').click();
+  await expect(first.getByTestId('telegram-waiting')).toBeVisible();
+  await first.close();
+
+  const again = await openPanel();
+  await expect(again.getByTestId('telegram-waiting')).toBeVisible();
+  api.telegramConfirmed = true;
+  await expect(again.getByTestId('gate')).toHaveCount(0);
+});
+
+test('a wait for Telegram can be cancelled: the button comes back and nothing is asked any more', async () => {
+  const panel = await openPanel();
+  await panel.getByTestId('telegram-sign-in').click();
+  await panel.getByTestId('telegram-cancel').click();
+  await expect(panel.getByTestId('telegram-sign-in')).toBeVisible();
+  const asked = api.requests.length;
+  await panel.waitForTimeout(800);
+  expect(api.requests.length).toBe(asked);
+  expect(
+    await session.worker.evaluate(
+      async () => (await chrome.storage.local.get('telegramLogin')).telegramLogin,
+    ),
+  ).toBeUndefined();
+});
+
+test('ways in: an address and Telegram are added to a Google account, one is removed, the last one stays', async () => {
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('method-google')).toContainText('learner@example.com');
+  // A single way in cannot be removed: no button for it.
+  await expect(panel.getByTestId('method-remove-google')).toHaveCount(0);
+
+  await panel.getByTestId('add-method').locator('summary').click();
+  await expect(panel.getByTestId('add-google')).toHaveCount(0); // it has Google already
+  await panel.getByTestId('email-input').fill('other@example.com');
+  await panel.getByTestId('email-send').click();
+  await panel.getByTestId('email-code').fill('123456');
+  await panel.getByTestId('email-verify').click();
+  await expect(panel.getByTestId('method-email')).toContainText('other@example.com');
+  // Added while signed in: with the access token, and the session is the same.
+  expect(api.requests.find((r) => r.path === '/auth/email/verify')!.auth).toBe('Bearer access-1');
+
+  await panel.getByTestId('add-telegram').click();
+  api.telegramConfirmed = true;
+  await expect(panel.getByTestId('method-telegram')).toContainText('@learner');
+  await expect(panel.getByTestId('add-method')).toHaveCount(0); // all three are there
+
+  await panel.getByTestId('method-remove-google').click();
+  await expect(panel.getByTestId('method-google')).toHaveCount(0);
+  await panel.getByTestId('method-remove-email').click();
+  await expect(panel.getByTestId('method-email')).toHaveCount(0);
+  await expect(panel.getByTestId('method-remove-telegram')).toHaveCount(0);
+  await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как @learner');
+});

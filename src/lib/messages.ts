@@ -74,6 +74,8 @@ export interface StartAgentMessage {
  */
 export interface SignInMessage {
   type: 'sign-in';
+  /** The signed-in user adds their Google to the account instead of signing in. */
+  link?: boolean;
 }
 
 /** The agent on TikTok found no page-world script (the site is not registered yet): inject it now. */
