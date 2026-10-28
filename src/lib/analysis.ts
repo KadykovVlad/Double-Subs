@@ -30,10 +30,14 @@ export interface TrackInput {
   cues: Cue[];
   /** The language the site gives for the track (srclang); only believed where the text cannot tell. */
   declared?: string;
+  /** The player itself shows this track: its choice wins among tracks of the same language and kind. */
+  preferred?: boolean;
 }
 
 interface TrackAnalysis {
   lang: Lang;
+  /** The player shows this track (see TrackInput.preferred). */
+  preferred: boolean;
   type: TrackType;
   /** Cues with markup (and, for SDH, sound descriptions) removed. */
   cues: Cue[];
@@ -103,7 +107,7 @@ export function normalizeCues(cues: Cue[], options: CleanOptions): Cue[] {
 // ---------------------------------------------------------------- language
 
 const LATIN = /[A-Za-z]/g;
-const CYRILLIC = /[А-Яа-яЁё]/g;
+const CYRILLIC = /\p{Script=Cyrillic}/gu;
 const ANY_LETTER = /\p{L}/gu;
 const MIN_LETTERS = 20;
 const SCRIPT_SHARE = 0.6;
@@ -154,9 +158,37 @@ const ENGLISH_WORDS = new Set([
 
 const count = (text: string, pattern: RegExp) => text.match(pattern)?.length ?? 0;
 
+/** Letters that tell the Cyrillic languages apart: each language has some the others do not. */
+const UKRAINIAN_LETTERS = /[іїєґ]/giu;
+const BELARUSIAN_LETTERS = /ў/giu;
+const SERBIAN_LETTERS = /[ђћљњџ]/giu;
+const RUSSIAN_LETTERS = /[ыэъё]/giu;
+const HARD_SIGN = /ъ/giu;
+const NOT_BULGARIAN_LETTERS = /[ыэё]/giu;
+
 /**
- * Only English and Russian are told apart by the text; any other language is `other` here, and the
- * track's own language (trackLanguage) names it.
+ * Which Cyrillic language a text is in, by the letters only it has (the site's own words for the
+ * language are not believed: some players write "rus" on every track). Russian is what is left.
+ */
+function cyrillicLanguage(text: string, letters: number): Lang {
+  const share = (pattern: RegExp) => count(text, pattern) / letters;
+  const ukrainian = count(text, UKRAINIAN_LETTERS);
+  if (share(BELARUSIAN_LETTERS) >= 0.002) return 'be';
+  if (share(SERBIAN_LETTERS) >= 0.005) return 'sr';
+  // Ukrainian has і ї є ґ in about one letter in ten, Russian none of them; a Ukrainian name in a
+  // Russian line does not make a Ukrainian text.
+  if (ukrainian >= 2 && ukrainian / letters >= 0.01 && ukrainian > 2 * count(text, RUSSIAN_LETTERS))
+    return 'uk';
+  // Bulgarian is full of ъ and has neither ы, э nor ё.
+  if (share(HARD_SIGN) >= 0.01 && count(text, NOT_BULGARIAN_LETTERS) === 0 && ukrainian === 0)
+    return 'bg';
+  return 'ru';
+}
+
+/**
+ * English and the Cyrillic languages (Russian, Ukrainian, Belarusian, Bulgarian, Serbian) are told
+ * apart by the text; any other language is `other` here, and the track's own language
+ * (trackLanguage) names it.
  */
 export function detectLanguage(cues: Cue[]): Lang {
   const text = cues
@@ -167,7 +199,7 @@ export function detectLanguage(cues: Cue[]): Lang {
   const letters = count(text, ANY_LETTER);
   if (letters < MIN_LETTERS) return 'unknown';
 
-  if (count(text, CYRILLIC) / letters >= SCRIPT_SHARE) return 'ru';
+  if (count(text, CYRILLIC) / letters >= SCRIPT_SHARE) return cyrillicLanguage(text, letters);
   if (count(text, LATIN) / letters < SCRIPT_SHARE) return 'other';
 
   const words = text.toLowerCase().match(/[a-z']+/g) ?? [];
@@ -175,7 +207,7 @@ export function detectLanguage(cues: Cue[]): Lang {
   return english / words.length >= ENGLISH_WORD_SHARE ? 'en' : 'other';
 }
 
-/** Languages written in Cyrillic, which the text check takes for Russian. */
+/** Languages written in Cyrillic that the text check may still take for Russian (a text too short, or with none of their own letters). */
 const CYRILLIC_OTHERS = new Set(['uk', 'be', 'bg', 'sr', 'mk', 'kk', 'ky', 'tg', 'mn']);
 
 /**
@@ -249,17 +281,18 @@ export function analyzeTracks(
 
   const analysed: TrackAnalysis[] = tracks.map((track, i) => {
     const cues = basic[i]!;
-    if (cues.length === 0) return { lang: 'unknown', type: 'empty', cues: [] };
+    const preferred = track.preferred === true;
+    if (cues.length === 0) return { lang: 'unknown', preferred, type: 'empty', cues: [] };
 
     // Sound descriptions ("[tense music]") carry no dialogue and would dilute the language signal.
     const lang = trackLanguage(detectLanguage(normalizeCues(track.cues, SDH)), track.declared);
     if (looksForced(track.label, cues.length, longest, options.durationSec)) {
-      return { lang, type: 'forced', cues };
+      return { lang, preferred, type: 'forced', cues };
     }
     if (looksLikeSdh(track.label, track.cues)) {
-      return { lang, type: 'sdh', cues: normalizeCues(track.cues, SDH) };
+      return { lang, preferred, type: 'sdh', cues: normalizeCues(track.cues, SDH) };
     }
-    return { lang, type: 'full', cues };
+    return { lang, preferred, type: 'full', cues };
   });
 
   return { tracks: analysed, decision: decide(analysed, options.pair) };
@@ -267,14 +300,23 @@ export function analyzeTracks(
 
 /**
  * The best usable track of a language: a full one first, SDH only when there is no full one.
- * Among equals the one with more cues wins; forced and empty tracks are never used.
+ * Among equals the one the player shows wins, then the one with more cues; forced and empty tracks
+ * are never used.
  */
 function bestTrack(tracks: TrackAnalysis[], lang: Lang): number | null {
   for (const type of ['full', 'sdh'] as const) {
     let best: number | null = null;
     tracks.forEach((track, i) => {
       if (track.lang !== lang || track.type !== type) return;
-      if (best === null || track.cues.length > tracks[best]!.cues.length) best = i;
+      if (best === null) best = i;
+      else {
+        const other = tracks[best]!;
+        const wins =
+          track.preferred !== other.preferred
+            ? track.preferred
+            : track.cues.length > other.cues.length;
+        if (wins) best = i;
+      }
     });
     if (best !== null) return best;
   }

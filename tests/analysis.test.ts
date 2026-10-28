@@ -351,3 +351,92 @@ describe('decision', () => {
     });
   });
 });
+
+// ------------------------------------------------------------ Cyrillic languages and the player's choice
+
+const UK_LINES = [
+  'Я не розумію, про що ти говориш.',
+  'Нам треба піти звідси, поки нас не знайшли.',
+  'Я не це казав, і ти це знаєш.',
+  'Де ти був усю ніч?',
+  'Це повториться знову і знову, їй-богу.',
+  'Розкажи мені, що ти бачив на озері.',
+  'Я більше не буду питати тебе.',
+  'Ти можеш мені довіряти, я просто хочу допомогти.',
+];
+
+const BG_LINES = [
+  'Не разбирам за какво говориш, къде беше цяла нощ.',
+  'Трябва да се махаме оттук, преди да ни намерят.',
+  'Това не е което казах, и ти го знаеш много добре.',
+  'Разкажи ми какво видя на езерото вчера късно.',
+];
+
+describe('detectLanguage: the Cyrillic languages are told apart by their own letters', () => {
+  it('Ukrainian is not Russian', () => {
+    expect(detectLanguage(makeCues(UK_LINES, 30))).toBe('uk');
+    expect(detectLanguage([{ start: 0, end: 1, text: 'І це повториться знову і знову.' }])).toBe(
+      'uk',
+    );
+  });
+
+  it('Russian stays Russian, also with a Ukrainian name in it', () => {
+    expect(detectLanguage(makeCues(RU_LINES, 30))).toBe('ru');
+    const withName = makeCues(RU_LINES, 30).map((cue, i) =>
+      i === 0 ? { ...cue, text: 'Мы едем в Київ, и там нас ждёт Іван, как всегда.' } : cue,
+    );
+    expect(detectLanguage(withName)).toBe('ru');
+  });
+
+  it('Bulgarian and Belarusian have letters of their own too', () => {
+    expect(detectLanguage(makeCues(BG_LINES, 20))).toBe('bg');
+    expect(
+      detectLanguage([
+        { start: 0, end: 1, text: 'Я ўсё чую, але не разумею, што ты гаворыш мне.' },
+      ]),
+    ).toBe('be');
+  });
+});
+
+describe('the Russian track wins over the Ukrainian one the site calls "rus"', () => {
+  // The case of a real player: every track carries language="rus", the Ukrainian one has more cues.
+  const russian: TrackInput = {
+    label: '(Russian) Русский',
+    cues: makeCues(RU_LINES, 120),
+    declared: 'rus',
+  };
+  const ukrainian: TrackInput = {
+    label: '(Ukrainian) 5',
+    cues: makeCues(UK_LINES, 160),
+    declared: 'rus',
+  };
+  const english: TrackInput = {
+    label: '(English) SDH',
+    cues: makeCues(EN_LINES, 150),
+    declared: 'eng',
+  };
+
+  it('the native line is the Russian track, the Ukrainian one is not taken for it', () => {
+    const { tracks, decision } = analyzeTracks([ukrainian, russian, english], {
+      durationSec: 2400,
+    });
+    expect(tracks.map((track) => track.lang)).toEqual(['uk', 'ru', 'en']);
+    expect(decision).toMatchObject({ case: 'A', learn: 2, native: 1 });
+  });
+
+  it('Ukrainian can be the own language too', () => {
+    const { decision } = analyzeTracks([ukrainian, russian, english], {
+      durationSec: 2400,
+      pair: { learn: 'en', native: 'uk' },
+    });
+    expect(decision).toMatchObject({ case: 'A', learn: 2, native: 0 });
+  });
+
+  it('of two Russian tracks the one the player shows wins, not the longer one', () => {
+    const dub: TrackInput = { label: '(Russian) Full (HDrezka)', cues: makeCues(RU_LINES, 140) };
+    const chosen: TrackInput = { ...russian, declared: undefined, preferred: true };
+    const { decision } = analyzeTracks([dub, chosen, english], { durationSec: 2400 });
+    expect(decision.native).toBe(1);
+    expect(analyzeTracks([dub, russian, english], { durationSec: 2400 }).decision.native).toBe(0);
+  });
+});

@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Two Russian tracks: the player shows one of them, the menu can switch to the other</title>
+<video id="player" crossorigin="anonymous" width="480" height="270" src="clip.webm">
+  <track kind="captions" label="(English) Full" src="en-full.vtt" language="eng" />
+  <track kind="captions" label="(Russian) Dub" src="ru-dub.vtt" language="rus" />
+  <track kind="captions" label="(Russian) Русский" src="ru-full.vtt" language="rus" />
+</video>
+<script>
+  // The site's own choice: the third track is on screen.
+  const tracks = () => document.getElementById('player').textTracks;
+  tracks()[2].mode = 'showing';
+  // The user picks the other Russian subtitle in the player's menu.
+  window.pickDub = function () {
+    tracks()[2].mode = 'disabled';
+    tracks()[1].mode = 'showing';
+  };
+</script>

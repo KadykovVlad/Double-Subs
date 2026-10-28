@@ -19,6 +19,8 @@ export interface PlayerFacts {
   trackSources: string;
   /** The first cue of the first track that has cues: another episode with as many cues still starts differently. */
   cueHead: string;
+  /** Which tracks the player shows: the user chose another subtitle in its menu, and our lines should follow. */
+  shown: string;
 }
 
 export function readPlayerFacts(video: HTMLVideoElement): PlayerFacts {
@@ -33,6 +35,7 @@ export function readPlayerFacts(video: HTMLVideoElement): PlayerFacts {
       .map((track) => track.getAttribute('src') ?? '')
       .join('\n'),
     cueHead: cueHeadOf(tracks),
+    shown: tracks.map((track) => (track.mode === 'showing' ? '1' : '0')).join(''),
   };
 }
 
@@ -73,6 +76,7 @@ export function playerChanged(before: PlayerFacts, now: PlayerFacts): boolean {
   if (before.tracks !== now.tracks || before.cues !== now.cues || before.files !== now.files)
     return true;
   if (before.trackSources !== now.trackSources || before.cueHead !== now.cueHead) return true;
+  if (before.shown !== now.shown) return true;
   const a = before.durationSec === null ? null : Math.round(before.durationSec);
   const b = now.durationSec === null ? null : Math.round(now.durationSec);
   return a !== b;

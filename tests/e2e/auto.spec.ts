@@ -198,6 +198,25 @@ test("a player that only points its <track> at another file gets that episode's 
   await expect(lines(page).host).toHaveCount(1);
 });
 
+test('every track says "rus": the Ukrainian one, the longest, is not taken for the Russian', async () => {
+  const page = await open('player-uk-rus.html');
+  await openPopupFor(session, page);
+  await seek(page, 1.5);
+  await expect(lines(page).en).toHaveText('Hello, Dexter.');
+  await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.');
+});
+
+test('of two Russian tracks the one the player shows is ours, and a switch in its menu is followed', async () => {
+  const page = await open('player-two-ru.html');
+  await openPopupFor(session, page);
+  await seek(page, 1.5);
+  await expect(page.locator('double-sub-overlay .ru')).toHaveText('Привет, Декстер.'); // not the longer dub
+  await page.evaluate(() => (window as unknown as { pickDub: () => void }).pickDub());
+  await expect(page.locator('double-sub-overlay .ru')).toHaveText('Здравствуй, Декстер.', {
+    timeout: 10_000,
+  });
+});
+
 test('soak: dozens of episodes in a row leave no overlays, nodes or listeners behind', async () => {
   test.setTimeout(120_000);
   const first = await open('spa-player.html');

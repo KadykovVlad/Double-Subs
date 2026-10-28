@@ -14,6 +14,7 @@ const facts = (patch: Partial<PlayerFacts> = {}): PlayerFacts => ({
   files: '',
   trackSources: 'en.vtt',
   cueHead: '1|Hello',
+  shown: '10',
   ...patch,
 });
 

@@ -103,6 +103,8 @@ function waitForTrack(
 }
 
 interface LoadedTrack {
+  /** The player shows this track (it was `showing` before we touched it). */
+  shown: boolean;
   label: string;
   language: string;
   kind: string;
@@ -111,8 +113,13 @@ interface LoadedTrack {
   cues: Cue[];
 }
 
-function snapshot(track: TextTrack, status: TrackStatus): LoadedTrack {
+function snapshot(
+  track: TextTrack,
+  status: TrackStatus,
+  shown = track.mode === 'showing',
+): LoadedTrack {
   return {
+    shown,
     label: track.label,
     language: track.language,
     kind: track.kind,
@@ -127,8 +134,9 @@ async function loadTrack(
   track: TextTrack,
   timeoutMs: number,
 ): Promise<LoadedTrack> {
+  const shown = track.mode === 'showing';
   activateTrack(track);
-  return snapshot(track, await waitForTrack(video, track, timeoutMs));
+  return snapshot(track, await waitForTrack(video, track, timeoutMs), shown);
 }
 
 /**
@@ -193,6 +201,7 @@ export async function inspectVideo(
         ...files.map(({ label, cues }): LoadedTrack => ({
           label,
           language: '',
+          shown: false,
           kind: 'file',
           mode: 'file',
           status: 'loaded',
@@ -209,7 +218,12 @@ export async function inspectVideo(
 
 function analyse(loaded: LoadedTrack[], durationSec: number | null, pair: LanguagePair) {
   const { tracks: analysis, decision } = analyzeTracks(
-    loaded.map(({ label, cues, language }) => ({ label, cues, declared: language })),
+    loaded.map(({ label, cues, language, shown }) => ({
+      label,
+      cues,
+      declared: language,
+      preferred: shown,
+    })),
     { durationSec, pair },
   );
   const report = {
