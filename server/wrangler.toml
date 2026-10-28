@@ -15,4 +15,13 @@ migrations_dir = "migrations"
 # The first is the development ID (fixed by the key in wxt.config.ts); add the store's ID after the first upload.
 EXTENSION_ORIGINS = "chrome-extension://kbipbdkmdaghooihkcmdjhfmeoimgnbm"
 
-# Secrets (wrangler secret put): GOOGLE_CLIENT_ID, SESSION_SECRET.
+# The sender of the letters with sign-in codes: an address of the domain verified in Resend.
+# MAIL_FROM = "Double Sub <login@example.com>"
+# The bot's username without "@" (from @BotFather): the extension opens t.me/<it>.
+# TELEGRAM_BOT_NAME = "DoubleSubBot"
+
+# Secrets (wrangler secret put): GOOGLE_CLIENT_ID, SESSION_SECRET, RESEND_API_KEY,
+# TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET; PROXY_SECRET only with a proxy in front (README).
+
+# A domain of your own instead of workers.dev, once the domain is in your Cloudflare account:
+# routes = [{ pattern = "api.example.com", custom_domain = true }]

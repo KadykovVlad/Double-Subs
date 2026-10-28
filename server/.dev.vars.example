@@ -1,0 +1,8 @@
+# Copy to .dev.vars for `npm run dev` (never commit .dev.vars).
+GOOGLE_CLIENT_ID=265593746967-gle7m26ptk75neles0hm2krrhlkm56kj.apps.googleusercontent.com
+SESSION_SECRET=a-local-secret-that-is-at-least-32-characters-long
+# Letters go into the dev_outbox table instead of being sent: read the code with
+#   npx wrangler d1 execute double-sub --local --command "SELECT body FROM dev_outbox ORDER BY id DESC LIMIT 1"
+MAIL_OUTBOX=1
+TELEGRAM_BOT_NAME=YourTestBot
+TELEGRAM_WEBHOOK_SECRET=local-webhook-secret
