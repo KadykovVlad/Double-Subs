@@ -72,6 +72,8 @@
 "set_radius": "Mviringo wa pembe",
 "set_sites": "Tovuti zinazojulikana",
 "set_sites_empty": "Washa “Anza mwenyewe” kwenye ukurasa wenye kicheza: wakati ujao kitapatikana bila kubofya aikoni.",
+"sites_access_text": "Tovuti kutoka kwenye akaunti zinazohitaji ufikiaji kwenye kivinjari hiki: $1",
+"sites_access_allow": "Ruhusu ufikiaji",
 "set_history": "Historia",
 "set_keep_history": "Kumbuka nilichotazama",
 "set_keep_history_hint": "Orodha ya video inahifadhiwa kwenye akaunti",

@@ -72,6 +72,8 @@
 "set_radius": "Arrodoniment",
 "set_sites": "Llocs coneguts",
 "set_sites_empty": "Activa «Inicia sol» en una pàgina amb reproductor: la propera vegada el trobarà sense fer clic a la icona.",
+"sites_access_text": "Llocs del compte que necessiten accés en aquest navegador: $1",
+"sites_access_allow": "Permet l’accés",
 "set_history": "Historial",
 "set_keep_history": "Recorda el que he vist",
 "set_keep_history_hint": "La llista de vídeos es desa al compte",

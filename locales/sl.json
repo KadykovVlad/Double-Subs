@@ -72,6 +72,8 @@
 "set_radius": "Zaobljenost",
 "set_sites": "Znana spletna mesta",
 "set_sites_empty": "Vklopite »Zaženi samodejno« na strani s predvajalnikom: prihodnjič bo najden brez klika na ikono.",
+"sites_access_text": "Spletna mesta iz računa, ki v tem brskalniku potrebujejo dostop: $1",
+"sites_access_allow": "Dovoli dostop",
 "set_history": "Zgodovina",
 "set_keep_history": "Zapomni si, kaj gledam",
 "set_keep_history_hint": "Seznam videoposnetkov se hrani v računu",

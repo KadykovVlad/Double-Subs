@@ -72,6 +72,8 @@
 "set_radius": "Arrondi",
 "set_sites": "Sites connus",
 "set_sites_empty": "Activez « Démarrer seul » sur une page avec un lecteur : la prochaine fois il sera trouvé sans cliquer sur l’icône.",
+"sites_access_text": "Sites du compte qui ont besoin d’un accès dans ce navigateur : $1",
+"sites_access_allow": "Autoriser l’accès",
 "set_history": "Historique",
 "set_keep_history": "Mémoriser ce que je regarde",
 "set_keep_history_hint": "La liste des vidéos est conservée dans le compte",

@@ -72,6 +72,8 @@
 "set_radius": "Roundness",
 "set_sites": "Known sites",
 "set_sites_empty": "Turn on “Start by itself” on a page with a player: next time it will be found without a click on the icon.",
+"sites_access_text": "Sites from the account that need access in this browser: $1",
+"sites_access_allow": "Allow access",
 "set_history": "History",
 "set_keep_history": "Remember what I watched",
 "set_keep_history_hint": "The list of videos is kept in the account",

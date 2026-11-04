@@ -1,9 +1,10 @@
+import { originPattern } from './scan';
 import { hostsOf, matchKnownHost } from './site-match';
 
 /**
  * Sites the user has chosen to start on their own. Keyed by the origin of the frame that holds the
- * player (a player embedded from another site is its own origin). For now it lives in the browser's
- * storage; an account that syncs it comes later.
+ * player (a player embedded from another site is its own origin). The list follows the account, the
+ * access to the sites does not: Chrome keeps that per browser (`sitesWithoutAccess`).
  */
 export interface KnownSite {
   origin: string;
@@ -116,6 +117,33 @@ export async function addKnownSites(origins: string[]): Promise<void> {
 }
 
 export const addKnownSite = (origin: string) => addKnownSites([origin]);
+
+/** A site on the list by default: added at no time, so that any decision in the account comes first. */
+const seededSite = (origin: string): KnownSite => ({
+  origin,
+  addedAt: 0,
+  lastUsed: 0,
+  preferredIndex: null,
+});
+
+export async function seedKnownSite(origin: string): Promise<void> {
+  const sites = await loadKnownSites();
+  await save({ ...sites, [origin]: sites[origin] ?? seededSite(origin) });
+}
+
+/** The access given for the automatic start goes with the site (YouTube's is part of the extension and stays). */
+export async function forgetAccess(origin: string): Promise<void> {
+  if (origin !== YOUTUBE_ORIGIN)
+    await browser.permissions.remove({ origins: [originPattern(origin)] }).catch(() => {});
+}
+
+/** The sites on the list that Chrome gives no access to here: they came from another browser. */
+export async function sitesWithoutAccess(origins: string[]): Promise<string[]> {
+  const answers = await Promise.all(
+    origins.map((origin) => browser.permissions.contains({ origins: [originPattern(origin)] })),
+  );
+  return origins.filter((_, index) => !answers[index]);
+}
 
 export async function removeKnownSite(origin: string): Promise<void> {
   const sites = await loadKnownSites();
@@ -236,6 +264,30 @@ export function watchDismissed(listener: (origins: string[]) => void): () => voi
   browser.storage.onChanged.addListener(onChanged);
   return () => browser.storage.onChanged.removeListener(onChanged);
 }
+
+// ---------------------------------------------------------------- the lists as one
+
+export interface SiteLists {
+  known: KnownSites;
+  excluded: string[];
+  dismissed: string[];
+}
+
+/** All the lists in one write, for what comes from the account. */
+export const saveSiteLists = ({ known, excluded, dismissed }: SiteLists) =>
+  browser.storage.local.set({
+    [KEY]: known,
+    [EXCLUDED_KEY]: [...excluded].sort(),
+    [DISMISSED_KEY]: dismissed,
+  });
+
+/** The lists of nobody: what another user signing in starts from. */
+export const clearSiteLists = () =>
+  saveSiteLists({
+    known: { [YOUTUBE_ORIGIN]: seededSite(YOUTUBE_ORIGIN) },
+    excluded: [],
+    dismissed: [],
+  });
 
 /** The origin of an address, for web pages only (not chrome://, not files). */
 export function webOrigin(url: string | null | undefined): string | null {

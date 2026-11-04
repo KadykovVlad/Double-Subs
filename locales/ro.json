@@ -72,6 +72,8 @@
 "set_radius": "Rotunjire",
 "set_sites": "Site-uri cunoscute",
 "set_sites_empty": "Activează „Pornește singur” pe o pagină cu player: data viitoare va fi găsit fără clic pe pictogramă.",
+"sites_access_text": "Site-uri din cont care au nevoie de acces în acest browser: $1",
+"sites_access_allow": "Permite accesul",
 "set_history": "Istoric",
 "set_keep_history": "Reține ce am vizionat",
 "set_keep_history_hint": "Lista de videoclipuri se păstrează în cont",

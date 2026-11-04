@@ -72,6 +72,8 @@
 "set_radius": "Ümardus",
 "set_sites": "Tuntud saidid",
 "set_sites_empty": "Lülita lehel, kus on mängija, sisse „Käivita ise“: järgmisel korral leitakse see ilma ikoonil klõpsamata.",
+"sites_access_text": "Konto saidid, mis vajavad selles brauseris juurdepääsu: $1",
+"sites_access_allow": "Luba juurdepääs",
 "set_history": "Ajalugu",
 "set_keep_history": "Jäta meelde, mida vaatasin",
 "set_keep_history_hint": "Videote loend salvestatakse kontole",

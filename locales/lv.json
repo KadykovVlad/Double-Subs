@@ -72,6 +72,8 @@
 "set_radius": "Noapaļojums",
 "set_sites": "Zināmās vietnes",
 "set_sites_empty": "Ieslēdziet „Palaist pašam” lapā ar atskaņotāju: nākamreiz tas tiks atrasts bez klikšķa uz ikonas.",
+"sites_access_text": "Konta vietnes, kurām šajā pārlūkā vajadzīga piekļuve: $1",
+"sites_access_allow": "Atļaut piekļuvi",
 "set_history": "Vēsture",
 "set_keep_history": "Atcerēties, ko esmu skatījies",
 "set_keep_history_hint": "Video saraksts tiek glabāts kontā",

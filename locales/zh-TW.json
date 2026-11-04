@@ -72,6 +72,8 @@
 "set_radius": "圓角",
 "set_sites": "已記住的網站",
 "set_sites_empty": "在有播放器的頁面開啟「自動啟動」：下次不必點擊圖示就能找到播放器。",
+"sites_access_text": "帳號中需要在這個瀏覽器取得存取權的網站:$1",
+"sites_access_allow": "允許存取",
 "set_history": "記錄",
 "set_keep_history": "記住我看過的內容",
 "set_keep_history_hint": "影片清單儲存在帳號中",

@@ -72,6 +72,8 @@
 "set_radius": "Yuvarlaklık",
 "set_sites": "Bilinen siteler",
 "set_sites_empty": "Oynatıcılı bir sayfada “Kendiliğinden başlat” seçeneğini aç: bir dahaki sefere simgeye tıklamadan bulunur.",
+"sites_access_text": "Bu tarayıcıda erişim gereken hesap siteleri: $1",
+"sites_access_allow": "Erişime izin ver",
 "set_history": "Geçmiş",
 "set_keep_history": "İzlediklerimi hatırla",
 "set_keep_history_hint": "Video listesi hesapta saklanır",

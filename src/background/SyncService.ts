@@ -1,9 +1,18 @@
 import { accountOwner, authedCall, loadAccount } from '../lib/account';
+import { clearSiteLists } from '../lib/known-sites';
 import { loadHistory, MAX_HISTORY, normalizeHistory, saveHistory } from '../lib/history';
 import type { HistoryEntry } from '../lib/history';
 import { loadSavedWords, normalizeSavedWord, saveSavedWords } from '../lib/saved-words';
 import type { SavedWord } from '../lib/saved-words';
 import { loadSettings } from '../lib/settings';
+import {
+  loadSyncedSites,
+  parseSyncedSite,
+  saveSyncedSites,
+  siteKey,
+  siteTime,
+  type SyncedSite,
+} from '../lib/synced-sites';
 import {
   loadSyncedSettings,
   parseSyncedSetting,
@@ -66,6 +75,17 @@ const settings: Collection<SyncedSetting> = {
   arrange: (list) => list,
 };
 
+const sites: Collection<SyncedSite> = {
+  kind: 'sites',
+  enabled: async () => true,
+  load: loadSyncedSites,
+  save: saveSyncedSites,
+  idOf: siteKey,
+  timeOf: siteTime,
+  parse: parseSyncedSite,
+  arrange: (list) => list,
+};
+
 interface SyncAnswer {
   cursor: number;
   changes: SyncChange[];
@@ -79,7 +99,7 @@ function isSyncAnswer(value: unknown): value is SyncAnswer {
 }
 
 /**
- * Brings the words, the history and the settings of this browser and of the server together: when the user signs in,
+ * Brings the words, the history, the settings and the sites of this browser and of the server together: when the user signs in,
  * when the panel opens, and after a change. It only runs here, so one synchronisation runs at a time.
  * Failing is no problem: what was not told stays different from `seen`, and goes next time.
  */
@@ -144,13 +164,15 @@ export class SyncService {
     const settingsNow = await snapshot(settings, await settings.load());
     const wordsNow = await snapshot(words, await words.load());
     const historyNow = await snapshot(history, await history.load());
+    const sitesNow = await snapshot(sites, await sites.load());
     const settingChanges = changesSince(settings, settingsNow, state.seen.settings, now);
+    const siteChanges = changesSince(sites, sitesNow, state.seen.sites, now);
     const wordChanges = changesSince(words, wordsNow, state.seen.words, now);
     // Off: what the user watched stays here, but what the user deleted is deleted everywhere.
     const historyChanges = changesSince(history, historyNow, state.seen.history, now).filter(
       (change) => historyOn || change.deleted,
     );
-    const queue = [...settingChanges, ...wordChanges, ...historyChanges];
+    const queue = [...settingChanges, ...siteChanges, ...wordChanges, ...historyChanges];
     if (options.onlyIfChanged && queue.length === 0) return;
 
     const cursor = historyOn && state.historyPaused ? 0 : state.cursor;
@@ -168,6 +190,11 @@ export class SyncService {
     next.seen.settings = await this.apply(
       settings,
       seenAfter(settingsNow, settingChanges, state.seen.settings),
+      answer.changes,
+    );
+    next.seen.sites = await this.apply(
+      sites,
+      seenAfter(sitesNow, siteChanges, state.seen.sites),
       answer.changes,
     );
     next.seen.words = await this.apply(
@@ -193,6 +220,7 @@ export class SyncService {
       return { ...state, owner: owner ?? state.owner, seen: { ...state.seen } };
     await saveSavedWords([]);
     await saveHistory([]);
+    await clearSiteLists();
     const fresh = emptySyncState(owner);
     await saveSyncState(fresh);
     return fresh;

@@ -1,9 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SyncService } from '../src/background/SyncService';
 import { MAX_HISTORY, type HistoryEntry } from '../src/lib/history';
+import {
+  seedKnownSite,
+  sitesWithoutAccess,
+  YOUTUBE_ORIGIN,
+  type KnownSites,
+} from '../src/lib/known-sites';
 import type { SavedWord } from '../src/lib/saved-words';
 import { DEFAULT_SETTINGS, normalizeSettings, type Settings } from '../src/lib/settings';
 import { loadSyncedSettings, parseSyncedSetting } from '../src/lib/synced-settings';
+import { parseSyncedSite } from '../src/lib/synced-sites';
 import {
   changesSince,
   fingerprint,
@@ -110,6 +117,8 @@ class FakeServer {
 class Browser {
   readonly store: Record<string, unknown> = {};
   readonly service = new SyncService();
+  /** The access Chrome holds in this browser, by match pattern. */
+  readonly access = new Set<string>();
 
   constructor(user: string | null) {
     if (user) this.store.account = account(user);
@@ -132,6 +141,10 @@ class Browser {
         onChanged: { addListener() {}, removeListener() {} },
       },
       runtime: { getURL: (path: string) => `chrome-extension://id${path}` },
+      permissions: {
+        contains: async ({ origins }: { origins: string[] }) => this.access.has(origins[0]!),
+        remove: async ({ origins }: { origins: string[] }) => this.access.delete(origins[0]!),
+      },
     });
   }
 
@@ -154,6 +167,36 @@ class Browser {
 
   remove(name: string) {
     this.store.savedWords = (this.store.savedWords as SavedWord[]).filter((w) => w.word !== name);
+  }
+
+  get sites() {
+    return Object.keys((this.store.knownSites as KnownSites | undefined) ?? {}).sort();
+  }
+
+  /** The user remembers a site here: the access is given and the site goes on the list. */
+  remember(origin: string) {
+    this.access.add(`${new URL(origin).protocol}//${new URL(origin).hostname}/*`);
+    this.store.knownSites = {
+      ...(this.store.knownSites as KnownSites),
+      [origin]: { origin, addedAt: Date.now(), lastUsed: Date.now(), preferredIndex: null },
+    };
+  }
+
+  forget(origin: string) {
+    const sites = { ...(this.store.knownSites as KnownSites) };
+    delete sites[origin];
+    this.store.knownSites = sites;
+  }
+
+  /** What the background does at the first start. */
+  async seed() {
+    this.use();
+    await seedKnownSite(YOUTUBE_ORIGIN);
+  }
+
+  async withoutAccess() {
+    this.use();
+    return sitesWithoutAccess(this.sites);
   }
 
   /** The user changes settings here. */
@@ -624,7 +667,8 @@ describe('settings', () => {
     expect(state?.cursor).toBe(0);
     expect(state?.seen.words).toEqual({ 'en:go': 'print' });
 
-    const known = { owner: 'u1', cursor: 500, seen: { words: {}, history: {}, settings: {} } };
+    const seen = { words: {}, history: {}, settings: {}, sites: {} };
+    const known = { owner: 'u1', cursor: 500, seen };
     expect(normalizeSyncState(known)?.cursor).toBe(500);
   });
 
@@ -634,6 +678,212 @@ describe('settings', () => {
     server.requests = [];
     await one.sync();
     expect(server.requests[0]?.changes).toEqual([]);
+  });
+});
+
+describe('sites', () => {
+  const film = 'https://films.example';
+  const clock = (time: number) => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(time);
+  };
+
+  it('a site remembered in one browser comes to the other, without the access', async () => {
+    const one = new Browser('u1');
+    one.remember(film);
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.sync();
+
+    expect(two.sites).toEqual([film]);
+    expect(await one.withoutAccess()).toEqual([]);
+    expect(await two.withoutAccess()).toEqual([film]);
+  });
+
+  it('the player picked on a site comes along', async () => {
+    const one = new Browser('u1');
+    one.remember(film);
+    (one.store.knownSites as KnownSites)[film]!.preferredIndex = 2;
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.sync();
+
+    expect((two.store.knownSites as KnownSites)[film]!.preferredIndex).toBe(2);
+  });
+
+  it('a site taken off the list goes from the other browser, with the access given there', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    one.remember(film);
+    await one.sync();
+    await two.sync();
+    two.access.add('https://films.example/*');
+
+    one.forget(film);
+    await one.sync();
+    await two.sync();
+
+    expect(two.sites).toEqual([]);
+    expect(two.access.size).toBe(0);
+    expect(server.live('u1', 'sites')).toEqual([]);
+  });
+
+  it('YouTube taken off does not come back with the next new browser', async () => {
+    const one = new Browser('u1');
+    await one.seed();
+    await one.sync();
+    one.forget(YOUTUBE_ORIGIN);
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.seed();
+    await two.sync();
+    await one.sync();
+
+    expect(two.sites).toEqual([]);
+    expect(one.sites).toEqual([]);
+  });
+
+  it('YouTube taken off elsewhere keeps its access: it is part of the extension', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await one.seed();
+    await one.sync();
+    await two.sync();
+    two.access.add('https://www.youtube.com/*');
+
+    one.forget(YOUTUBE_ORIGIN);
+    await one.sync();
+    await two.sync();
+
+    expect(two.sites).toEqual([]);
+    expect(two.access.has('https://www.youtube.com/*')).toBe(true);
+  });
+
+  it('YouTube put back by the user stays', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await one.seed();
+    await one.sync();
+    await two.sync();
+    one.forget(YOUTUBE_ORIGIN);
+    await one.sync();
+    await two.sync();
+
+    clock(Date.now() + 1000);
+    two.remember(YOUTUBE_ORIGIN);
+    await two.sync();
+    await one.sync();
+
+    expect(one.sites).toEqual([YOUTUBE_ORIGIN]);
+    expect(two.sites).toEqual([YOUTUBE_ORIGIN]);
+  });
+
+  it('seeding leaves a site that is on the list as it is', async () => {
+    const one = new Browser('u1');
+    one.remember(YOUTUBE_ORIGIN);
+    const before = (one.store.knownSites as KnownSites)[YOUTUBE_ORIGIN];
+    await one.seed();
+    expect((one.store.knownSites as KnownSites)[YOUTUBE_ORIGIN]).toEqual(before);
+  });
+
+  it('a site switched off, on, and off again stays off everywhere', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await two.sync();
+
+    clock(1_000_000);
+    one.store.excludedSites = ['films.example'];
+    await one.sync();
+    await two.sync();
+    expect(two.store.excludedSites).toEqual(['films.example']);
+
+    clock(2_000_000);
+    one.store.excludedSites = [];
+    await one.sync();
+    await two.sync();
+    expect(two.store.excludedSites).toEqual([]);
+
+    clock(3_000_000);
+    one.store.excludedSites = ['films.example'];
+    await one.sync();
+    await two.sync();
+    expect(one.store.excludedSites).toEqual(['films.example']);
+    expect(two.store.excludedSites).toEqual(['films.example']);
+  });
+
+  it('a site not to be offered again is not offered in the other browser either', async () => {
+    const one = new Browser('u1');
+    one.store.rememberDismissed = [film];
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.sync();
+
+    expect(two.store.rememberDismissed).toEqual([film]);
+  });
+
+  it('"on every site" stays in the browser: it is only an access', async () => {
+    const one = new Browser('u1');
+    one.store.mirrorsMode = true;
+    one.store.accessBannerDismissed = true;
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.sync();
+
+    expect(two.store.mirrorsMode).toBeUndefined();
+    expect(two.store.accessBannerDismissed).toBeUndefined();
+  });
+
+  it('another user gets none of the lists, only YouTube, and the one before finds them again', async () => {
+    const shared = new Browser('u1');
+    await shared.seed();
+    shared.remember(film);
+    shared.store.excludedSites = ['news.example'];
+    shared.store.rememberDismissed = ['https://shop.example'];
+    await shared.sync();
+
+    shared.store.account = account('u2');
+    await shared.sync();
+    expect(shared.sites).toEqual([YOUTUBE_ORIGIN]);
+    expect(shared.store.excludedSites).toEqual([]);
+    expect(shared.store.rememberDismissed).toEqual([]);
+    expect(server.live('u2', 'sites')).toEqual([`known:${YOUTUBE_ORIGIN}`]);
+
+    shared.store.account = account('u1');
+    await shared.sync();
+    expect(shared.sites).toEqual([film, YOUTUBE_ORIGIN].sort());
+    expect(shared.store.excludedSites).toEqual(['news.example']);
+    expect(shared.store.rememberDismissed).toEqual(['https://shop.example']);
+  });
+
+  it('what is not a site is left out', () => {
+    const site = { origin: film, addedAt: 1, lastUsed: 2, preferredIndex: null };
+    expect(parseSyncedSite({ list: 'known', id: film, site })).toEqual({
+      list: 'known',
+      id: film,
+      site,
+    });
+    expect(parseSyncedSite({ list: 'off', id: 'films.example' })).toEqual({
+      list: 'off',
+      id: 'films.example',
+    });
+    expect(parseSyncedSite({ list: 'never', id: film })).toEqual({ list: 'never', id: film });
+
+    expect(parseSyncedSite({ list: 'known', id: film })).toBeNull();
+    expect(parseSyncedSite({ list: 'known', id: film, site: { ...site, origin: 'x' } })).toBeNull();
+    expect(
+      parseSyncedSite({ list: 'known', id: film, site: { ...site, origin: 'https://b.example' } }),
+    ).toBeNull();
+    expect(parseSyncedSite({ list: 'known', id: 'file:///etc', site })).toBeNull();
+    expect(parseSyncedSite({ list: 'never', id: `${film}/page` })).toBeNull();
+    expect(parseSyncedSite({ list: 'off', id: 'www.films.example' })).toBeNull();
+    expect(parseSyncedSite({ list: 'off', id: 'a b' })).toBeNull();
+    expect(parseSyncedSite({ list: 'other', id: film })).toBeNull();
+    expect(parseSyncedSite('nonsense')).toBeNull();
   });
 });
 

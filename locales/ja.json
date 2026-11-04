@@ -72,6 +72,8 @@
 "set_radius": "角の丸み",
 "set_sites": "登録済みのサイト",
 "set_sites_empty": "プレーヤーのあるページで「自動で開始」をオンにすると、次回からアイコンをクリックせずに見つかります。",
+"sites_access_text": "このブラウザでアクセス許可が必要なアカウントのサイト: $1",
+"sites_access_allow": "アクセスを許可",
 "set_history": "履歴",
 "set_keep_history": "視聴した動画を記録する",
 "set_keep_history_hint": "動画のリストはアカウントに保存されます",

@@ -72,6 +72,8 @@
 "set_radius": "Pyöristys",
 "set_sites": "Tunnetut sivustot",
 "set_sites_empty": "Ota ”Käynnistä itse” käyttöön sivulla, jolla on soitin: ensi kerralla se löytyy ilman kuvakkeen napsautusta.",
+"sites_access_text": "Tilin sivustot, jotka tarvitsevat käyttöoikeuden tässä selaimessa: $1",
+"sites_access_allow": "Salli käyttö",
 "set_history": "Historia",
 "set_keep_history": "Muista, mitä olen katsonut",
 "set_keep_history_hint": "Videolista säilyy tilillä",

@@ -72,6 +72,8 @@
 "set_radius": "Kebulatan",
 "set_sites": "Laman web dikenali",
 "set_sites_empty": "Hidupkan “Mula sendiri” pada halaman dengan pemain: lain kali ia akan ditemui tanpa mengklik ikon.",
+"sites_access_text": "Laman daripada akaun yang memerlukan akses dalam pelayar ini: $1",
+"sites_access_allow": "Benarkan akses",
 "set_history": "Sejarah",
 "set_keep_history": "Ingat apa yang saya tonton",
 "set_keep_history_hint": "Senarai video disimpan dalam akaun",

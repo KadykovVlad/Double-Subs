@@ -3,6 +3,7 @@ import { PROVIDERS, removeMethod, signOut, type Provider } from '../../src/lib/a
 import { requestSync } from '../../src/lib/sync';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
+import { originPattern } from '../../src/lib/scan';
 import { setSiteExcluded } from '../../src/lib/known-sites';
 import {
   BAR_OPACITY,
@@ -47,6 +48,7 @@ import {
   useExcludedSites,
   useHistory,
   useKnownSites,
+  useSitesWithoutAccess,
   useSettings,
 } from './hooks';
 import { Button, Card, ColorRow, Icons, RangeRow, SectionTitle, SelectRow, SwitchRow } from './ui';
@@ -270,6 +272,7 @@ export function SettingsTab({
                   ))}
                 </ul>
               )}
+              <SitesAccess />
               <MirrorsSwitch />
             </Card>
 
@@ -753,6 +756,28 @@ const PlanCurrent = () => (
 );
 
 /** The sites the user switched off, each with a button to turn it on again; nothing is shown while there are none. */
+/** Sites that came from the account: Chrome gives access per browser, and asks only on a click. */
+function SitesAccess() {
+  const missing = useSitesWithoutAccess();
+  if (missing.length === 0) return null;
+  return (
+    <>
+      <p class="muted" data-testid="sites-access">
+        {t('sites_access_text', missing.length)}
+      </p>
+      <Button
+        variant="secondary"
+        size="sm"
+        testid="sites-allow"
+        // The request is made synchronously inside the click: Chrome requires the user gesture.
+        onClick={() => void browser.permissions.request({ origins: missing.map(originPattern) })}
+      >
+        {t('sites_access_allow')}
+      </Button>
+    </>
+  );
+}
+
 function SwitchedOffSites() {
   const excluded = useExcludedSites();
   if (excluded.length === 0) return null;

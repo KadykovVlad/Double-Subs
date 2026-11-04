@@ -72,6 +72,8 @@
 "set_radius": "Zaokrąglenie",
 "set_sites": "Znane strony",
 "set_sites_empty": "Włącz „Uruchamiaj samodzielnie” na stronie z odtwarzaczem: następnym razem zostanie znaleziony bez klikania ikony.",
+"sites_access_text": "Witryny z konta, które potrzebują dostępu w tej przeglądarce: $1",
+"sites_access_allow": "Zezwól na dostęp",
 "set_history": "Historia",
 "set_keep_history": "Zapamiętuj, co oglądam",
 "set_keep_history_hint": "Lista filmów jest przechowywana na koncie",

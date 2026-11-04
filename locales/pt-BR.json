@@ -72,6 +72,8 @@
 "set_radius": "Arredondamento",
 "set_sites": "Sites conhecidos",
 "set_sites_empty": "Ative «Iniciar sozinho» em uma página com player: da próxima vez ele será encontrado sem clicar no ícone.",
+"sites_access_text": "Sites da conta que precisam de acesso neste navegador: $1",
+"sites_access_allow": "Permitir acesso",
 "set_history": "Histórico",
 "set_keep_history": "Lembrar o que eu assisti",
 "set_keep_history_hint": "A lista de vídeos fica guardada na conta",

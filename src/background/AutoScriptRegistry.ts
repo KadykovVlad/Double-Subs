@@ -1,5 +1,5 @@
 import {
-  addKnownSite,
+  seedKnownSite,
   loadKnownSites,
   loadMirrorsMode,
   MIRRORS_PATTERN,
@@ -54,7 +54,7 @@ export class AutoScriptRegistry {
   /** YouTube works out of the box: it is known from the first start until the user takes it off. */
   async seedYouTube(): Promise<void> {
     if ((await browser.storage.local.get(SEEDED_KEY))[SEEDED_KEY]) return;
-    await addKnownSite(YOUTUBE_ORIGIN);
+    await seedKnownSite(YOUTUBE_ORIGIN);
     await browser.storage.local.set({ [SEEDED_KEY]: true });
   }
 

@@ -72,6 +72,8 @@
 "set_radius": "Afronding",
 "set_sites": "Bekende sites",
 "set_sites_empty": "Zet “Zelf starten” aan op een pagina met een speler: de volgende keer wordt hij gevonden zonder op het pictogram te klikken.",
+"sites_access_text": "Sites uit het account die in deze browser toegang nodig hebben: $1",
+"sites_access_allow": "Toegang toestaan",
 "set_history": "Geschiedenis",
 "set_keep_history": "Onthouden wat ik heb gekeken",
 "set_keep_history_hint": "De lijst met video’s blijft in het account",

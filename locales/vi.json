@@ -72,6 +72,8 @@
 "set_radius": "Bo góc",
 "set_sites": "Trang web đã biết",
 "set_sites_empty": "Bật “Tự khởi động” trên trang có trình phát: lần sau sẽ tìm thấy mà không cần nhấp vào biểu tượng.",
+"sites_access_text": "Các trang trong tài khoản cần quyền truy cập trên trình duyệt này: $1",
+"sites_access_allow": "Cho phép truy cập",
 "set_history": "Lịch sử",
 "set_keep_history": "Ghi nhớ những gì tôi đã xem",
 "set_keep_history_hint": "Danh sách video được lưu trong tài khoản",

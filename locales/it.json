@@ -72,6 +72,8 @@
 "set_radius": "Arrotondamento",
 "set_sites": "Siti noti",
 "set_sites_empty": "Attiva «Avvia da solo» in una pagina con un player: la prossima volta verrà trovato senza fare clic sull’icona.",
+"sites_access_text": "Siti dell’account che richiedono l’accesso in questo browser: $1",
+"sites_access_allow": "Consenti l’accesso",
 "set_history": "Cronologia",
 "set_keep_history": "Ricorda cosa guardo",
 "set_keep_history_hint": "L’elenco dei video resta nell’account",

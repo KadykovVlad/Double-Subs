@@ -72,6 +72,8 @@
 "set_radius": "Afrunding",
 "set_sites": "Kendte websteder",
 "set_sites_empty": "Slå “Start selv” til på en side med en afspiller: næste gang findes den uden at klikke på ikonet.",
+"sites_access_text": "Websteder fra kontoen, der skal have adgang i denne browser: $1",
+"sites_access_allow": "Giv adgang",
 "set_history": "Historik",
 "set_keep_history": "Husk, hvad jeg har set",
 "set_keep_history_hint": "Listen over videoer gemmes på kontoen",

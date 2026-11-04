@@ -72,6 +72,8 @@
 "set_radius": "Zaobljenost",
 "set_sites": "Poznate stranice",
 "set_sites_empty": "Uključite »Pokreni sam« na stranici s playerom: sljedeći put bit će pronađen bez klika na ikonu.",
+"sites_access_text": "Web-mjesta s računa kojima treba pristup u ovom pregledniku: $1",
+"sites_access_allow": "Dopusti pristup",
 "set_history": "Povijest",
 "set_keep_history": "Pamti što sam gledao",
 "set_keep_history_hint": "Popis videozapisa sprema se na računu",

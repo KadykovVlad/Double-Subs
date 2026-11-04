@@ -200,6 +200,87 @@ test('signing in brings the settings of the account, and a changed setting goes 
   await expect.poll(told, { timeout: 10_000 }).toContain(90);
 });
 
+test('a change in any of the lists of sites goes to the server by itself', async () => {
+  test.setTimeout(60_000);
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  // No synchronisation of the sign-in or of the panel, and no timer from clearing the storage, is left.
+  await panel.waitForTimeout(6000);
+  const told = () =>
+    api.requests
+      .filter((r) => r.path === '/sync')
+      .flatMap((r) => (r.body as { changes: Array<{ key: string }> }).changes.map((c) => c.key));
+  const origin = 'https://films.example';
+  const site = { origin, addedAt: Date.now(), lastUsed: 1, preferredIndex: null };
+  const changes: Array<[Record<string, unknown>, string]> = [
+    [{ knownSites: { [origin]: site } }, `known:${origin}`],
+    [{ excludedSites: ['films.example'] }, 'off:films.example'],
+    [{ rememberDismissed: [origin] }, `never:${origin}`],
+  ];
+  for (const [change, key] of changes) {
+    await session.worker.evaluate((items) => chrome.storage.local.set(items), change);
+    await expect.poll(told, { timeout: 10_000 }).toContain(key);
+  }
+});
+
+test('a site that came from the account without access: the panel says so and asks on a click', async () => {
+  const other = 'https://films.example';
+  api.synced = [
+    {
+      kind: 'sites',
+      key: `known:${other}`,
+      updatedAt: Date.now(),
+      deleted: false,
+      data: {
+        list: 'known',
+        id: other,
+        site: { origin: other, addedAt: 1, lastUsed: 1, preferredIndex: null },
+      },
+    },
+  ];
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('known-site').filter({ hasText: 'films.example' })).toBeVisible();
+  await expect(panel.getByTestId('sites-access')).toContainText('1');
+
+  // Chrome's own question cannot be answered from a test: the click must ask it for that site.
+  await panel.evaluate(() => {
+    const asked: unknown[] = [];
+    Object.assign(window, { asked });
+    chrome.permissions.request = (async (request: unknown) => {
+      asked.push(request);
+      return true;
+    }) as typeof chrome.permissions.request;
+  });
+  await panel.getByTestId('sites-allow').click();
+  expect(await panel.evaluate(() => (window as unknown as { asked: unknown[] }).asked)).toEqual([
+    { origins: ['https://films.example/*'] },
+  ]);
+});
+
+test('on a site of the list without access here: not shown as working, and offered again', async () => {
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await expect(panel.getByTestId('remember-title')).toBeVisible();
+  await panel.evaluate(() => {
+    const real = chrome.permissions.contains.bind(chrome.permissions);
+    chrome.permissions.contains = (async (query: chrome.permissions.Permissions) =>
+      query.origins?.[0]?.includes('localhost')
+        ? false
+        : real(query)) as typeof chrome.permissions.contains;
+  });
+  await session.worker.evaluate(
+    (origin) =>
+      chrome.storage.local.set({
+        knownSites: { [origin]: { origin, addedAt: 1, lastUsed: 1, preferredIndex: null } },
+      }),
+    fixtures.origin,
+  );
+  await expect(panel.getByTestId('auto-start')).not.toBeChecked();
+  await expect(panel.getByTestId('remember-title')).toBeVisible();
+});
+
 test('a free account stays free: no words tab, the plan says so', async () => {
   api.plan = 'free';
   const panel = await openPanel();

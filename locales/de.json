@@ -72,6 +72,8 @@
 "set_radius": "Rundung",
 "set_sites": "Bekannte Seiten",
 "set_sites_empty": "Schalte „Selbst starten“ auf einer Seite mit Player ein: Beim nächsten Mal wird er ohne Klick auf das Symbol gefunden.",
+"sites_access_text": "Websites aus dem Konto, die in diesem Browser Zugriff brauchen: $1",
+"sites_access_allow": "Zugriff erlauben",
 "set_history": "Verlauf",
 "set_keep_history": "Merken, was ich gesehen habe",
 "set_keep_history_hint": "Die Videoliste wird im Konto gespeichert",

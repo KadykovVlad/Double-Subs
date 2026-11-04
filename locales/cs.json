@@ -72,6 +72,8 @@
 "set_radius": "Zaoblení",
 "set_sites": "Známé weby",
 "set_sites_empty": "Zapněte „Spouštět samo“ na stránce s přehrávačem: příště se najde bez kliknutí na ikonu.",
+"sites_access_text": "Weby z účtu, které v tomto prohlížeči potřebují přístup: $1",
+"sites_access_allow": "Povolit přístup",
 "set_history": "Historie",
 "set_keep_history": "Pamatovat si, co sleduji",
 "set_keep_history_hint": "Seznam videí se ukládá v účtu",

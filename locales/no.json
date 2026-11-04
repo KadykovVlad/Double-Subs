@@ -72,6 +72,8 @@
 "set_radius": "Avrunding",
 "set_sites": "Kjente nettsteder",
 "set_sites_empty": "Slå på «Start selv» på en side med spiller: neste gang blir den funnet uten å klikke på ikonet.",
+"sites_access_text": "Nettsteder fra kontoen som trenger tilgang i denne nettleseren: $1",
+"sites_access_allow": "Gi tilgang",
 "set_history": "Historikk",
 "set_keep_history": "Husk hva jeg har sett",
 "set_keep_history_hint": "Videolisten lagres på kontoen",

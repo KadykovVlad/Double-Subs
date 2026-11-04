@@ -4,6 +4,7 @@ import { cleanTitle, displayUrl, formatDuration, historyId } from '../../src/lib
 import {
   addKnownSite,
   addKnownSites,
+  forgetAccess,
   dismissOffer,
   excludedHostOf,
   MIRRORS_PATTERN,
@@ -11,7 +12,6 @@ import {
   removeKnownSite,
   setMirrorsMode,
   setSiteExcluded,
-  YOUTUBE_ORIGIN,
 } from '../../src/lib/known-sites';
 import { originPattern } from '../../src/lib/scan';
 import type { TranslationStatus } from '../../src/lib/translation-messages';
@@ -33,6 +33,7 @@ import {
   useHistory,
   useKnownSites,
   useMirrorsMode,
+  useSitesWithoutAccess,
   useSettings,
 } from './hooks';
 import { MODEL_MARK, ModelsRow, useTranslationModels } from './models';
@@ -83,9 +84,7 @@ function roleOf(decision: Decision, index: number): string {
 
 export const forgetSite = async (origin: string): Promise<void> => {
   await removeKnownSite(origin);
-  // The access given for the automatic start goes too (YouTube's is part of the extension and stays).
-  if (origin !== YOUTUBE_ORIGIN)
-    await browser.permissions.remove({ origins: [originPattern(origin)] }).catch(() => {});
+  await forgetAccess(origin);
 };
 
 export interface NowProps {
@@ -358,7 +357,8 @@ function StatusCard({ state, tabId, onGrant, onPick, onCancelPick, onRetry, onRe
  * finds the player and shows the subtitles without a click on the icon.
  */
 function RememberOffer({ state }: { state: PopupState }) {
-  const known = useKnownSites();
+  const sites = useKnownSites();
+  const withoutAccess = useSitesWithoutAccess();
   const dismissed = useDismissedOffers();
   const mirrorsOn = useMirrorsMode();
   const [later, setLater] = useState<string[]>([]);
@@ -366,6 +366,10 @@ function RememberOffer({ state }: { state: PopupState }) {
 
   if (state.kind === 'working' || state.kind === 'restricted' || state.kind === 'error')
     return null;
+  // A site that came from the account and has no access here is not remembered in this browser yet.
+  const known = Object.fromEntries(
+    Object.entries(sites).filter(([origin]) => !withoutAccess.includes(origin)),
+  );
   const offer = originsToOffer(state.pageUrl, state.kind === 'selected' ? state.origin : null, {
     known,
     dismissed: [...dismissed, ...later],
@@ -439,8 +443,9 @@ function SiteSwitch({ address }: { address: string }) {
 /** "Start on this site by itself": needs access to the site, which only a click in the panel can ask for. */
 function AutoStart({ origin }: { origin: string }) {
   const sites = useKnownSites();
+  const withoutAccess = useSitesWithoutAccess();
   const [denied, setDenied] = useState(false);
-  const known = origin in sites;
+  const known = origin in sites && !withoutAccess.includes(origin);
   const host = new URL(origin).host;
 
   const onChange = (checked: boolean) => {

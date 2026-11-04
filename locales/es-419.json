@@ -72,6 +72,8 @@
 "set_radius": "Redondeo",
 "set_sites": "Sitios conocidos",
 "set_sites_empty": "Activa «Iniciar solo» en una página con reproductor: la próxima vez se encontrará sin hacer clic en el ícono.",
+"sites_access_text": "Sitios de la cuenta que necesitan acceso en este navegador: $1",
+"sites_access_allow": "Permitir acceso",
 "set_history": "Historial",
 "set_keep_history": "Recordar lo que veo",
 "set_keep_history_hint": "La lista de videos se guarda en la cuenta",

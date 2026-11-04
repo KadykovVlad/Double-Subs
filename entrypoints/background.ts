@@ -37,6 +37,17 @@ type Message =
  * - TranslationRelay: carries translation requests to the offscreen document
  * - SyncService: keeps the words and the history on the server
  */
+/** What goes to the server soon after a change (the history has a rhythm of its own). */
+const SYNCED_SOON = [
+  'savedWords',
+  'settings',
+  'panelTheme',
+  'uiLanguage',
+  'knownSites',
+  'excludedSites',
+  'rememberDismissed',
+];
+
 export default defineBackground(() => {
   const registry = new AutoScriptRegistry();
   const launcher = new AgentLauncher();
@@ -99,8 +110,7 @@ export default defineBackground(() => {
       keepOnboardingInStep();
     // A sign-in, not a renewal of the tokens: what the user has elsewhere comes to this browser.
     if (changes.account?.newValue && !changes.account.oldValue) void sync.run();
-    if (['savedWords', 'settings', 'panelTheme', 'uiLanguage'].some((key) => key in changes))
-      sync.changed();
+    if (SYNCED_SOON.some((key) => key in changes)) sync.changed();
     else if ('history' in changes) void sync.historyChanged();
   });
   browser.permissions.onAdded.addListener(() => {

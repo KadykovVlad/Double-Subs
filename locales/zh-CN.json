@@ -72,6 +72,8 @@
 "set_radius": "圆角",
 "set_sites": "已记住的网站",
 "set_sites_empty": "在有播放器的页面开启“自动启动”：下次无需点击图标即可找到播放器。",
+"sites_access_text": "账号中需要在此浏览器获得访问权限的网站:$1",
+"sites_access_allow": "允许访问",
 "set_history": "历史",
 "set_keep_history": "记住我看过的内容",
 "set_keep_history_hint": "视频列表保存在账号中",

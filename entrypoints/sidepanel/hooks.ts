@@ -11,6 +11,7 @@ import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/hist
 import {
   loadDismissed,
   loadKnownSites,
+  sitesWithoutAccess,
   ALL_SITES_PATTERN,
   loadAccessDismissed,
   loadExcludedSites,
@@ -95,6 +96,29 @@ export function useMirrorsMode(): boolean {
     return watchMirrorsMode(setOn);
   }, []);
   return on;
+}
+
+/** The sites on the list that have no access in this browser (they came from the account). */
+export function useSitesWithoutAccess(): string[] {
+  const sites = useKnownSites();
+  const [missing, setMissing] = useState<string[]>([]);
+  const origins = Object.keys(sites).sort().join(' ');
+  useEffect(() => {
+    let current = true;
+    const check = () =>
+      void sitesWithoutAccess(origins ? origins.split(' ') : []).then((list) => {
+        if (current) setMissing(list);
+      });
+    check();
+    browser.permissions.onAdded.addListener(check);
+    browser.permissions.onRemoved.addListener(check);
+    return () => {
+      current = false;
+      browser.permissions.onAdded.removeListener(check);
+      browser.permissions.onRemoved.removeListener(check);
+    };
+  }, [origins]);
+  return missing;
 }
 
 /** Is the extension allowed to start by itself on every site: the switch is on and Chrome holds the access. */

@@ -72,6 +72,8 @@
 "set_radius": "Užapvalinimas",
 "set_sites": "Žinomos svetainės",
 "set_sites_empty": "Įjunkite „Paleisti pačiam“ puslapyje su grotuvu: kitą kartą jis bus rastas nespustelėjus piktogramos.",
+"sites_access_text": "Paskyros svetainės, kurioms šioje naršyklėje reikia prieigos: $1",
+"sites_access_allow": "Leisti prieigą",
 "set_history": "Istorija",
 "set_keep_history": "Prisiminti, ką žiūrėjau",
 "set_keep_history_hint": "Vaizdo įrašų sąrašas saugomas paskyroje",

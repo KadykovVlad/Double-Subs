@@ -7,7 +7,7 @@ import type { SyncMessage } from './messages';
  * comparing and merging; the network and the timing are in src/background/SyncService.ts.
  */
 
-const SYNC_KINDS = ['words', 'history', 'settings'] as const;
+const SYNC_KINDS = ['words', 'history', 'settings', 'sites'] as const;
 export type SyncKind = (typeof SYNC_KINDS)[number];
 
 /** One thing as the server's /sync takes and gives it. */
@@ -201,7 +201,7 @@ const KEY = 'syncState';
 export const emptySyncState = (owner: string | null): SyncState => ({
   owner,
   cursor: 0,
-  seen: { words: {}, history: {}, settings: {} },
+  seen: { words: {}, history: {}, settings: {}, sites: {} },
   lastAt: 0,
   historyPaused: false,
 });
@@ -222,6 +222,7 @@ export function normalizeSyncState(value: unknown): SyncState | null {
       words: prints(record.words),
       history: prints(record.history),
       settings: prints(record.settings),
+      sites: prints(record.sites),
     },
     lastAt: typeof lastAt === 'number' ? lastAt : 0,
     historyPaused: historyPaused === true,

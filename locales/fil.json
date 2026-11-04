@@ -72,6 +72,8 @@
 "set_radius": "Bilog ng sulok",
 "set_sites": "Mga kilalang site",
 "set_sites_empty": "I-on ang “Awtomatikong magsimula” sa pahinang may player: sa susunod ay mahahanap ito nang hindi nagki-click sa icon.",
+"sites_access_text": "Mga site mula sa account na kailangan ng access sa browser na ito: $1",
+"sites_access_allow": "Payagan ang access",
 "set_history": "History",
 "set_keep_history": "Tandaan ang mga pinanood ko",
 "set_keep_history_hint": "Ang listahan ng mga video ay nasa account",

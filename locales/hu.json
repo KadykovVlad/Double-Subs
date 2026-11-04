@@ -72,6 +72,8 @@
 "set_radius": "Lekerekítés",
 "set_sites": "Ismert webhelyek",
 "set_sites_empty": "Kapcsold be az „Automatikus indítás” funkciót egy lejátszós oldalon: legközelebb az ikonra kattintás nélkül megtalálja.",
+"sites_access_text": "A fiók webhelyei, amelyeknek hozzáférés kell ebben a böngészőben: $1",
+"sites_access_allow": "Hozzáférés engedélyezése",
 "set_history": "Előzmények",
 "set_keep_history": "Megjegyzem, mit néztem",
 "set_keep_history_hint": "A videók listája a fiókban tárolódik",

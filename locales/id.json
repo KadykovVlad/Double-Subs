@@ -72,6 +72,8 @@
 "set_radius": "Kebulatan",
 "set_sites": "Situs yang dikenal",
 "set_sites_empty": "Nyalakan “Mulai otomatis” di halaman dengan pemutar: lain kali pemutar akan ditemukan tanpa mengeklik ikon.",
+"sites_access_text": "Situs dari akun yang perlu akses di browser ini: $1",
+"sites_access_allow": "Izinkan akses",
 "set_history": "Riwayat",
 "set_keep_history": "Ingat yang saya tonton",
 "set_keep_history_hint": "Daftar video disimpan di akun",

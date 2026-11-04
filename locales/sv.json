@@ -72,6 +72,8 @@
 "set_radius": "Rundning",
 "set_sites": "Kända webbplatser",
 "set_sites_empty": "Slå på ”Starta själv” på en sida med en spelare: nästa gång hittas den utan att du klickar på ikonen.",
+"sites_access_text": "Webbplatser från kontot som behöver åtkomst i den här webbläsaren: $1",
+"sites_access_allow": "Tillåt åtkomst",
 "set_history": "Historik",
 "set_keep_history": "Kom ihåg vad jag har tittat på",
 "set_keep_history_hint": "Videolistan sparas på kontot",

@@ -72,6 +72,8 @@
 "set_radius": "የማዕዘን ክብነት",
 "set_sites": "የሚታወቁ ጣቢያዎች",
 "set_sites_empty": "ማጫወቻ ባለበት ገጽ ላይ “በራሱ ጀምር” ያብሩ፦ በሚቀጥለው ጊዜ አዶውን ጠቅ ሳያደርጉ ይገኛል።",
+"sites_access_text": "ከመለያው የመጡ በዚህ አሳሽ ውስጥ ፈቃድ የሚያስፈልጋቸው ጣቢያዎች፦ $1",
+"sites_access_allow": "ፍቀድ",
 "set_history": "ታሪክ",
 "set_keep_history": "ያየሁትን አስታውስ",
 "set_keep_history_hint": "የቪዲዮ ዝርዝሩ በመለያው ውስጥ ይቀመጣል",
