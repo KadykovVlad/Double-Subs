@@ -337,3 +337,61 @@ test('an ad first, the film later: the chip waits, then the subtitles come by th
   await expect(page.locator('double-sub-notice .chip')).toBeHidden(); // ready is not announced
   await expect(lines(page).host).toHaveCount(1);
 });
+
+// ---------------------------------------------------------------- the subtitles are off
+
+const switchOff = () =>
+  session.worker.evaluate(() => chrome.storage.local.set({ settings: { enabled: false } }));
+const restoreButton = (page: Page) => page.locator('double-sub-overlay .restore');
+
+test('off: no "looking for subtitles" chip, and the round button is there before any subtitles exist', async () => {
+  await switchOff();
+  const page = await open('ad-then-film.html'); // a clip without subtitles first, the film later
+  const popup = await openPopupFor(session, page);
+  void popup;
+  // The button is on the video while the player has nothing: the panel is not needed to turn them on.
+  await expect(restoreButton(page)).toBeVisible({ timeout: 10_000 });
+  await expect(restoreButton(page)).toHaveAttribute('title', 'Показать субтитры');
+  await page.waitForTimeout(1500); // long enough for the chip to have come, were it to come
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden();
+
+  // The film arrives with its subtitles: still off, still no chip, the button stays.
+  await page.evaluate(() => (window as unknown as { startFilm: () => void }).startFilm());
+  await seek(page, 1.5);
+  await page.waitForTimeout(1500);
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden();
+  await expect(lines(page).en).toBeHidden();
+  await expect(restoreButton(page)).toBeVisible();
+
+  await restoreButton(page).click();
+  await expect(lines(page).en).toHaveText('Hello, Dexter.', { timeout: 10_000 });
+  await expect(restoreButton(page)).toBeHidden();
+});
+
+test('off, on a player without any subtitles: the button is there and turns the subtitles on', async () => {
+  await switchOff();
+  const page = await open('ad-then-film.html');
+  await openPopupFor(session, page);
+  await expect(restoreButton(page)).toBeVisible({ timeout: 10_000 });
+  await restoreButton(page).click();
+  await expect(restoreButton(page)).toBeHidden();
+  expect(
+    await session.worker.evaluate(
+      async () =>
+        ((await chrome.storage.local.get('settings')).settings as { enabled: boolean }).enabled,
+    ),
+  ).toBe(true);
+});
+
+test('switched off while the chip is up: it goes, and the button takes its place', async () => {
+  const page = await open('ad-then-film.html');
+  const popup = await openPopupFor(session, page);
+  await expect(page.locator('double-sub-notice .text')).toHaveText(
+    'Жду начала видео · ищу субтитры',
+    { timeout: 10_000 },
+  );
+  await expect(restoreButton(page)).toHaveCount(0); // on: nothing to bring back
+  await popup.getByTestId('toggle-overlay').uncheck();
+  await expect(page.locator('double-sub-notice .chip')).toBeHidden();
+  await expect(restoreButton(page)).toBeVisible();
+});

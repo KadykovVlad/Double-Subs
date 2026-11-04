@@ -7,7 +7,7 @@ import { fileLabel, loadSubtitleFiles } from '../lib/subtitle-files';
 import { inspectVideo } from '../lib/tracks';
 import { youtubeBlocked } from '../lib/youtube';
 import type { TranslationStatus } from '../lib/translation-messages';
-import type { Inspection, VideoReport } from '../lib/types';
+import type { Inspection, SubtitleLines, VideoReport } from '../lib/types';
 import { createNotice, type Notice } from '../overlay/notice';
 import { startOverlay, type Overlay } from '../overlay/overlay';
 import type { WordTools } from '../overlay/words-ui';
@@ -62,6 +62,8 @@ export class VideoSession {
   report: VideoReport | null = null;
 
   private overlay: Overlay | null = null;
+  /** The bar on the video has lines to show (a bar without them is only the button that brings the subtitles back). */
+  private hasLines = false;
   private inspection: Inspection | null = null;
   private translation: TranslationJob | null = null;
   private readonly notice: Notice;
@@ -109,10 +111,12 @@ export class VideoSession {
     this.notice = createNotice(video, {
       bottom: this.youtube?.isShort(video) ?? false,
       anchor: this.anchor,
+      // Switched off: no "looking for subtitles", no "translating", nothing.
+      allowed: () => deps.data.settings.enabled,
     });
     this.history = new HistoryRecorder(
       video,
-      () => deps.data.settings.keepHistory && this.overlay !== null,
+      () => deps.data.settings.keepHistory && this.overlay !== null && this.hasLines,
     );
   }
 
@@ -210,6 +214,7 @@ export class VideoSession {
     try {
       await this.deps.data.ready; // the language of the texts (track labels, notes) is known from here on
       this.syncNativeCaptions();
+      this.ensureRestoreButton(); // switched off: the button is there while the lines are still being read
       const pair = pairOf(this.deps.data.settings);
       const inspection = this.youtube
         ? await this.youtube.inspect(pair)
@@ -302,23 +307,14 @@ export class VideoSession {
     );
   }
 
-  /** Puts the subtitle bar on the video and starts translating what is missing. */
-  private async show(raw: Inspection): Promise<void> {
-    this.translation?.stop();
-    this.overlay?.stop();
-    this.overlay = null;
-    // Whole phrases on both lines: a sentence cut in two cues is joined, and the cues one track needs
-    // to match a longer cue of the other are shown together. The translation takes the joined text too.
-    const inspection: Inspection = { ...raw, lines: phrasize(raw.lines) };
-    this.inspection = inspection;
-    const { learn, native } = inspection.lines;
-    if (!learn && !native) return;
-
-    await this.deps.data.ready;
-    if (this.closed) return;
-    const { data, words, panel } = this.deps;
+  /**
+   * The bar on the video, made once the settings are known. With no lines it is only the round
+   * button that brings the subtitles back (it shows while they are off).
+   */
+  private startBar(lines: SubtitleLines): Overlay {
+    const { data, words } = this.deps;
     this.stopListeningToUser.forEach((stop) => stop());
-    this.overlay = startOverlay(this.video, inspection.lines, data.settings, {
+    const overlay = startOverlay(this.video, lines, data.settings, {
       hideSelector:
         this.youtube?.nativeCaptionSelector ?? (this.tiktok ? TIKTOK_CAPTION_SELECTOR : undefined),
       noRestoreButton: this.youtube !== null, // our switch sits in YouTube's control bar
@@ -331,6 +327,41 @@ export class VideoSession {
       data.onSettings((settings) => this.overlay?.setSettings(settings)),
       data.onSavedWords((keys) => this.overlay?.setSaved(keys)),
     ];
+    return overlay;
+  }
+
+  /**
+   * With the subtitles off, any player gets the round button that brings them back, also while the
+   * lines are being read, and when the page has none: the user does not have to open the panel.
+   * (YouTube has its own switch in the control bar.)
+   */
+  private ensureRestoreButton(): void {
+    if (this.closed || this.overlay || this.youtube || this.deps.data.settings.enabled) return;
+    this.hasLines = false;
+    this.overlay = this.startBar({ learn: null, native: null });
+  }
+
+  /** Puts the subtitle bar on the video and starts translating what is missing. */
+  private async show(raw: Inspection): Promise<void> {
+    this.translation?.stop();
+    this.overlay?.stop();
+    this.overlay = null;
+    this.hasLines = false;
+    // Whole phrases on both lines: a sentence cut in two cues is joined, and the cues one track needs
+    // to match a longer cue of the other are shown together. The translation takes the joined text too.
+    const inspection: Inspection = { ...raw, lines: phrasize(raw.lines) };
+    this.inspection = inspection;
+    const { learn, native } = inspection.lines;
+    const hasLines = Boolean(learn || native);
+
+    await this.deps.data.ready;
+    if (this.closed) return;
+    // Nothing to show and the subtitles are on: no bar. Off: still the button that brings them back.
+    if (!hasLines) return this.ensureRestoreButton();
+
+    const { panel } = this.deps;
+    this.hasLines = true;
+    this.overlay = this.startBar(inspection.lines);
 
     this.translation = new TranslationJob({
       video: this.video,
@@ -409,6 +440,8 @@ export class VideoSession {
   private follow(): void {
     this.stopFollowing.forEach((stop) => stop());
     this.stopFollowing = [];
+    // Switched off while there is no bar (no lines yet, or none on the page): the button that brings them back.
+    this.stopFollowing.push(this.deps.data.onSettings(() => this.ensureRestoreButton()));
     // Other languages chosen: the lines are read again in them at once.
     this.stopFollowing.push(
       this.deps.data.onSettings((settings) => {

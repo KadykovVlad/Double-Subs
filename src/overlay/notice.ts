@@ -39,18 +39,20 @@ const MARK = `<svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect wid
  * A small chip in the corner of the video that says what Double Sub found and does ("Subtitles found
  * · EN + RU", translation progress); `bottom`: at the bottom centre instead (a Short has YouTube's
  * buttons in its top corner). It never takes the mouse, so the player stays usable, and in
- * fullscreen it moves into the fullscreen element like the subtitle bar does.
+ * fullscreen it moves into the fullscreen element like the subtitle bar does. `allowed`: asked
+ * whenever the chip would show; while it says no (the user switched the subtitles off) nothing is
+ * said, and a chip that is up goes away.
  */
 export function createNotice(
   video: HTMLVideoElement,
-  options: { bottom?: boolean; anchor?: OverlayAnchor } = {},
+  config: { bottom?: boolean; anchor?: OverlayAnchor; allowed?: () => boolean } = {},
 ): Notice {
   const host = document.createElement('double-sub-notice');
   const root = host.attachShadow({ mode: 'open' });
   root.innerHTML = `<style>${STYLE}</style>
     <div class="box"><div class="chip" role="status" aria-live="polite">${MARK}<span class="dot"></span><span class="text"></span></div></div>`;
   const box = root.querySelector<HTMLElement>('.box')!;
-  box.classList.toggle('bottom', options.bottom === true);
+  box.classList.toggle('bottom', config.bottom === true);
   const chip = root.querySelector<HTMLElement>('.chip')!;
   const dot = root.querySelector<HTMLElement>('.dot')!;
   const text = root.querySelector<HTMLElement>('.text')!;
@@ -60,10 +62,12 @@ export function createNotice(
   let shown = false;
   let destroyed = false;
 
-  const place = () => placeHost(host, video, options.anchor);
+  const place = () => placeHost(host, video, config.anchor);
 
   const layout = () => {
     frame = 0;
+    // The user switched the subtitles off while the chip was up: it goes, with its loop.
+    if (shown && config.allowed?.() === false) return hide();
     place();
     const rect = boxInHost(host, video);
     box.style.display = rect.width === 0 || rect.height === 0 ? 'none' : '';
@@ -91,6 +95,7 @@ export function createNotice(
   return {
     show(message, tone, options = {}) {
       if (destroyed) return; // its session is over: nothing of it may come back on the page
+      if (config.allowed?.() === false) return; // the subtitles are off: nothing is said about them
       clearTimeout(timer);
       place();
       text.textContent = message;
