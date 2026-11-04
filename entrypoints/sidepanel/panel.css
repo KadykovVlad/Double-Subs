@@ -1,8 +1,7 @@
 /*
- * Double Sub side panel. The palette is three colours: for each theme a ground and an ink, and one
- * accent for both. The accent sits between the two grounds in lightness, so it reads the same on either
- * and stays still while the theme changes round it. Every other tone is mixed from these three; the
- * themes differ only by `light-dark()`, so a tone is written once. Components use the tokens only.
+ * Double Sub side panel. A colour theme is four colours for each mode: a ground, an ink, an accent and
+ * the text on it (src/lib/palettes.ts). Every other tone is mixed from them, and the modes differ only
+ * by `light-dark()`, so a tone is written once. Components use the tokens only.
  */
 @import './fonts.css';
 
@@ -10,11 +9,11 @@
   color-scheme: light dark;
   --font: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  /* The palette: tests/palette.test.ts holds these to their contrast. */
-  --ground: light-dark(#eef0ea, #121917);
-  --ink: light-dark(#17211e, #e8eae3);
-  --accent: #d14426;
-  --on-accent: #ffffff;
+  /* The first colour theme, until src/lib/palettes.ts paints the chosen one. */
+  --ground: light-dark(#eff5fc, #14222f);
+  --ink: light-dark(#172839, #e3eaf3);
+  --accent: light-dark(#3574b0, #82b6ec);
+  --on-accent: light-dark(#ffffff, #0d1926);
 
   /* Surfaces: lifted from the ground, towards white in the light theme and towards the ink in the dark. */
   --bg: var(--ground);
@@ -63,7 +62,7 @@
   color-scheme: dark;
 }
 
-/* The theme changes in a circle from its button, and the accent runs along the edge of it. */
+/* The colours change in a circle from the button pressed, and the accent runs along the edge of it. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -186,7 +185,7 @@ select {
   padding: 1px 8px;
   border-radius: 99px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -298,7 +297,7 @@ select:focus-visible {
   padding: 0 5px;
   border-radius: 99px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 10.5px;
   font-weight: 700;
   line-height: 17px;
@@ -1350,7 +1349,7 @@ a.page-url:hover {
   padding: 2px;
   border-radius: 5px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .soon {
   margin-left: 6px;
@@ -1445,7 +1444,7 @@ a.page-url:hover {
   place-items: center;
   border-radius: 11px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 .dual-icon svg {
   width: 19px;
@@ -1576,7 +1575,7 @@ a.page-url:hover {
   flex: none;
   place-items: center;
   border-radius: 50%;
-  color: #fff;
+  color: var(--ground);
 }
 .toast-icon svg {
   width: 16px;
@@ -1658,7 +1657,7 @@ a.page-url:hover {
   border: 0;
   border-radius: 12px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   transition:
     transform 0.12s var(--ease),
@@ -1806,6 +1805,68 @@ a.page-url:hover {
   display: grid;
   gap: 8px;
   margin-top: 8px;
+}
+.palettes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px 8px;
+}
+.palette {
+  display: grid;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+}
+.palette-tile {
+  position: relative;
+  display: flex;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: transform 0.15s var(--ease);
+}
+.palette:hover .palette-tile {
+  transform: translateY(-1px);
+}
+.palette-tile > i {
+  flex: 1;
+}
+.palette-dot {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.palette-dot > span {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 50%;
+}
+.palette-dot svg {
+  width: 13px;
+  height: 13px;
+}
+.palette[aria-pressed='true'] {
+  color: var(--text);
+  font-weight: 600;
+}
+.palette[aria-pressed='true'] .palette-tile {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.palette:focus-visible .palette-tile {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .add-method summary {
   cursor: pointer;

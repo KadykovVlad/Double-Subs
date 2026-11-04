@@ -200,7 +200,7 @@ test('signing in brings the settings of the account, and a changed setting goes 
 });
 
 test('a change in the lists of sites or in the watchlist goes to the server by itself', async () => {
-  test.setTimeout(90_000);
+  test.setTimeout(110_000);
   const panel = await openPanel();
   await panel.getByTestId('sign-in').click();
   // No synchronisation of the sign-in or of the panel, and no timer from clearing the storage, is left.
@@ -212,6 +212,7 @@ test('a change in the lists of sites or in the watchlist goes to the server by i
   const origin = 'https://films.example';
   const site = { origin, addedAt: Date.now(), lastUsed: 1, preferredIndex: null };
   const changes: Array<[Record<string, unknown>, string]> = [
+    [{ panelPalette: 'plum' }, 'palette'],
     [{ knownSites: { [origin]: site } }, `known:${origin}`],
     [{ excludedSites: ['films.example'] }, 'off:films.example'],
     [{ rememberDismissed: [origin] }, `never:${origin}`],

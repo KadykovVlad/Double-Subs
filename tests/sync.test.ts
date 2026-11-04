@@ -584,6 +584,19 @@ describe('settings', () => {
     expect(two.store.uiLanguage).toEqual({ code: 'fr', messages: { hello: 'Bonjour' } });
   });
 
+  it('the colour theme comes along; none chosen sends nothing', async () => {
+    const one = new Browser('u1');
+    await one.sync();
+    expect(server.live('u1', 'settings')).not.toContain('palette');
+
+    one.store.panelPalette = 'plum';
+    await one.sync();
+    const two = new Browser('u1');
+    await two.sync();
+    expect(two.store.panelPalette).toBe('plum');
+    expect(parseSyncedSetting({ name: 'palette', value: 'orange' })).toBeNull();
+  });
+
   it('"as in the system" of an older version is no choice: nothing goes and nothing breaks', async () => {
     const one = new Browser('u1');
     one.store.panelTheme = 'system';

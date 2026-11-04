@@ -45,6 +45,7 @@ const SYNCED_SOON = [
   'savedWords',
   'settings',
   'panelTheme',
+  'panelPalette',
   'uiLanguage',
   'knownSites',
   'excludedSites',

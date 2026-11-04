@@ -17,12 +17,12 @@ export function startPicking(
     <style>
       .box {
         position: fixed; box-sizing: border-box; pointer-events: auto; cursor: pointer;
-        border: 3px solid #d14426; border-radius: 6px; background: rgba(209, 68, 38, 0.18);
+        border: 3px solid #3574b0; border-radius: 6px; background: rgba(53, 116, 176, 0.18);
         display: flex; align-items: center; justify-content: center;
       }
       .box:hover { background: rgba(139, 92, 246, 0.32); }
       .label {
-        padding: 8px 14px; border-radius: 6px; background: #d14426; color: #fff;
+        padding: 8px 14px; border-radius: 6px; background: #3574b0; color: #fff;
         font: 600 15px/1.2 system-ui, sans-serif;
       }
       .hint {

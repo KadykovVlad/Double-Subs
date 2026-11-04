@@ -555,20 +555,38 @@ test('the history is grouped by day and can be searched and filtered by site', a
 test('the theme changes in a circle with the accent on its edge, which leaves nothing behind', async () => {
   const page = await openPage('shadow-video.html');
   const panel = await openPopupFor(session, page);
-  const accent = () =>
-    panel.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent'));
-  const ground = () => panel.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  await panel.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
-  const [darkAccent, darkGround] = [await accent(), await ground()];
-
-  await panel.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
-  expect(await accent()).toBe(darkAccent); // the one colour both themes share
-  expect(await ground()).not.toBe(darkGround);
-
   await panel.getByTestId('theme-toggle').click();
   await expect(panel.locator('.theme-ring')).toHaveCount(1);
   await expect(panel.locator('.theme-ring')).toHaveCount(0, { timeout: 3000 });
   await session.worker.evaluate(() => chrome.storage.local.remove('panelTheme'));
+});
+
+test('ten colour themes: a click repaints the panel, marks the choice and stays after a reopen', async () => {
+  const page = await openPage('shadow-video.html');
+  const panel = await openPopupFor(session, page);
+  await openPanelTab(panel, 'settings');
+  await expect(panel.getByTestId('palettes').locator('button')).toHaveCount(10);
+  // Nothing chosen: the first theme, and it is marked.
+  await expect(panel.getByTestId('palette-ocean')).toHaveAttribute('aria-pressed', 'true');
+
+  const background = () => panel.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  const before = await background();
+  await panel.getByTestId('palette-olive').click();
+  await expect(panel.getByTestId('palette-olive')).toHaveAttribute('aria-pressed', 'true');
+  await expect(panel.getByTestId('palette-ocean')).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(background).not.toBe(before);
+  await expect(panel.getByTestId('palette-olive')).toContainText('Олива');
+
+  const again = await session.context.newPage();
+  await again.goto(`chrome-extension://${session.extensionId}/sidepanel.html`);
+  await expect
+    .poll(() =>
+      again.evaluate(() =>
+        document.documentElement.style.getPropertyValue('--accent').includes('#597d2e'),
+      ),
+    )
+    .toBe(true);
+  await session.worker.evaluate(() => chrome.storage.local.remove('panelPalette'));
 });
 
 test('with the setting off nothing is remembered', async () => {

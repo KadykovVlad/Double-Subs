@@ -7,6 +7,7 @@ import {
   updateSettings,
   type Settings,
 } from './settings';
+import { loadPalette, normalizePalette, savePalette } from './palettes';
 import { loadTheme, normalizeTheme, saveTheme, type Theme } from './theme';
 import {
   chooseUiLanguage,
@@ -46,6 +47,7 @@ const FIELDS = [
 
 const LANGUAGES = 'languages';
 const THEME = 'theme';
+const PALETTE = 'palette';
 const UI_LANGUAGE = 'uiLanguage';
 
 export interface SyncedSetting {
@@ -57,10 +59,12 @@ export async function loadSyncedSettings(): Promise<SyncedSetting[]> {
   const settings = await loadSettings();
   const language = await savedUiLanguage();
   const theme = await loadTheme();
+  const palette = await loadPalette();
   return [
     ...FIELDS.map((name) => ({ name, value: settings[name] })),
     { name: LANGUAGES, value: pairOf(settings) },
     ...(theme ? [{ name: THEME, value: theme }] : []),
+    ...(palette ? [{ name: PALETTE, value: palette }] : []),
     ...(language ? [{ name: UI_LANGUAGE, value: language }] : []),
   ];
 }
@@ -84,6 +88,7 @@ export function settingTime(setting: SyncedSetting): number {
 
 function isValid(name: string, value: unknown): boolean {
   if (name === THEME) return normalizeTheme(value) !== null;
+  if (name === PALETTE) return normalizePalette(value) !== null;
   if (name === UI_LANGUAGE) return (UI_LANGUAGES as readonly unknown[]).includes(value);
   if (name === LANGUAGES) {
     const { learn, native } = (value ?? {}) as Record<string, unknown>;
@@ -112,6 +117,8 @@ export async function saveSyncedSettings(list: SyncedSetting[]): Promise<void> {
 
   const theme = rows.get(THEME) as Theme | undefined;
   if (theme && theme !== (await loadTheme())) await saveTheme(theme);
+  const palette = rows.get(PALETTE) as string | undefined;
+  if (palette && palette !== (await loadPalette())) await savePalette(palette);
   // Last: its file is read from the package, and the rest must not wait for it.
   const language = rows.get(UI_LANGUAGE) as string | undefined;
   if (language !== undefined && language !== (await savedUiLanguage()))

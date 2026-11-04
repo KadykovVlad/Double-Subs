@@ -3,6 +3,8 @@ import { PROVIDERS, removeMethod, signOut, type Account } from '../../src/lib/ac
 import { requestSync } from '../../src/lib/sync';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
+import { applyPalette, PALETTES, savePalette } from '../../src/lib/palettes';
+import { revealTheme } from '../../src/lib/theme';
 import { originPattern } from '../../src/lib/scan';
 import { setSiteExcluded } from '../../src/lib/known-sites';
 import {
@@ -48,6 +50,7 @@ import {
   useExcludedSites,
   useHistory,
   useKnownSites,
+  usePalette,
   useSitesWithoutAccess,
   useSettings,
 } from './hooks';
@@ -88,6 +91,12 @@ export function SettingsTab({
         <div class="settings-body">
           <section id="set-account" class="settings-section">
             <AccountCard />
+          </section>
+          <section id="set-palette" class="settings-section">
+            <SectionTitle>{t('nav_palette')}</SectionTitle>
+            <Card>
+              <PalettePicker />
+            </Card>
           </section>
           <section id="set-subtitles" class="settings-section">
             <SectionTitle>{t('set_learning')}</SectionTitle>
@@ -367,10 +376,11 @@ function revealSection(
 
 const BLINK_MS = 1650;
 
-type SectionId = 'account' | 'subtitles' | 'window' | 'sites' | 'history' | 'dev';
+type SectionId = 'account' | 'palette' | 'subtitles' | 'window' | 'sites' | 'history' | 'dev';
 
 const SECTIONS: Array<{ id: SectionId; label: MessageKey; icon: JSX.Element }> = [
   { id: 'account', label: 'nav_account', icon: Icons.user },
+  { id: 'palette', label: 'nav_palette', icon: Icons.palette },
   { id: 'subtitles', label: 'nav_subtitles', icon: Icons.subtitles },
   { id: 'window', label: 'nav_window', icon: Icons.window },
   { id: 'sites', label: 'nav_sites', icon: Icons.globe },
@@ -729,6 +739,39 @@ function ProOffer() {
 }
 
 /** The sites the user switched off, each with a button to turn it on again; nothing is shown while there are none. */
+/** Ten colour themes: a tile shows both modes of one, a click repaints the panel at once. */
+function PalettePicker() {
+  const chosen = usePalette() ?? PALETTES[0]!.id;
+  return (
+    <div class="palettes" data-testid="palettes">
+      {PALETTES.map(({ id, name, light, dark }) => (
+        <button
+          key={id}
+          class="palette"
+          type="button"
+          aria-pressed={id === chosen}
+          data-testid={`palette-${id}`}
+          onClick={(event) => {
+            revealTheme(event.currentTarget, () => applyPalette(id));
+            void savePalette(id);
+          }}
+        >
+          <span class="palette-tile">
+            <i style={{ background: light.ground }} />
+            <i style={{ background: dark.ground }} />
+            <span class="palette-dot">
+              <span style={{ background: light.accent, color: light.onAccent }}>
+                {id === chosen && Icons.check}
+              </span>
+            </span>
+          </span>
+          {t(name)}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /** Sites that came from the account: Chrome gives access per browser, and asks only on a click. */
 function SitesAccess() {
   const missing = useSitesWithoutAccess();

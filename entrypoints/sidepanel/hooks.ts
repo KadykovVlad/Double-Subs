@@ -6,6 +6,7 @@ import {
   watchEntitlements,
   type Entitlements,
 } from '../../src/lib/entitlements';
+import { loadPalette, watchPalette } from '../../src/lib/palettes';
 import { applyTheme, loadTheme, systemTheme, watchTheme, type Theme } from '../../src/lib/theme';
 import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/history';
 import {
@@ -176,6 +177,16 @@ export function useDismissedOffers(): string[] {
     return watchDismissed(setOrigins);
   }, []);
   return origins;
+}
+
+/** The colour theme the user chose; null until they do. */
+export function usePalette(): string | null {
+  const [id, setId] = useState<string | null>(null);
+  useEffect(() => {
+    void loadPalette().then(setId);
+    return watchPalette(setId);
+  }, []);
+  return id;
 }
 
 /** The theme the panel shows: the chosen one, or the system's until there is a choice. */
