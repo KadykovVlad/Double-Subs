@@ -55,6 +55,13 @@ export const markWord = (word: string) => `«${word}»`;
  * The translator keeps quotation marks around a word, so the part between them is that word as it
  * is translated in this very sentence. Null when the marks did not survive.
  */
+/** Both meanings of a word when they differ: the one in its sentence first, then the dictionary one. */
+export function bestTranslation(context: string | null, plain: string | null): string | null {
+  return context && plain && context.toLowerCase() !== plain.toLowerCase()
+    ? `${context} · ${plain}`
+    : (plain ?? context);
+}
+
 export function extractMarked(translated: string): string | null {
   const match = /[«“„"]\s*([^«»“”„"]{1,60}?)\s*[»”"]/.exec(translated);
   return match?.[1]?.trim() || null;

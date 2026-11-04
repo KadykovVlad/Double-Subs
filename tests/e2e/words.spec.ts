@@ -230,32 +230,55 @@ test('removing a word in the popup removes the underline on the page', async () 
   await expect(word).not.toHaveClass(/saved/);
 });
 
-test('saved words are copied for Anki as tab-separated text', async () => {
-  const { page, popup } = await openPlayer();
-  // Playwright cannot grant clipboard access to an extension page: catch what the popup writes.
-  await popup.evaluate(() => {
-    navigator.clipboard.writeText = async (text: string) =>
-      void ((window as unknown as { copied: string }).copied = text);
-  });
-  const word = overlay(page).enWord('Hello');
-  await word.hover();
-  await expectTip(page, 'привет');
-  await expect(overlay(page).tip.locator('.tip-ctx-text')).toHaveText('здравствуй');
-  await expect(overlay(page).tip.locator('.tip-dict').first()).toBeVisible(); // the dictionary has answered
-  await word.click();
-
-  await openPanelTab(popup, 'words');
-  await popup.getByTestId('copy-words').click();
-  await expect(popup.getByTestId('copy-words')).toHaveText('Скопировано');
-  expect(await popup.evaluate(() => (window as unknown as { copied: string }).copied)).toMatch(
-    /^Hello\tздравствуй · привет\tHello, Dexter\.\t\S.+$/,
-  ); // the last column: the dictionary meaning
-});
-
 test('the Russian line is hoverable too: its words are translated into English', async () => {
   const { page } = await openPlayer();
   await overlay(page).ruWord('Декстер').hover();
   await expectTip(page, '[ru] Декстер'); // the stand-in marks what it was given
+});
+
+test('only the language being learnt is saved: a word of the own line is read, and a click saves nothing', async () => {
+  const { page, popup } = await openPlayer();
+  const word = overlay(page).ruWord('Декстер');
+  await word.hover();
+  await expectTip(page, '[ru] Декстер');
+  await expect(overlay(page).tip).not.toContainText('сохранить');
+  await word.click();
+  await openPanelTab(popup, 'words');
+  await expect(popup.getByTestId('saved-word')).toHaveCount(0);
+
+  const learnt = overlay(page).enWord('Hello');
+  await learnt.hover();
+  await expectTip(page, 'привет');
+  await learnt.click();
+  await expect(popup.getByTestId('saved-word')).toHaveCount(1);
+});
+
+test('a word saved before its translation came, with the dictionary in English, is completed in the own language', async () => {
+  const { popup } = await openPlayer();
+  await session.worker.evaluate(() =>
+    chrome.storage.local.set({
+      savedWords: [
+        {
+          key: 'en:hello',
+          word: 'Hello',
+          lang: 'en',
+          translation: null,
+          context: 'Hello, Dexter.',
+          savedAt: 1,
+          definition: 'межд. A greeting said on meeting.',
+        },
+      ],
+    }),
+  );
+  await openPanelTab(popup, 'words');
+  await expect(popup.locator('.word-tr')).not.toHaveText('…');
+  await expect(popup.locator('.word-tr')).toContainText('привет');
+  await expect(popup.getByTestId('word-definition')).not.toContainText('greeting said');
+  const stored = await session.worker.evaluate(async () => {
+    const { savedWords } = await chrome.storage.local.get('savedWords');
+    return (savedWords as Array<{ definitionLang?: string }>)[0]!.definitionLang;
+  });
+  expect(stored).toBe('ru');
 });
 
 test('with hover translation off the lines are plain text again, and on again they are words', async () => {

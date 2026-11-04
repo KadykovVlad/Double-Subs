@@ -1,7 +1,9 @@
 import { t } from './i18n';
 /**
- * Spaced repetition for saved words, a simplified SM-2: every word has a due time; the answer
- * ("again", "hard", "good", "easy") decides how long the next gap is. A word never seen before is due at once.
+ * Spaced repetition for saved words: every word has a due time, and an answer decides the next gap.
+ * The answer is only "remembered" or "not": people judge their own memory poorly, and two choices are
+ * honest where four are noise. The gap grows by the ease of the word and by how long it really held,
+ * so a word remembered after a long absence counts for more. A word forgotten keeps part of its gap.
  */
 export interface Srs {
   /** When the word is due again, ms since epoch. */
@@ -15,15 +17,18 @@ export interface Srs {
   lapses: number;
 }
 
-export type Rating = 'again' | 'hard' | 'good' | 'easy';
-
-export const RATINGS: Rating[] = ['again', 'hard', 'good', 'easy'];
-
 const DAY_MS = 24 * 60 * 60 * 1000;
 const MINUTE_MS = 60 * 1000;
 export const AGAIN_DELAY_MS = 10 * MINUTE_MS;
 const MIN_EASE = 1.3;
 const START_EASE = 2.5;
+/** What a forgotten word keeps of its gap: it comes back faster than a new one. */
+const KEPT_AFTER_LAPSE = 0.25;
+/** A late answer counts for at most this many gaps. */
+const MAX_LATE = 2;
+/** Gaps of a week and more vary a little, or the words of one day would keep coming back together. */
+const SPREAD = 0.1;
+const SPREAD_FROM_DAYS = 7;
 
 export const newSrs = (now: number): Srs => ({
   due: now,
@@ -46,46 +51,28 @@ export function normalizeSrs(raw: unknown, savedAt: number): Srs {
   };
 }
 
-/** The word after an answer. */
-export function grade(srs: Srs, rating: Rating, now: number): Srs {
-  switch (rating) {
-    case 'again':
-      return {
-        ...srs,
-        due: now + AGAIN_DELAY_MS,
-        interval: 0,
-        reps: 0,
-        ease: Math.max(MIN_EASE, srs.ease - 0.2),
-        lapses: srs.lapses + 1,
-      };
-    case 'hard': {
-      const interval = Math.max(1, Math.round(Math.max(1, srs.interval) * 1.2));
-      return {
-        ...srs,
-        due: now + interval * DAY_MS,
-        interval,
-        ease: Math.max(MIN_EASE, srs.ease - 0.15),
-      };
-    }
-    case 'good': {
-      const reps = srs.reps + 1;
-      const interval =
-        reps === 1
-          ? 1
-          : reps === 2
-            ? 3
-            : Math.max(srs.interval + 1, Math.round(srs.interval * srs.ease));
-      return { ...srs, reps, interval, due: now + interval * DAY_MS };
-    }
-    case 'easy': {
-      const reps = srs.reps + 1;
-      const interval =
-        srs.interval === 0
-          ? 4
-          : Math.max(srs.interval + 2, Math.round(srs.interval * srs.ease * 1.3));
-      return { ...srs, reps, interval, due: now + interval * DAY_MS, ease: srs.ease + 0.15 };
-    }
-  }
+/** The word after an answer. `spread` is between -1 and 1. */
+export function grade(srs: Srs, remembered: boolean, now: number, spread = 0): Srs {
+  if (!remembered)
+    return {
+      ...srs,
+      due: now + AGAIN_DELAY_MS,
+      interval: Math.floor(srs.interval * KEPT_AFTER_LAPSE),
+      reps: 0,
+      ease: Math.max(MIN_EASE, srs.ease - 0.2),
+      lapses: srs.lapses + 1,
+    };
+  const reps = srs.reps + 1;
+  const held = (now - (srs.due - srs.interval * DAY_MS)) / DAY_MS;
+  const base = Math.min(Math.max(srs.interval, held), srs.interval * MAX_LATE);
+  const grown =
+    reps === 1
+      ? Math.max(1, srs.interval)
+      : reps === 2
+        ? Math.max(3, srs.interval + 1)
+        : Math.max(srs.interval + 1, Math.round(base * srs.ease));
+  const interval = grown >= SPREAD_FROM_DAYS ? Math.round(grown * (1 + SPREAD * spread)) : grown;
+  return { ...srs, reps, interval, due: now + interval * DAY_MS };
 }
 
 export const isDue = (srs: Srs, now: number) => srs.due <= now;
@@ -102,8 +89,8 @@ export function wordStatus(srs: Srs): WordStatus {
 }
 
 /** "10 min", "1 d", "3 wk" (in the user's language): how long the gap after an answer will be, for the button labels. */
-export function gapLabel(srs: Srs, rating: Rating, now: number): string {
-  const ms = grade(srs, rating, now).due - now;
+export function gapLabel(srs: Srs, remembered: boolean, now: number): string {
+  const ms = grade(srs, remembered, now).due - now;
   if (ms < 60 * MINUTE_MS) return t('gap_min', Math.max(1, Math.round(ms / MINUTE_MS)));
   const days = Math.round(ms / DAY_MS);
   if (days < 14) return t('gap_day', days);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { loadAccount, watchAccount, type Account } from '../../src/lib/account';
 import {
   FREE_PLAN,
@@ -25,10 +25,20 @@ import {
   type KnownSites,
 } from '../../src/lib/known-sites';
 import { loadWatchlist, watchWatchlist, type WatchItem } from '../../src/lib/watchlist';
-import { loadSavedWords, watchSavedWords, type SavedWord } from '../../src/lib/saved-words';
+import { completeWord, needsCompleting, type CompletingTools } from '../../src/lib/complete-word';
+import { lookupWord } from '../../src/lib/dictionary-messages';
+import {
+  loadSavedWords,
+  updateSavedWord,
+  watchSavedWords,
+  type SavedWord,
+} from '../../src/lib/saved-words';
+import { directionOf } from '../../src/lib/translator';
+import { offscreenTranslationService } from '../../src/translation/client';
 import {
   DEFAULT_SETTINGS,
   loadSettings,
+  pairOf,
   updateSettings,
   watchSettings,
   type Settings,
@@ -177,6 +187,36 @@ export function useDismissedOffers(): string[] {
     return watchDismissed(setOrigins);
   }, []);
   return origins;
+}
+
+const completingTools: CompletingTools = {
+  lookup: lookupWord,
+  translate: async (text, from) => {
+    const { native } = pairOf(await loadSettings());
+    const direction = directionOf(from, native);
+    return (await offscreenTranslationService.translate(direction, [text]))[0] ?? '';
+  },
+};
+
+/** Fills in what saved words lack, one at a time; a word that cannot be helped now is left for the next opening. */
+export function useCompletedWords(words: SavedWord[]): void {
+  const tried = useRef(new Set<string>());
+  const running = useRef(false);
+  useEffect(() => {
+    if (running.current) return;
+    running.current = true;
+    void (async () => {
+      const { native } = pairOf(await loadSettings());
+      const next = () => words.find((w) => needsCompleting(w, native) && !tried.current.has(w.key));
+      for (let word = next(); word; word = next()) {
+        tried.current.add(word.key);
+        const patch = await completeWord(word, native, completingTools).catch(() => ({}));
+        if (Object.keys(patch).length > 0) await updateSavedWord(word.key, patch);
+      }
+    })().finally(() => {
+      running.current = false;
+    });
+  }, [words]);
 }
 
 /** The colour theme the user chose; null until they do. */

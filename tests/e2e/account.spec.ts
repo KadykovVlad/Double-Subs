@@ -280,6 +280,29 @@ test('videos: put aside by a click and by a link, once, and taken off', async ()
   await expect(panel.getByTestId('saved-item')).toHaveCount(1);
 });
 
+test('videos on Pro open on what was put aside, with no moment of the history first', async () => {
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await expect(panel.getByTestId('tab-video')).toBeVisible();
+  await expect(panel.getByTestId('tab-words')).toBeVisible(); // the plan has been read
+  const flashed = await panel.evaluate(async () => {
+    const history = () =>
+      document.querySelector('[data-testid="video-history"]')?.getAttribute('aria-selected');
+    let seen = false;
+    const look = () => {
+      if (history() === 'true') seen = true;
+    };
+    const observer = new MutationObserver(look);
+    observer.observe(document.body, { subtree: true, childList: true, attributes: true });
+    document.querySelector<HTMLElement>('[data-testid="tab-video"]')!.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    observer.disconnect();
+    return seen;
+  });
+  expect(flashed).toBe(false);
+  await expect(panel.getByTestId('video-saved')).toHaveAttribute('aria-selected', 'true');
+});
+
 test('videos on a free account: the history comes first, putting aside is a Pro feature', async () => {
   api.plan = 'free';
   const panel = await openPanel();

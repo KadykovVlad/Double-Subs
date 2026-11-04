@@ -14,6 +14,8 @@ export interface SavedWord {
   form?: string;
   /** From the dictionary: "verb: to move from one place to another". */
   definition?: string;
+  /** The language of `definition` once it is in the user's own; the dictionary speaks English. */
+  definitionLang?: string;
   /** Repetition schedule; a word saved before it existed gets one when it is first read. */
   srs?: Srs;
   /** Starred by the user. */
@@ -35,16 +37,6 @@ export function toggleWord(list: SavedWord[], entry: SavedWord): SavedWord[] {
   return list.some((item) => item.key === entry.key)
     ? list.filter((item) => item.key !== entry.key)
     : [{ ...entry, srs: entry.srs ?? newSrs(entry.savedAt) }, ...list];
-}
-
-/** Tab-separated text (word, translation, context, dictionary meaning) that Anki and spreadsheets import as it is. */
-export function toTsv(list: SavedWord[]): string {
-  const clean = (text: string | null | undefined) => (text ?? '').replace(/[\t\r\n]+/g, ' ').trim();
-  return list
-    .map((item) =>
-      [item.word, item.translation, item.context, item.definition].map(clean).join('\t'),
-    )
-    .join('\n');
 }
 
 const KEY = 'savedWords';
@@ -79,6 +71,14 @@ export async function updateSavedSrs(key: string, srs: Srs): Promise<void> {
   const list = await loadSavedWords();
   await browser.storage.local.set({
     [KEY]: list.map((item) => (item.key === key ? { ...item, srs } : item)),
+  });
+}
+
+/** Writes what was found for a word: it may have been deleted meanwhile, then nothing happens. */
+export async function updateSavedWord(key: string, patch: Partial<SavedWord>): Promise<void> {
+  const list = await loadSavedWords();
+  await browser.storage.local.set({
+    [KEY]: list.map((item) => (item.key === key ? { ...item, ...patch } : item)),
   });
 }
 

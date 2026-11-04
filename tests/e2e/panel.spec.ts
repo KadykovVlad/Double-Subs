@@ -382,7 +382,7 @@ const seedWords = () =>
     }),
   );
 
-test('words are due at once, the tab says how many, and a review moves them on', async () => {
+test('words are due at once, the tab says how many, and a word forgotten comes back in the same session', async () => {
   await seedWords();
   const page = await openPage('shadow-video.html');
   const panel = await openPopupFor(session, page);
@@ -392,17 +392,25 @@ test('words are due at once, the tab says how many, and a review moves them on',
   await expect(panel.getByTestId('due-count')).toHaveText('2');
   await panel.getByTestId('start-review').click();
 
+  // Two words are too few to choose from: recall, with the sentence kept back until the answer.
   await expect(panel.getByTestId('review-word')).toHaveText('Hello'); // the oldest first
   await expect(panel.getByTestId('review-progress')).toHaveText('1 из 2');
-  await expect(panel.getByTestId('review-answer')).toHaveCount(0); // not before asked
+  await expect(panel.getByTestId('review-answer')).toHaveCount(0);
+  await expect(panel.locator('.review-ctx')).toHaveCount(0);
   await panel.getByTestId('review-show').click();
   await expect(panel.getByTestId('review-answer')).toHaveText('привет');
+  await expect(panel.locator('.review-ctx mark')).toHaveText('Hello');
   await panel.getByTestId('rate-good').click();
 
   await expect(panel.getByTestId('review-word')).toHaveText('night');
-  await expect(panel.getByTestId('review-progress')).toHaveText('2 из 2');
   await panel.getByTestId('review-show').click();
   await panel.getByTestId('rate-again').click();
+
+  // Forgotten: not the end of it, the word is asked again until it is remembered once.
+  await expect(panel.getByTestId('review-word')).toHaveText('night');
+  await expect(panel.getByTestId('review-progress')).toHaveText('3 из 3');
+  await panel.getByTestId('review-show').click();
+  await panel.getByTestId('rate-good').click();
 
   await expect(panel.getByText('Повторение закончено')).toBeVisible();
   await panel.getByTestId('review-close').click();
@@ -410,24 +418,73 @@ test('words are due at once, the tab says how many, and a review moves them on',
   await expect(panel.getByTestId('start-review')).toBeDisabled();
 
   const words =
-    await stored<Array<{ key: string; srs: { interval: number; due: number; lapses: number } }>>(
+    await stored<Array<{ key: string; srs: { interval: number; lapses: number; reps: number } }>>(
       'savedWords',
     );
   const hello = words.find((w) => w.key === 'en:hello')!;
   const night = words.find((w) => w.key === 'en:night')!;
-  expect(hello.srs.interval).toBe(1); // "good": back in a day
-  expect(night.srs.lapses).toBe(1); // "again": back in ten minutes
-  expect(night.srs.due).toBeGreaterThan(Date.now());
-  expect(night.srs.due).toBeLessThan(Date.now() + 11 * 60 * 1000);
+  expect(hello.srs.interval).toBe(1); // back in a day
+  expect(night.srs.lapses).toBe(1);
+  expect(night.srs.reps).toBe(1);
+  expect(night.srs.interval).toBe(1);
 });
 
-test('the review shows the sentence of the word with the word marked', async () => {
-  await seedWords();
+const practised = (name: string, reps: number) => ({
+  key: `en:${name}`,
+  word: name,
+  lang: 'en',
+  translation: `перевод ${name}`,
+  context: `They say ${name} every day.`,
+  savedAt: 1,
+  srs: { due: 1, interval: reps ? 10 : 0, ease: 2.5, reps, lapses: 0 },
+});
+
+test('a new word is recognised among others: the wrong choice shows the right one and comes back', async () => {
+  const list = ['alpha', 'bravo', 'charlie', 'delta'].map((name) => practised(name, 0));
+  await session.worker.evaluate((savedWords) => chrome.storage.local.set({ savedWords }), list);
   const page = await openPage('shadow-video.html');
   const panel = await openPopupFor(session, page);
   await openPanelTab(panel, 'words');
   await panel.getByTestId('start-review').click();
-  await expect(panel.locator('.review-ctx mark')).toHaveText('Hello');
+
+  const word = (await panel.getByTestId('review-word').textContent())!;
+  await expect(panel.getByTestId('review-option')).toHaveCount(4);
+  await expect(panel.locator('.review-ctx mark')).toHaveText(word); // the sentence helps a new word
+  await panel
+    .getByTestId('review-option')
+    .filter({ hasNotText: `перевод ${word}` })
+    .first()
+    .click();
+  await expect(panel.locator('.review-option.right')).toHaveText(`перевод ${word}`);
+  await expect(panel.locator('.review-option.wrong')).toHaveCount(1);
+  await panel.getByTestId('review-next').click();
+  await expect(panel.getByTestId('review-progress')).toHaveText('2 из 5');
+});
+
+test('a word well on its way is written into its sentence: a typo passes, a wrong word does not', async () => {
+  const list = [practised('wonderful', 3), practised('splendid', 3)];
+  await session.worker.evaluate((savedWords) => chrome.storage.local.set({ savedWords }), list);
+  const page = await openPage('shadow-video.html');
+  const panel = await openPopupFor(session, page);
+  await openPanelTab(panel, 'words');
+  await panel.getByTestId('start-review').click();
+
+  // The word is not on the card: its meaning, the sentence with a gap and the first letter.
+  await expect(panel.getByTestId('review-translation')).toHaveText('перевод wonderful');
+  await expect(panel.getByTestId('review-cloze')).toHaveText('They say w… every day.');
+  await panel.getByTestId('review-input').fill('wonderfull');
+  await panel.getByTestId('review-check').click();
+  await expect(panel.getByTestId('review-feedback')).toHaveText('Почти: wonderful');
+  await expect(panel.getByTestId('review-cloze')).toHaveText('They say wonderful every day.');
+  await panel.getByTestId('review-next').click();
+
+  await panel.getByTestId('review-input').fill('table');
+  await panel.getByTestId('review-input').press('Enter');
+  await expect(panel.getByTestId('review-feedback')).toHaveText('Правильно: splendid');
+  await panel.getByTestId('review-next').click();
+  // Forgotten, so it starts over: recall this time, not writing.
+  await expect(panel.getByTestId('review-word')).toHaveText('splendid');
+  await expect(panel.getByTestId('review-show')).toBeVisible();
 });
 
 test('words can be starred, filtered by favourites and status, and searched', async () => {

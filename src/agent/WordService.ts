@@ -72,8 +72,13 @@ export class WordService implements WordTools {
     speakWord(word, lang);
   }
 
-  canSave(): boolean {
-    return this.canSaveWords();
+  /** What is learnt is the language being learnt: a word of the user's own line is only read. */
+  private isLearnt(lang: WordLang): boolean {
+    return sameLanguage(lang, this.pair().learn);
+  }
+
+  canSave(lang: WordLang): boolean {
+    return this.canSaveWords() && this.isLearnt(lang);
   }
 
   /** One entry per dictionary word: "went" and "going" are saved as "go" (and the form that was met is kept). */
@@ -84,6 +89,7 @@ export class WordService implements WordTools {
     context,
     info,
   }: Parameters<WordTools['toggleSaved']>[0]): void {
+    if (!this.isLearnt(lang)) return;
     if (!this.canSaveWords()) {
       void nudgePro().catch(() => {});
       return;

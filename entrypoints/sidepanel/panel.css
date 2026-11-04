@@ -748,14 +748,73 @@ details[open] > summary::after {
   padding: 26px 18px;
 }
 .review-word {
+  color: var(--accent-text);
   font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.025em;
-  /* The word being learnt carries the brand light. */
-  background: var(--accent);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+}
+.review-prompt {
+  color: var(--muted);
+  font-size: 12px;
+}
+.review-cloze {
+  font-size: 16px;
+}
+.review-cloze b {
+  color: var(--accent-text);
+}
+.review-options {
+  display: grid;
+  gap: 8px;
+}
+.review-option {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.review-option:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+.review-option.right {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+.review-option.wrong {
+  border-color: var(--danger);
+}
+.review-option:disabled {
+  cursor: default;
+}
+.review-form {
+  display: grid;
+  gap: 8px;
+}
+.review-form .field {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--field);
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+  outline: 0;
+}
+.review-form .field:focus {
+  border-color: var(--accent-line);
+}
+.review-feedback {
+  font-weight: 600;
+}
+.review-feedback.right {
+  color: var(--ok);
+}
+.review-feedback.wrong {
+  color: var(--danger);
 }
 .review-ctx {
   margin-top: 10px;
@@ -776,7 +835,7 @@ details[open] > summary::after {
 }
 .rate {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 .rate button {
@@ -801,7 +860,7 @@ details[open] > summary::after {
 .rate .again {
   color: var(--danger);
 }
-.rate .easy {
+.rate .good {
   color: var(--ok);
 }
 

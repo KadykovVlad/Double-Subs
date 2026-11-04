@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterWords, savedKeys, toggleWord, toTsv, type SavedWord } from '../src/lib/saved-words';
+import { filterWords, savedKeys, toggleWord, type SavedWord } from '../src/lib/saved-words';
 import { extractMarked, markWord, matchesTranslation, splitWords, wordKey } from '../src/lib/words';
 
 const wordsOf = (text: string, lang: 'en' | 'ru') =>
@@ -104,17 +104,6 @@ describe('saved words', () => {
     const two = toggleWord(one, entry('night'));
     expect(two.map((w) => w.word)).toEqual(['night', 'hello']);
     expect(toggleWord(two, entry('Hello')).map((w) => w.word)).toEqual(['night']); // same key, other case
-  });
-
-  it('toTsv makes one line per word with tabs only between columns', () => {
-    const list = [entry('hello', 'Hello,\tDexter.\n'), { ...entry('night'), translation: null }];
-    expect(toTsv(list)).toBe('hello\tперевод\tHello, Dexter.\t\nnight\t\ta line\t');
-  });
-
-  it('toTsv adds the dictionary meaning as the last column', () => {
-    expect(toTsv([{ ...entry('go'), definition: 'глаг. to move' }])).toBe(
-      'go\tперевод\ta line\tглаг. to move',
-    );
   });
 
   it('a form of a saved word counts as saved: both the dictionary word and the form that was met', () => {

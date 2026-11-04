@@ -1,5 +1,4 @@
 import { useState } from 'preact/hooks';
-import { hasFeature } from '../../src/lib/entitlements';
 import { displayUrl } from '../../src/lib/history';
 import { t, type MessageKey } from '../../src/lib/i18n';
 import { webOrigin } from '../../src/lib/known-sites';
@@ -11,7 +10,7 @@ import {
   type WatchItem,
 } from '../../src/lib/watchlist';
 import { showToast } from '../../src/panel/toasts';
-import { useEntitlements, useWatchlist } from './hooks';
+import { useWatchlist } from './hooks';
 import { HistoryTab } from './HistoryTab';
 import { Button, Card, Empty, Icons, VideoThumb } from './ui';
 
@@ -23,8 +22,16 @@ const VIEWS: Array<{ id: View; label: MessageKey }> = [
 ];
 
 /** What the user put aside and what was watched. A free account starts on the history, which it has. */
-export function VideoTab({ tabId, pageUrl }: { tabId: number | null; pageUrl: string | null }) {
-  const allowed = hasFeature(useEntitlements(), 'watchlist');
+export function VideoTab({
+  tabId,
+  pageUrl,
+  allowed,
+}: {
+  tabId: number | null;
+  pageUrl: string | null;
+  /** From the panel, which has read the plan already: read here, the free view would flash first. */
+  allowed: boolean;
+}) {
   const [chosen, setChosen] = useState<View | null>(null);
   const view = chosen ?? (allowed ? 'saved' : 'history');
 

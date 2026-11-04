@@ -324,7 +324,13 @@ function SignedInApp({ language }: { language: string }) {
           />
         )}
         {tab === 'words' && <WordsTab />}
-        {tab === 'video' && <VideoTab tabId={tabId} pageUrl={state.pageUrl} />}
+        {tab === 'video' && (
+          <VideoTab
+            tabId={tabId}
+            pageUrl={state.pageUrl}
+            allowed={hasFeature(entitlements, 'watchlist')}
+          />
+        )}
         {tab === 'settings' && (
           <SettingsTab tabId={tabId} diagnostics={state.diagnostics} focus={settingsFocus} />
         )}

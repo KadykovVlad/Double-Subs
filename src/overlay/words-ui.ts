@@ -1,5 +1,12 @@
 import { posName, type WordInfo } from '../lib/dictionary';
-import { markWord, matchesTranslation, splitWords, wordKey, type WordLang } from '../lib/words';
+import {
+  bestTranslation,
+  markWord,
+  matchesTranslation,
+  splitWords,
+  wordKey,
+  type WordLang,
+} from '../lib/words';
 import { t, textDirection } from '../lib/i18n';
 
 export type WordTranslation =
@@ -28,8 +35,8 @@ export interface WordTools {
   lookup(word: string, lang: WordLang): Promise<WordInfo | null>;
   /** Says the word aloud. */
   speak(word: string, lang: WordLang): void;
-  /** Saving words is part of the Pro plan: without it the tip does not offer to save. */
-  canSave(): boolean;
+  /** Words of the learnt language are saved, on the Pro plan: otherwise the tip does not offer it. */
+  canSave(lang: WordLang): boolean;
   /** Saves the word, or removes it when it is already saved. */
   toggleSaved(request: SaveRequest): void;
 }
@@ -229,7 +236,12 @@ export class WordsUi {
     this.root.querySelectorAll<HTMLElement>('.w').forEach((el) => this.markSaved(el));
     // The tip of the hovered word says whether it is saved.
     if (this.active && this.tip.visible && this.tip.content)
-      this.tip.show(this.active, this.tip.content, this.isSaved(this.active), this.tools.canSave());
+      this.tip.show(
+        this.active,
+        this.tip.content,
+        this.isSaved(this.active),
+        this.tools.canSave(this.active.dataset.lang as WordLang),
+      );
   }
 
   destroy(): void {
@@ -314,7 +326,12 @@ export class WordsUi {
       failure: null,
       info: null,
     };
-    this.tip.show(word, content, this.isSaved(word), this.tools.canSave());
+    this.tip.show(
+      word,
+      content,
+      this.isSaved(word),
+      this.tools.canSave(word.dataset.lang as WordLang),
+    );
 
     const lang = word.dataset.lang as WordLang;
     const text = word.dataset.word!;
@@ -322,7 +339,12 @@ export class WordsUi {
 
     const refresh = () => {
       if (id !== this.request || this.active !== word) return; // the pointer has moved on
-      this.tip.show(word, content, this.isSaved(word), this.tools.canSave());
+      this.tip.show(
+        word,
+        content,
+        this.isSaved(word),
+        this.tools.canSave(word.dataset.lang as WordLang),
+      );
       this.remember(word, content);
       this.highlightInOtherLine(word, [content.context, content.plain]);
     };
@@ -351,13 +373,7 @@ export class WordsUi {
 
   /** Saved with both meanings: the one in this sentence first, then the dictionary one. */
   private remember(word: HTMLElement, content: TipContent): void {
-    const both =
-      content.context &&
-      content.plain &&
-      content.context.toLowerCase() !== content.plain.toLowerCase();
-    const best = both
-      ? `${content.context} · ${content.plain}`
-      : (content.plain ?? content.context);
+    const best = bestTranslation(content.context, content.plain);
     if (!best) return;
     if (this.translations.size > 300) this.translations.clear();
     this.translations.set(word.dataset.key!, best);
