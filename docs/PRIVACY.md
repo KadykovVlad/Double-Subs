@@ -10,14 +10,15 @@
 - Subtitles are read from the video player on the page you open the extension on.
 - Missing subtitle lines are translated by Chrome's built-in on-device Translator API. The text is not sent to us or to any server of ours.
 - Translated lines and single words are cached in the extension's own storage on your computer.
-- Your settings, the list of sites you switched automatic start on, the words you saved (with their repetition schedule) and the list of videos you watched with Double Sub (page address, title, the place where you stopped) are kept in `chrome.storage.local`. They are not uploaded anywhere. The history can be switched off and cleared in the settings. For YouTube videos in the history, and for the one the panel works with, the panel shows their preview picture, loaded from YouTube's image server (`i.ytimg.com`) without a referrer; other sites get a letter tile and nothing is loaded.
+- Your settings and the list of sites you switched automatic start on are kept in `chrome.storage.local` and are not uploaded anywhere. The words you saved (with their repetition schedule) and the list of videos you watched with Double Sub (page address, title, the place where you stopped) are kept there too, and also on our server (see "Account"). The history can be switched off and cleared in the settings. For YouTube videos in the history, and for the one the panel works with, the panel shows their preview picture, loaded from YouTube's image server (`i.ytimg.com`) without a referrer; other sites get a letter tile and nothing is loaded.
 
 **Account (required).** The extension works after you sign in with Google; before that it does nothing on any page. Until you sign in, the side panel shows one card with the choice of language, the request for access to the sites and the sign-in, each with a click (a mark on the icon tells you to open it). When you sign in:
 - Google gives the extension an ID token for your Google account (we ask only for `openid`, `email` and `profile`). The extension sends it to our server (a Cloudflare Worker with a database), which checks it with Google's public keys.
-- The server stores the Google account identifier, your e-mail address, your plan (free or Pro) and the sign-in sessions of your browsers (only a hash of the renewal token). Nothing else is uploaded in this version: your words, history and settings stay on your computer. The sign-in sessions use tokens kept in `chrome.storage.local`.
-- "Sign out" in the settings ends the session on the server and removes the tokens from the browser; the extension then stops working until the next sign-in. Deleting the account with the data stored for it on the server will be offered in the settings before synchronisation of words and history is switched on.
+- The server stores the Google account identifier, your e-mail address, your plan (free or Pro) and the sign-in sessions of your browsers (only a hash of the renewal token). The sign-in sessions use tokens kept in `chrome.storage.local`.
+- Your saved words and your history are stored on the server under your account, so that they come back when you sign in in another browser. With "Keep history" switched off, the history does not leave your browser. What you delete, or clear, is deleted on the server and in your other browsers too. Your settings and the list of sites stay on your computer.
+- "Sign out" in the settings ends the session on the server and removes the tokens from the browser; the extension then stops working until the next sign-in. Your words and history stay in the browser and on the server for when you sign back in; if somebody else signs in in this browser, they are removed from the browser and stay on the server. Deleting the account with the data stored for it on the server will be offered in the settings. *(To do before publishing: the server can do this already, the button is missing.)*
 
-**What we do not do.** We have no analytics. We do not collect, sell or share personal data, browsing history, page content or the videos you watch. We do not use remote code.
+**What we do not do.** We have no analytics. We do not sell or share personal data. We do not collect your browsing history or page content; the list of videos you watched with Double Sub is stored only to give it back to you. We do not use remote code.
 
 **Third parties.**
 - *YouTube.* On YouTube the extension asks YouTube for the subtitles of the video you are watching (including YouTube's own machine translation), the same way the YouTube player does. This request goes to YouTube, not to us.
@@ -28,9 +29,9 @@
 
 **Starting on every site (optional).** The switch "Start by itself on every site" asks for access to all sites, so that the subtitles begin on any page with a video without a click. The script it runs only waits for a video to appear (see above). You can switch it off at any time, and the access is taken back.
 
-**Your control.** Remove a site from the list, delete saved words, or uninstall the extension to delete all of its data.
+**Your control.** Remove a site from the list, or delete saved words and clear the history (also on the server). Uninstalling the extension deletes its data in this browser, not on the server.
 
-**Changes.** Before synchronisation of words, history and settings, and before a paid plan, are switched on, this policy will be updated and the new data will be described here.
+**Changes.** Before synchronisation of settings and before a paid plan are switched on, this policy will be updated and the new data will be described here.
 
 ## Русский
 
@@ -40,14 +41,15 @@
 - субтитры читаются из плеера на странице, на которой вы открыли расширение;
 - недостающая строка переводится встроенным переводчиком Chrome прямо на устройстве, текст не отправляется ни нам, ни на какие наши серверы;
 - переводы кэшируются в хранилище расширения на вашем компьютере;
-- настройки, список сайтов с автозапуском, сохранённые слова (с графиком повторения) и история просмотра (адрес страницы, название, место остановки) лежат в `chrome.storage.local` и никуда не передаются. Историю можно выключить и очистить в настройках. Для видео YouTube в истории и для видео, с которым работает панель, показывается превью, загружая картинку с сервера изображений YouTube (`i.ytimg.com`) без адреса страницы; для других сайтов — плитка с буквой, ничего не загружается.
+- настройки и список сайтов с автозапуском лежат в `chrome.storage.local` и никуда не передаются. Сохранённые слова (с графиком повторения) и история просмотра (адрес страницы, название, место остановки) лежат там же и ещё на нашем сервере (см. «Аккаунт»). Историю можно выключить и очистить в настройках. Для видео YouTube в истории и для видео, с которым работает панель, показывается превью, загружая картинку с сервера изображений YouTube (`i.ytimg.com`) без адреса страницы; для других сайтов — плитка с буквой, ничего не загружается.
 
 **Аккаунт (обязателен).** Расширение работает после входа через Google; до этого оно ничего не делает ни на одной странице. Пока вы не вошли, боковая панель показывает одну карточку: выбор языка, запрос доступа к сайтам и вход, каждое по клику (отметка на значке подсказывает, что панель нужно открыть). При входе:
 - Google выдаёт расширению ID-токен вашего аккаунта (запрашиваем только `openid`, `email` и `profile`). Расширение отправляет его на наш сервер (Cloudflare Worker с базой данных), который проверяет его по открытым ключам Google;
-- сервер хранит идентификатор аккаунта Google, ваш адрес электронной почты, тариф (бесплатный или Pro) и сеансы входа ваших браузеров (от токена обновления хранится только хэш). Больше в этой версии ничего не загружается: слова, история и настройки остаются на вашем компьютере. Токены сеанса лежат в `chrome.storage.local`;
-- «Выйти» в настройках завершает сеанс на сервере и удаляет токены из браузера; после этого расширение не работает до следующего входа. Удаление аккаунта вместе с данными на сервере появится в настройках до включения синхронизации слов и истории.
+- сервер хранит идентификатор аккаунта Google, ваш адрес электронной почты, тариф (бесплатный или Pro) и сеансы входа ваших браузеров (от токена обновления хранится только хэш). Токены сеанса лежат в `chrome.storage.local`;
+- сохранённые слова и история хранятся на сервере в вашем аккаунте, чтобы вернуться при входе в другом браузере. Если «Сохранять историю» выключено, история не покидает браузер. То, что вы удалили или очистили, удаляется и на сервере, и в других ваших браузерах. Настройки и список сайтов остаются на вашем компьютере;
+- «Выйти» в настройках завершает сеанс на сервере и удаляет токены из браузера; после этого расширение не работает до следующего входа. Слова и история остаются в браузере и на сервере до следующего входа; если в этом браузере войдёт другой человек, они исчезнут из браузера и останутся на сервере. Удаление аккаунта вместе с данными на сервере появится в настройках. *(Сделать до публикации: сервер это уже умеет, нет кнопки.)*
 
-**Чего мы не делаем.** У нас нет аналитики. Мы не собираем, не продаём и не передаём личные данные, историю, содержимое страниц и то, что вы смотрите. Удалённый код не используется.
+**Чего мы не делаем.** У нас нет аналитики. Мы не продаём и не передаём личные данные. Мы не собираем историю браузера и содержимое страниц; список видео, просмотренных с Double Sub, хранится только для того, чтобы вернуть его вам. Удалённый код не используется.
 
 **Файлы субтитров.** Если плеер держит субтитры вне стандартных дорожек, расширение скачивает файлы `.vtt` и `.srt`, которые страница уже запрашивала сама, теми же правами, что у страницы (не более 6 файлов по 2 МБ). Больше ничего по этим адресам не отправляется, а сами файлы читаются только на устройстве.
 
@@ -57,6 +59,6 @@
 
 **Запуск на любом сайте (по желанию).** В карточке боковой панели (и позже переключателем «Запускаться само на любом сайте» в настройках) можно разрешить доступ ко всем сайтам. Тогда на каждой странице и в каждом фрейме работает небольшой скрипт. Он не читает страницу: он только ждёт, когда на ней появится `<video>`, и лишь тогда расширение читает субтитры этого видео. Сайт можно отключить переключателем «Работать на этом сайте» в панели, после этого скрипт там ничего не делает. Выключить можно в любой момент, доступ при этом отзывается.
 
-**Ваш контроль.** Уберите сайт из списка, удалите сохранённые слова или само расширение — данные удалятся.
+**Ваш контроль.** Уберите сайт из списка, удалите сохранённые слова или очистите историю (это удалит их и на сервере). Удаление расширения стирает данные в этом браузере, но не на сервере.
 
-**Изменения.** До включения синхронизации слов, истории и настроек и до появления платного тарифа политика будет обновлена, а новые данные описаны здесь.
+**Изменения.** До включения синхронизации настроек и до появления платного тарифа политика будет обновлена, а новые данные описаны здесь.

@@ -16,6 +16,7 @@ import { NowTab, type SettingsFocus } from './NowTab';
 import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
 import { refreshAccount } from '../../src/lib/account';
+import { requestSync } from '../../src/lib/sync';
 import {
   useAccessDismissed,
   useAccount,
@@ -205,7 +206,10 @@ function SignedInApp({ language }: { language: string }) {
     browser.runtime.onMessage.addListener(onMessage);
     // A payment or a change on the server shows up when the panel opens; offline is no problem, the
     // plan is asked again as soon as the network is back.
-    const askPlan = () => void refreshAccount().catch(() => {});
+    const askPlan = () => {
+      void refreshAccount().catch(() => {});
+      void requestSync();
+    };
     askPlan();
     window.addEventListener('online', askPlan);
 

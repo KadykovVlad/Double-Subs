@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { PROVIDERS, removeMethod, signOut, type Provider } from '../../src/lib/account';
+import { requestSync } from '../../src/lib/sync';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
 import { setSiteExcluded } from '../../src/lib/known-sites';
@@ -670,7 +671,12 @@ function AccountCard() {
             {t(isPro(entitlements) ? 'account_plan_pro' : 'account_plan_free')}
           </span>
         </div>
-        <Button variant="secondary" size="sm" testid="sign-out" onClick={() => void signOut()}>
+        <Button
+          variant="secondary"
+          size="sm"
+          testid="sign-out"
+          onClick={() => void requestSync().finally(() => signOut())}
+        >
           {t('account_sign_out')}
         </Button>
       </Card>

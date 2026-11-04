@@ -78,6 +78,11 @@ export interface SignInMessage {
   link?: boolean;
 }
 
+/** A window of the extension → background: synchronise now; the answer comes when it is done. */
+export interface SyncMessage {
+  type: 'sync';
+}
+
 /** The agent on TikTok found no page-world script (the site is not registered yet): inject it now. */
 export interface InjectTikTokMainMessage {
   type: 'inject-tiktok-main';

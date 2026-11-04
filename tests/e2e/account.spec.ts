@@ -71,12 +71,89 @@ test('signed out: only the sign-in is offered, no tabs; signing in opens the pan
     'Текущий план',
   );
   await expect(panel.getByTestId('plan-upgrade')).toHaveCount(0);
-  expect(api.requests.map((r) => `${r.method} ${r.path}`)).toEqual([
+  const asked = api.requests.filter((r) => r.path !== '/sync');
+  expect(asked.map((r) => `${r.method} ${r.path}`)).toEqual([
     'POST /auth/google',
     'GET /me',
     'GET /me', // the panel asks for the plan once more when it opens
   ]);
-  expect(api.requests[1]!.auth).toBe('Bearer access-1');
+  expect(asked[1]!.auth).toBe('Bearer access-1');
+});
+
+test('signing in brings the words and the history kept on the server into this browser', async () => {
+  const now = Date.now();
+  api.synced = [
+    {
+      kind: 'words',
+      key: 'en:serendipity',
+      updatedAt: now,
+      deleted: false,
+      data: {
+        key: 'en:serendipity',
+        word: 'serendipity',
+        lang: 'en',
+        translation: 'счастливая случайность',
+        context: 'Pure serendipity.',
+        savedAt: now,
+      },
+    },
+    {
+      kind: 'history',
+      key: 'https://example.com/film',
+      updatedAt: now,
+      deleted: false,
+      data: {
+        id: 'https://example.com/film',
+        url: 'https://example.com/film',
+        title: 'A film from another browser',
+        host: 'example.com',
+        firstAt: now,
+        lastAt: now,
+        position: 60,
+        duration: 600,
+      },
+    },
+  ];
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await openPanelTab(panel, 'words');
+  await expect(panel.getByTestId('saved-word')).toContainText('serendipity');
+  await openPanelTab(panel, 'history');
+  // The page under the panel is in the history too.
+  await expect(
+    panel.getByTestId('history-item').filter({ hasText: 'A film from another browser' }),
+  ).toBeVisible();
+});
+
+test('what this browser had before the sign-in goes to the server, and a new word follows', async () => {
+  const saved = (key: string) => ({
+    key,
+    word: key.slice(3),
+    lang: 'en',
+    translation: null,
+    context: 'A line.',
+    savedAt: Date.now(),
+  });
+  await session.worker.evaluate(
+    (word) => chrome.storage.local.set({ savedWords: [word] }),
+    saved('en:before'),
+  );
+  const told = () =>
+    api.requests
+      .filter((r) => r.path === '/sync')
+      .flatMap((r) => (r.body as { changes: Array<{ key: string }> }).changes.map((c) => c.key));
+
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await expect.poll(told).toContain('en:before');
+  // The sign-in and the panel each ask for a synchronisation: the new word must not ride on one of them.
+  await panel.waitForTimeout(1500);
+
+  await session.worker.evaluate(async (word) => {
+    const { savedWords } = await chrome.storage.local.get('savedWords');
+    await chrome.storage.local.set({ savedWords: [word, ...(savedWords as unknown[])] });
+  }, saved('en:after'));
+  await expect.poll(told, { timeout: 10_000 }).toContain('en:after');
 });
 
 test('a free account stays free: no words tab, the plan says so', async () => {

@@ -1,4 +1,4 @@
-/** What the user watched with the extension: kept in the browser, newest first, never sent anywhere. */
+/** What the user watched with the extension: newest first; kept on the server too, unless "Keep history" is off. */
 export interface HistoryEntry {
   /** The page without its fragment and tracking noise, see historyId(). */
   id: string;
@@ -94,6 +94,10 @@ export function normalizeHistory(raw: unknown): HistoryEntry[] {
 
 export async function loadHistory(): Promise<HistoryEntry[]> {
   return normalizeHistory((await browser.storage.local.get(KEY))[KEY]);
+}
+
+export async function saveHistory(list: HistoryEntry[]): Promise<void> {
+  await browser.storage.local.set({ [KEY]: list });
 }
 
 export async function recordHistory(entry: HistoryEntry): Promise<void> {

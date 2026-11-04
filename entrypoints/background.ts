@@ -5,6 +5,7 @@ import { AutoScriptRegistry } from '../src/background/AutoScriptRegistry';
 import type { LookupWordMessage } from '../src/lib/dictionary-messages';
 import { DictionaryService } from '../src/background/DictionaryService';
 import { SpeechService } from '../src/background/SpeechService';
+import { SyncService } from '../src/background/SyncService';
 import { TranslationRelay } from '../src/background/TranslationRelay';
 import type {
   AgentRequest,
@@ -12,6 +13,7 @@ import type {
   PickedMessage,
   SignInMessage,
   StartAgentMessage,
+  SyncMessage,
 } from '../src/lib/messages';
 import type { SpeakMessage } from '../src/lib/speech';
 import type { TranslationEnvelope } from '../src/lib/translation-messages';
@@ -22,6 +24,7 @@ type Message =
   | SpeakMessage
   | StartAgentMessage
   | SignInMessage
+  | SyncMessage
   | InjectTikTokMainMessage
   | LookupWordMessage;
 
@@ -32,6 +35,7 @@ type Message =
  * - SpeechService: reads words aloud
  * - DictionaryService: the meaning and dictionary form of a word
  * - TranslationRelay: carries translation requests to the offscreen document
+ * - SyncService: keeps the words and the history on the server
  */
 export default defineBackground(() => {
   const registry = new AutoScriptRegistry();
@@ -39,6 +43,7 @@ export default defineBackground(() => {
   const speech = new SpeechService();
   const dictionary = new DictionaryService();
   const translation = new TranslationRelay();
+  const sync = new SyncService();
 
   // A click on the toolbar icon opens the side panel; the same click gives us access to the page (activeTab).
   // A new user finds the welcome there: the access to the sites and the sign-in (the panel decides).
@@ -68,8 +73,10 @@ export default defineBackground(() => {
     });
   keepOnboardingInStep();
 
+  browser.runtime.onStartup.addListener(() => void sync.run());
   browser.runtime.onInstalled.addListener((details) => {
     void registry.sync();
+    void sync.run();
     // A new user is met by the side panel with the welcome. Chrome opens the panel only on a gesture of
     // the user, so this is a try (it works when Chrome counts the installation as one); if it is refused,
     // the mark on the icon is there and one click opens the panel.
@@ -90,6 +97,10 @@ export default defineBackground(() => {
       void registry.sync();
     if ('account' in changes || 'mirrorsMode' in changes || 'accessBannerDismissed' in changes)
       keepOnboardingInStep();
+    // A sign-in, not a renewal of the tokens: what the user has elsewhere comes to this browser.
+    if (changes.account?.newValue && !changes.account.oldValue) void sync.run();
+    if ('savedWords' in changes) sync.wordsChanged();
+    else if ('history' in changes) void sync.historyChanged();
   });
   browser.permissions.onAdded.addListener(() => {
     void registry.sync();
@@ -120,6 +131,9 @@ export default defineBackground(() => {
               code: error instanceof AccountError ? error.code : 'server',
             }),
           );
+        return true; // async response
+      case 'sync':
+        void sync.run().then(() => sendResponse({ ok: true }));
         return true; // async response
       case 'speak':
         void loadAccount().then((account) => account && speech.speak(message));

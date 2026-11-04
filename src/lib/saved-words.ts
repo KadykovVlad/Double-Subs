@@ -49,6 +49,21 @@ export function toTsv(list: SavedWord[]): string {
 
 const KEY = 'savedWords';
 
+/** A word from the server, or null when it is not one. */
+export function normalizeSavedWord(value: unknown): SavedWord | null {
+  const word = value as Partial<SavedWord> | null;
+  if (
+    typeof word?.key !== 'string' ||
+    typeof word.word !== 'string' ||
+    typeof word.lang !== 'string' ||
+    typeof word.context !== 'string' ||
+    typeof word.savedAt !== 'number' ||
+    (typeof word.translation !== 'string' && word.translation !== null)
+  )
+    return null;
+  return withSrs(word as SavedWord);
+}
+
 export async function loadSavedWords(): Promise<SavedWord[]> {
   const stored = await browser.storage.local.get(KEY);
   return Array.isArray(stored[KEY]) ? (stored[KEY] as SavedWord[]).map(withSrs) : [];
@@ -84,6 +99,10 @@ export function filterWords(list: SavedWord[], query: string): SavedWord[] {
       text?.toLowerCase().includes(needle),
     ),
   );
+}
+
+export async function saveSavedWords(list: SavedWord[]): Promise<void> {
+  await browser.storage.local.set({ [KEY]: list });
 }
 
 export async function toggleSavedWord(entry: SavedWord): Promise<void> {

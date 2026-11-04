@@ -91,6 +91,12 @@ async function saveAccount(account: Account | null): Promise<void> {
   else await browser.storage.local.remove(KEY);
 }
 
+/** Whose data this is: the user id in the access token, null when the token does not tell. */
+export function accountOwner(account: Account): string | null {
+  const { sub } = jwtPayload(account.accessToken);
+  return typeof sub === 'string' ? sub : null;
+}
+
 /** Calls `listener` whenever the account changes anywhere (panel, any frame). */
 export function watchAccount(listener: (account: Account | null) => void): () => void {
   const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {

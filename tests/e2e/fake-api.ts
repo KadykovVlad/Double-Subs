@@ -16,6 +16,8 @@ export interface FakeApi {
   name: string;
   methods: Array<{ provider: Provider; label: string }>;
   requests: Array<{ method: string; path: string; auth: string | undefined; body: unknown }>;
+  /** What /sync gives a browser that starts from the beginning. */
+  synced: unknown[];
   close(): Promise<void>;
 }
 
@@ -31,6 +33,7 @@ export async function startFakeApi(): Promise<FakeApi> {
     name: 'learner@example.com',
     methods: [{ provider: 'google', label: 'learner@example.com' }],
     requests: [],
+    synced: [],
     // The browser keeps its connections alive (the bot's tab, the polls): they are cut, or close waits.
     close: () =>
       new Promise((resolve) => {
@@ -114,6 +117,13 @@ export async function startFakeApi(): Promise<FakeApi> {
         return send(200, { methods: api.methods });
       }
       if (path === '/auth/logout') return send(200, { ok: true });
+      if (path === '/sync')
+        return send(200, {
+          cursor: 1,
+          changes: body?.cursor === 0 ? api.synced : [],
+          more: false,
+          reset: false,
+        });
       send(404, { error: 'not_found' });
     });
   });

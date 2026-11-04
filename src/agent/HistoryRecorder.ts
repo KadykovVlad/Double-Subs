@@ -4,7 +4,7 @@ import { isExtensionAlive } from './host';
 /** How often the place where the user stopped is saved to the history. */
 const EVERY_MS = import.meta.env.VITE_DS_E2E ? 1000 : 15_000;
 
-/** Writes what the user is watching to the history (kept in the browser only; a setting turns it off). */
+/** Writes what the user is watching to the history (a setting turns it off). */
 export class HistoryRecorder {
   private timer: ReturnType<typeof setInterval> | undefined;
 
