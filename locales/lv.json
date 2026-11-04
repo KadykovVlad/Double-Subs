@@ -74,7 +74,7 @@
 "set_sites_empty": "Ieslēdziet „Palaist pašam” lapā ar atskaņotāju: nākamreiz tas tiks atrasts bez klikšķa uz ikonas.",
 "set_history": "Vēsture",
 "set_keep_history": "Atcerēties, ko esmu skatījies",
-"set_keep_history_hint": "Video saraksts tiek glabāts tikai šajā pārlūkā",
+"set_keep_history_hint": "Video saraksts tiek glabāts kontā",
 "set_clear_history": "Notīrīt vēsturi ($1)",
 "voices_count": "iebūvētās balsis: $1",
 "voices_none": "sistēmā nav balsu",

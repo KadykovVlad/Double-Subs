@@ -74,7 +74,7 @@
 "set_sites_empty": "הפעל “התחל אוטומטית” בדף עם נגן: בפעם הבאה הוא יימצא בלי ללחוץ על הסמל.",
 "set_history": "היסטוריה",
 "set_keep_history": "זכור מה צפיתי",
-"set_keep_history_hint": "רשימת הסרטונים נשמרת רק בדפדפן הזה",
+"set_keep_history_hint": "רשימת הסרטונים נשמרת בחשבון",
 "set_clear_history": "נקה היסטוריה ($1)",
 "voices_count": "קולות מובנים: $1",
 "voices_none": "אין קולות במערכת",

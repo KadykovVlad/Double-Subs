@@ -7,7 +7,8 @@ import type { SyncMessage } from './messages';
  * comparing and merging; the network and the timing are in src/background/SyncService.ts.
  */
 
-export type SyncKind = 'words' | 'history';
+const SYNC_KINDS = ['words', 'history', 'settings'] as const;
+export type SyncKind = (typeof SYNC_KINDS)[number];
 
 /** One thing as the server's /sync takes and gives it. */
 export interface SyncChange {
@@ -191,6 +192,8 @@ export interface SyncState {
   seen: Record<SyncKind, Record<string, string>>;
   /** When it last reached the server, ms since the epoch. */
   lastAt: number;
+  /** The history was off when the cursor moved on: what it passed must be read again once it is on. */
+  historyPaused: boolean;
 }
 
 const KEY = 'syncState';
@@ -198,8 +201,9 @@ const KEY = 'syncState';
 export const emptySyncState = (owner: string | null): SyncState => ({
   owner,
   cursor: 0,
-  seen: { words: {}, history: {} },
+  seen: { words: {}, history: {}, settings: {} },
   lastAt: 0,
+  historyPaused: false,
 });
 
 const prints = (value: unknown): Record<string, string> =>
@@ -207,14 +211,20 @@ const prints = (value: unknown): Record<string, string> =>
 
 export function normalizeSyncState(value: unknown): SyncState | null {
   if (typeof value !== 'object' || value === null) return null;
-  const { owner, cursor, seen, lastAt } = value as Record<string, unknown>;
+  const { owner, cursor, seen, lastAt, historyPaused } = value as Record<string, unknown>;
   if (typeof cursor !== 'number') return null;
   const record = (typeof seen === 'object' && seen !== null ? seen : {}) as Record<string, unknown>;
   return {
     owner: typeof owner === 'string' ? owner : null,
-    cursor,
-    seen: { words: prints(record.words), history: prints(record.history) },
+    // A kind this browser has not synchronised yet: the cursor has passed its things, unread.
+    cursor: SYNC_KINDS.every((kind) => kind in record) ? cursor : 0,
+    seen: {
+      words: prints(record.words),
+      history: prints(record.history),
+      settings: prints(record.settings),
+    },
     lastAt: typeof lastAt === 'number' ? lastAt : 0,
+    historyPaused: historyPaused === true,
   };
 }
 

@@ -2,10 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SyncService } from '../src/background/SyncService';
 import { MAX_HISTORY, type HistoryEntry } from '../src/lib/history';
 import type { SavedWord } from '../src/lib/saved-words';
+import { DEFAULT_SETTINGS, normalizeSettings, type Settings } from '../src/lib/settings';
+import { loadSyncedSettings, parseSyncedSetting } from '../src/lib/synced-settings';
 import {
   changesSince,
   fingerprint,
   merge,
+  normalizeSyncState,
   snapshot,
   syncKey,
   takeChunk,
@@ -128,6 +131,7 @@ class Browser {
         },
         onChanged: { addListener() {}, removeListener() {} },
       },
+      runtime: { getURL: (path: string) => `chrome-extension://id${path}` },
     });
   }
 
@@ -152,6 +156,15 @@ class Browser {
     this.store.savedWords = (this.store.savedWords as SavedWord[]).filter((w) => w.word !== name);
   }
 
+  /** The user changes settings here. */
+  set(change: Partial<Settings>) {
+    this.store.settings = { ...(this.store.settings as object), ...change };
+  }
+
+  get settings(): Settings {
+    return normalizeSettings(this.store.settings);
+  }
+
   edit(name: string, change: Partial<SavedWord>) {
     this.store.savedWords = (this.store.savedWords as SavedWord[]).map((w) =>
       w.word === name ? { ...w, ...change } : w,
@@ -164,7 +177,9 @@ let server: FakeServer;
 beforeEach(() => {
   server = new FakeServer();
   vi.spyOn(console, 'info').mockImplementation(() => {});
-  vi.stubGlobal('fetch', async (_url: string, init: RequestInit = {}) => {
+  vi.stubGlobal('fetch', async (url: string, init: RequestInit = {}) => {
+    if (String(url).includes('/_locales/'))
+      return new Response(JSON.stringify({ hello: { message: 'Bonjour' } }));
     if (server.failing) throw new TypeError('offline');
     const auth = (init.headers as Record<string, string>).authorization ?? '';
     const payload = JSON.parse(atob(auth.replace('Bearer ', '').split('.')[1]!)) as { sub: string };
@@ -358,6 +373,347 @@ describe('keep history off', () => {
     expect(two.history).toEqual(['https://example.com/mine']);
     expect(server.live('u1', 'words')).toEqual(['en:go']); // the words go on
   });
+
+  it('a history cleared while it is off is cleared on the server too', async () => {
+    const one = new Browser('u1');
+    one.store.history = [entry('https://example.com/a')];
+    await one.sync();
+    one.set({ keepHistory: false });
+    one.store.history = [];
+    await one.sync();
+
+    expect(server.live('u1', 'history')).toEqual([]);
+  });
+});
+
+describe('settings', () => {
+  const clock = (time: number) => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(time);
+  };
+
+  it('a setting changed in one browser comes to the other', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await one.sync();
+    await two.sync();
+
+    one.set({ fontSize: 40, fontFamily: 'serif' });
+    await one.sync();
+    await two.sync();
+
+    expect(two.settings.fontSize).toBe(40);
+    expect(two.settings.fontFamily).toBe('serif');
+  });
+
+  it('a new browser takes the settings of the account, its defaults replace nothing', async () => {
+    const one = new Browser('u1');
+    one.set({ fontSize: 40 });
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.sync();
+    await one.sync();
+
+    expect(two.settings.fontSize).toBe(40);
+    expect(one.settings.fontSize).toBe(40);
+  });
+
+  it('defaults that reach the server first give way to what somebody chose', async () => {
+    const fresh = new Browser('u1');
+    await fresh.sync();
+
+    const used = new Browser('u1');
+    used.set({ fontSize: 40, learnLang: 'ko', nativeLang: 'ru' });
+    used.store.panelTheme = 'dark';
+    await used.sync();
+    await fresh.sync();
+
+    for (const browser of [fresh, used]) {
+      expect(browser.settings.fontSize).toBe(40);
+      expect(browser.settings.learnLang).toBe('ko');
+      expect(browser.store.panelTheme).toBe('dark');
+    }
+  });
+
+  it('two browsers with their own values: the account keeps the first, for both', async () => {
+    const one = new Browser('u1');
+    one.set({ fontSize: 40 });
+    await one.sync();
+    const two = new Browser('u1');
+    two.set({ fontSize: 50 });
+    await two.sync();
+
+    expect(two.settings.fontSize).toBe(40);
+  });
+
+  it('going back to the default on purpose is a change like any other', async () => {
+    const one = new Browser('u1');
+    one.set({ fontSize: 40 });
+    await one.sync();
+    const two = new Browser('u1');
+    await two.sync();
+
+    one.set({ fontSize: DEFAULT_SETTINGS.fontSize });
+    await one.sync();
+    await two.sync();
+
+    expect(two.settings.fontSize).toBe(DEFAULT_SETTINGS.fontSize);
+  });
+
+  it('a change made in the new browser after that goes back', async () => {
+    const one = new Browser('u1');
+    one.set({ fontSize: 40 });
+    await one.sync();
+    const two = new Browser('u1');
+    await two.sync();
+
+    two.set({ fontSize: 50 });
+    await two.sync();
+    await one.sync();
+
+    expect(one.settings.fontSize).toBe(50);
+  });
+
+  it('different settings changed in two browsers both stay', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await one.sync();
+    await two.sync();
+
+    one.set({ fontSize: 40 });
+    two.set({ glassTint: '#1c1c22' });
+    await one.sync();
+    await two.sync();
+    await one.sync();
+
+    for (const browser of [one, two]) {
+      expect(browser.settings.fontSize).toBe(40);
+      expect(browser.settings.glassTint).toBe('#1c1c22');
+    }
+  });
+
+  it('the same setting changed in two browsers: the later change stays', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await one.sync();
+    await two.sync();
+
+    clock(2_000_000);
+    two.set({ fontSize: 50 });
+    await two.sync();
+    clock(1_000_000);
+    one.set({ fontSize: 40 });
+    await one.sync();
+    await two.sync();
+
+    expect(one.settings.fontSize).toBe(50);
+    expect(two.settings.fontSize).toBe(50);
+  });
+
+  it('the two languages of the subtitles travel as a pair', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await one.sync();
+    await two.sync();
+
+    clock(1_000_000);
+    one.set({ learnLang: 'ko', nativeLang: 'ru' });
+    await one.sync();
+    clock(2_000_000);
+    two.set({ learnLang: 'en', nativeLang: 'ko' }); // each alone would make ko + ko, which is no pair
+    await two.sync();
+    await one.sync();
+
+    expect([one.settings.learnLang, one.settings.nativeLang]).toEqual(['en', 'ko']);
+  });
+
+  it('the theme and the language of the interface come along, with the texts of the language', async () => {
+    const one = new Browser('u1');
+    one.store.panelTheme = 'dark';
+    one.store.uiLanguage = { code: 'fr', messages: { hello: 'Bonjour' } };
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.sync();
+
+    expect(two.store.panelTheme).toBe('dark');
+    expect(two.store.uiLanguage).toEqual({ code: 'fr', messages: { hello: 'Bonjour' } });
+  });
+
+  it('the switch of the moment and the voices of the system stay in their browser', async () => {
+    const one = new Browser('u1');
+    one.set({
+      enabled: false,
+      voiceEn: 'Samantha',
+      voiceRu: 'Milena',
+      voicesOther: { ko: 'Yuna' },
+    });
+    await one.sync();
+
+    const two = new Browser('u1');
+    await two.sync();
+
+    expect(two.settings.enabled).toBe(true);
+    expect(two.settings.voiceEn).toBe('');
+    expect(two.settings.voiceRu).toBe('');
+    expect(two.settings.voicesOther).toEqual({});
+  });
+
+  it('every setting is decided: it follows the account or stays here on purpose', async () => {
+    await new Browser('u1').sync();
+    const names = (await loadSyncedSettings()).map((setting) => setting.name);
+    const stayHere = ['enabled', 'voiceEn', 'voiceRu', 'voicesOther'];
+    const pair = ['learnLang', 'nativeLang'];
+    for (const name of Object.keys(DEFAULT_SETTINGS))
+      expect([...names, ...stayHere, ...pair]).toContain(name);
+  });
+
+  it('what does not fit a setting is left out, and the rest comes', async () => {
+    const one = new Browser('u1');
+    await one.sync();
+    server.users.get('u1')!.items.set('settings/fontSize', {
+      kind: 'settings',
+      key: 'fontSize',
+      data: { name: 'fontSize', value: 'huge' },
+      updatedAt: Date.now(),
+      deleted: false,
+      seq: (server.users.get('u1')!.seq += 1),
+    });
+    const two = new Browser('u1');
+    two.set({ fontSize: 30 });
+    await two.sync();
+
+    expect(two.settings.fontSize).toBe(30);
+    expect(parseSyncedSetting({ name: 'enabled', value: false })).toBeNull();
+    expect(parseSyncedSetting({ name: 'fontSize', value: 500 })).toBeNull();
+    expect(parseSyncedSetting({ name: 'fontFamily', value: 'comic' })).toBeNull();
+    expect(
+      parseSyncedSetting({ name: 'languages', value: { learn: 'ko', native: 'ko' } }),
+    ).toBeNull();
+    expect(parseSyncedSetting({ name: 'theme', value: 'pink' })).toBeNull();
+    expect(parseSyncedSetting({ name: 'uiLanguage', value: 'klingon' })).toBeNull();
+    expect(parseSyncedSetting('nonsense')).toBeNull();
+    expect(parseSyncedSetting({ name: 'fontSize', value: 24 })).toEqual({
+      name: 'fontSize',
+      value: 24,
+    });
+  });
+
+  it('another user signing in gets their own settings, not the ones before', async () => {
+    const elsewhere = new Browser('u2');
+    elsewhere.set({ fontSize: 50 });
+    await elsewhere.sync();
+
+    const shared = new Browser('u1');
+    shared.set({ fontSize: 40 });
+    await shared.sync();
+    shared.store.account = account('u2');
+    await shared.sync();
+
+    expect(shared.settings.fontSize).toBe(50);
+  });
+
+  it('a browser that synchronised before settings were synced reads what it passed', async () => {
+    const state = normalizeSyncState({
+      owner: 'u1',
+      cursor: 500,
+      seen: { words: { 'en:go': 'print' }, history: {} },
+      lastAt: 1,
+    });
+    expect(state?.cursor).toBe(0);
+    expect(state?.seen.words).toEqual({ 'en:go': 'print' });
+
+    const known = { owner: 'u1', cursor: 500, seen: { words: {}, history: {}, settings: {} } };
+    expect(normalizeSyncState(known)?.cursor).toBe(500);
+  });
+
+  it('nothing changed: settings tell the server nothing the second time', async () => {
+    const one = new Browser('u1');
+    await one.sync();
+    server.requests = [];
+    await one.sync();
+    expect(server.requests[0]?.changes).toEqual([]);
+  });
+});
+
+describe('keep history, now that it follows the account', () => {
+  it('a browser where it is off does not get it switched on by the sign-in', async () => {
+    const one = new Browser('u1');
+    await one.sync();
+
+    const two = new Browser('u1');
+    two.set({ keepHistory: false });
+    await two.sync();
+    await one.sync();
+
+    expect(two.settings.keepHistory).toBe(false);
+    expect(one.settings.keepHistory).toBe(false);
+  });
+
+  it("not even when the account has it on by somebody's choice", async () => {
+    const one = new Browser('u1');
+    await one.sync();
+    one.set({ keepHistory: false });
+    await one.sync();
+    one.set({ keepHistory: true });
+    await one.sync();
+
+    const two = new Browser('u1');
+    two.set({ keepHistory: false });
+    await two.sync();
+
+    expect(two.settings.keepHistory).toBe(false);
+  });
+
+  it('off in one browser: the other stops taking the history in the same synchronisation', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await two.sync();
+    one.store.history = [entry('https://example.com/a')];
+    await one.sync();
+    one.set({ keepHistory: false });
+    await one.sync();
+
+    await two.sync();
+
+    expect(two.settings.keepHistory).toBe(false);
+    expect(two.history).toEqual([]);
+  });
+
+  it('switched on again: what passed while it was off is read after all', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    await two.sync();
+    one.store.history = [entry('https://example.com/a')];
+    await one.sync();
+    one.set({ keepHistory: false });
+    await one.sync();
+    await two.sync();
+
+    one.set({ keepHistory: true });
+    await one.sync();
+    await two.sync();
+    await two.sync();
+
+    expect(two.settings.keepHistory).toBe(true);
+    expect(two.history).toEqual(['https://example.com/a']);
+  });
+
+  it('switched on elsewhere: the entries that come with it are taken at once', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    one.set({ keepHistory: false });
+    await one.sync();
+    await two.sync();
+
+    one.set({ keepHistory: true });
+    one.store.history = [entry('https://example.com/b')];
+    await one.sync();
+    await two.sync();
+
+    expect(two.history).toEqual(['https://example.com/b']);
+  });
 });
 
 describe('a server that fails or forgets', () => {
@@ -422,9 +778,9 @@ describe('when the server hears of a change', () => {
     await one.sync();
     server.requests = [];
     one.add(word('go'));
-    one.service.wordsChanged();
+    one.service.changed();
     one.add(word('run'));
-    one.service.wordsChanged();
+    one.service.changed();
     await vi.advanceTimersByTimeAsync(4000);
     expect(server.requests).toEqual([]);
     await vi.advanceTimersByTimeAsync(2000);
@@ -436,7 +792,7 @@ describe('when the server hears of a change', () => {
     const one = new Browser('u1');
     await one.sync();
     server.requests = [];
-    one.service.wordsChanged();
+    one.service.changed();
     await vi.advanceTimersByTimeAsync(6000);
     await Promise.resolve();
     expect(server.requests).toEqual([]);

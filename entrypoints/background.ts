@@ -99,7 +99,8 @@ export default defineBackground(() => {
       keepOnboardingInStep();
     // A sign-in, not a renewal of the tokens: what the user has elsewhere comes to this browser.
     if (changes.account?.newValue && !changes.account.oldValue) void sync.run();
-    if ('savedWords' in changes) sync.wordsChanged();
+    if (['savedWords', 'settings', 'panelTheme', 'uiLanguage'].some((key) => key in changes))
+      sync.changed();
     else if ('history' in changes) void sync.historyChanged();
   });
   browser.permissions.onAdded.addListener(() => {

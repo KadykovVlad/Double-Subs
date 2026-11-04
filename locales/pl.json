@@ -74,7 +74,7 @@
 "set_sites_empty": "Włącz „Uruchamiaj samodzielnie” na stronie z odtwarzaczem: następnym razem zostanie znaleziony bez klikania ikony.",
 "set_history": "Historia",
 "set_keep_history": "Zapamiętuj, co oglądam",
-"set_keep_history_hint": "Lista filmów jest przechowywana tylko w tej przeglądarce",
+"set_keep_history_hint": "Lista filmów jest przechowywana na koncie",
 "set_clear_history": "Wyczyść historię ($1)",
 "voices_count": "wbudowane głosy: $1",
 "voices_none": "brak głosów w systemie",

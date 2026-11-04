@@ -74,7 +74,7 @@
 "set_sites_empty": "Nyalakan “Mulai otomatis” di halaman dengan pemutar: lain kali pemutar akan ditemukan tanpa mengeklik ikon.",
 "set_history": "Riwayat",
 "set_keep_history": "Ingat yang saya tonton",
-"set_keep_history_hint": "Daftar video hanya disimpan di browser ini",
+"set_keep_history_hint": "Daftar video disimpan di akun",
 "set_clear_history": "Hapus riwayat ($1)",
 "voices_count": "suara bawaan: $1",
 "voices_none": "tidak ada suara di sistem",

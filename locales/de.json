@@ -74,7 +74,7 @@
 "set_sites_empty": "Schalte „Selbst starten“ auf einer Seite mit Player ein: Beim nächsten Mal wird er ohne Klick auf das Symbol gefunden.",
 "set_history": "Verlauf",
 "set_keep_history": "Merken, was ich gesehen habe",
-"set_keep_history_hint": "Die Videoliste wird nur in diesem Browser gespeichert",
+"set_keep_history_hint": "Die Videoliste wird im Konto gespeichert",
 "set_clear_history": "Verlauf löschen ($1)",
 "voices_count": "integrierte Stimmen: $1",
 "voices_none": "keine Stimmen im System",

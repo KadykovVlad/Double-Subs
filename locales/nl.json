@@ -74,7 +74,7 @@
 "set_sites_empty": "Zet “Zelf starten” aan op een pagina met een speler: de volgende keer wordt hij gevonden zonder op het pictogram te klikken.",
 "set_history": "Geschiedenis",
 "set_keep_history": "Onthouden wat ik heb gekeken",
-"set_keep_history_hint": "De lijst met video’s blijft alleen in deze browser",
+"set_keep_history_hint": "De lijst met video’s blijft in het account",
 "set_clear_history": "Geschiedenis wissen ($1)",
 "voices_count": "ingebouwde stemmen: $1",
 "voices_none": "geen stemmen in het systeem",

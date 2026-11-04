@@ -74,7 +74,7 @@
 "set_sites_empty": "Vklopite »Zaženi samodejno« na strani s predvajalnikom: prihodnjič bo najden brez klika na ikono.",
 "set_history": "Zgodovina",
 "set_keep_history": "Zapomni si, kaj gledam",
-"set_keep_history_hint": "Seznam videoposnetkov se hrani samo v tem brskalniku",
+"set_keep_history_hint": "Seznam videoposnetkov se hrani v računu",
 "set_clear_history": "Počisti zgodovino ($1)",
 "voices_count": "vgrajeni glasovi: $1",
 "voices_none": "v sistemu ni glasov",

@@ -74,7 +74,7 @@
 "set_sites_empty": "ማጫወቻ ባለበት ገጽ ላይ “በራሱ ጀምር” ያብሩ፦ በሚቀጥለው ጊዜ አዶውን ጠቅ ሳያደርጉ ይገኛል።",
 "set_history": "ታሪክ",
 "set_keep_history": "ያየሁትን አስታውስ",
-"set_keep_history_hint": "የቪዲዮ ዝርዝሩ በዚህ አሳሽ ውስጥ ብቻ ይቀመጣል",
+"set_keep_history_hint": "የቪዲዮ ዝርዝሩ በመለያው ውስጥ ይቀመጣል",
 "set_clear_history": "ታሪክን አጽዳ ($1)",
 "voices_count": "አብሮ የተገነቡ ድምጾች፦ $1",
 "voices_none": "በሲስተሙ ውስጥ ድምጽ የለም",

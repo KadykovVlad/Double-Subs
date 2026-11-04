@@ -74,7 +74,7 @@
 "set_sites_empty": "Attiva «Avvia da solo» in una pagina con un player: la prossima volta verrà trovato senza fare clic sull’icona.",
 "set_history": "Cronologia",
 "set_keep_history": "Ricorda cosa guardo",
-"set_keep_history_hint": "L’elenco dei video resta solo in questo browser",
+"set_keep_history_hint": "L’elenco dei video resta nell’account",
 "set_clear_history": "Cancella cronologia ($1)",
 "voices_count": "voci integrate: $1",
 "voices_none": "nessuna voce nel sistema",

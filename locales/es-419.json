@@ -74,7 +74,7 @@
 "set_sites_empty": "Activa «Iniciar solo» en una página con reproductor: la próxima vez se encontrará sin hacer clic en el ícono.",
 "set_history": "Historial",
 "set_keep_history": "Recordar lo que veo",
-"set_keep_history_hint": "La lista de videos se guarda solo en este navegador",
+"set_keep_history_hint": "La lista de videos se guarda en la cuenta",
 "set_clear_history": "Borrar historial ($1)",
 "voices_count": "voces integradas: $1",
 "voices_none": "no hay voces en el sistema",

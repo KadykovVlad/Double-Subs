@@ -74,7 +74,7 @@
 "set_sites_empty": "Turn on “Start by itself” on a page with a player: next time it will be found without a click on the icon.",
 "set_history": "History",
 "set_keep_history": "Remember what I watched",
-"set_keep_history_hint": "The list of videos is kept only in this browser",
+"set_keep_history_hint": "The list of videos is kept in the account",
 "set_clear_history": "Clear history ($1)",
 "voices_count": "built-in voices: $1",
 "voices_none": "no voices in the system",

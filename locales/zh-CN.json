@@ -74,7 +74,7 @@
 "set_sites_empty": "在有播放器的页面开启“自动启动”：下次无需点击图标即可找到播放器。",
 "set_history": "历史",
 "set_keep_history": "记住我看过的内容",
-"set_keep_history_hint": "视频列表仅保存在此浏览器中",
+"set_keep_history_hint": "视频列表保存在账号中",
 "set_clear_history": "清除历史（$1）",
 "voices_count": "内置语音：$1",
 "voices_none": "系统中没有语音",

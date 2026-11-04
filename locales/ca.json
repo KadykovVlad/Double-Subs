@@ -74,7 +74,7 @@
 "set_sites_empty": "Activa «Inicia sol» en una pàgina amb reproductor: la propera vegada el trobarà sense fer clic a la icona.",
 "set_history": "Historial",
 "set_keep_history": "Recorda el que he vist",
-"set_keep_history_hint": "La llista de vídeos només es desa en aquest navegador",
+"set_keep_history_hint": "La llista de vídeos es desa al compte",
 "set_clear_history": "Esborra l’historial ($1)",
 "voices_count": "veus integrades: $1",
 "voices_none": "no hi ha veus al sistema",

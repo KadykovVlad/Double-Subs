@@ -74,7 +74,7 @@
 "set_sites_empty": "Ota ”Käynnistä itse” käyttöön sivulla, jolla on soitin: ensi kerralla se löytyy ilman kuvakkeen napsautusta.",
 "set_history": "Historia",
 "set_keep_history": "Muista, mitä olen katsonut",
-"set_keep_history_hint": "Videolista säilyy vain tässä selaimessa",
+"set_keep_history_hint": "Videolista säilyy tilillä",
 "set_clear_history": "Tyhjennä historia ($1)",
 "voices_count": "sisäänrakennettuja ääniä: $1",
 "voices_none": "järjestelmässä ei ole ääniä",

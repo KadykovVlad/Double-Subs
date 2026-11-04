@@ -93,6 +93,12 @@ export async function ensureUiLanguage(): Promise<void> {
   }
 }
 
+/** The language of the interface that is saved; null before the panel has opened for the first time. */
+export async function savedUiLanguage(): Promise<string | null> {
+  const stored = (await browser.storage.local.get(KEY))[KEY] as Stored | undefined;
+  return stored?.code ?? null;
+}
+
 /** At the start of a page of the extension or of the agent: from now on `t()` speaks the chosen language. */
 export async function loadUiLanguage(): Promise<void> {
   try {

@@ -74,7 +74,7 @@
 "set_sites_empty": "Lülita lehel, kus on mängija, sisse „Käivita ise“: järgmisel korral leitakse see ilma ikoonil klõpsamata.",
 "set_history": "Ajalugu",
 "set_keep_history": "Jäta meelde, mida vaatasin",
-"set_keep_history_hint": "Videote loend salvestatakse ainult selles brauseris",
+"set_keep_history_hint": "Videote loend salvestatakse kontole",
 "set_clear_history": "Tühjenda ajalugu ($1)",
 "voices_count": "sisseehitatud hääli: $1",
 "voices_none": "süsteemis pole hääli",

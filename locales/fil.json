@@ -74,7 +74,7 @@
 "set_sites_empty": "I-on ang “Awtomatikong magsimula” sa pahinang may player: sa susunod ay mahahanap ito nang hindi nagki-click sa icon.",
 "set_history": "History",
 "set_keep_history": "Tandaan ang mga pinanood ko",
-"set_keep_history_hint": "Ang listahan ng mga video ay nasa browser na ito lang",
+"set_keep_history_hint": "Ang listahan ng mga video ay nasa account",
 "set_clear_history": "I-clear ang history ($1)",
 "voices_count": "mga built-in na boses: $1",
 "voices_none": "walang boses sa system",

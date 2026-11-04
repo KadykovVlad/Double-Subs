@@ -5,6 +5,13 @@ import { loadSavedWords, normalizeSavedWord, saveSavedWords } from '../lib/saved
 import type { SavedWord } from '../lib/saved-words';
 import { loadSettings } from '../lib/settings';
 import {
+  loadSyncedSettings,
+  parseSyncedSetting,
+  saveSyncedSettings,
+  settingTime,
+  type SyncedSetting,
+} from '../lib/synced-settings';
+import {
   changesSince,
   emptySyncState,
   loadSyncState,
@@ -18,7 +25,7 @@ import {
   type SyncState,
 } from '../lib/sync';
 
-/** A saved word goes to the server soon after the user is done. */
+/** A saved word or a changed setting goes to the server soon after the user is done. */
 const WORDS_DELAY_MS = 5000;
 /** A playing video writes to the history every 15 seconds; the server hears of it far less often. */
 const HISTORY_EVERY_MS = 5 * 60 * 1000;
@@ -48,6 +55,17 @@ const history: Collection<HistoryEntry> = {
   arrange: (list) => [...list].sort((a, b) => b.lastAt - a.lastAt).slice(0, MAX_HISTORY),
 };
 
+const settings: Collection<SyncedSetting> = {
+  kind: 'settings',
+  enabled: async () => true,
+  load: loadSyncedSettings,
+  save: saveSyncedSettings,
+  idOf: (setting) => setting.name,
+  timeOf: settingTime,
+  parse: parseSyncedSetting,
+  arrange: (list) => list,
+};
+
 interface SyncAnswer {
   cursor: number;
   changes: SyncChange[];
@@ -61,7 +79,7 @@ function isSyncAnswer(value: unknown): value is SyncAnswer {
 }
 
 /**
- * Brings the words and the history of this browser and of the server together: when the user signs in,
+ * Brings the words, the history and the settings of this browser and of the server together: when the user signs in,
  * when the panel opens, and after a change. It only runs here, so one synchronisation runs at a time.
  * Failing is no problem: what was not told stays different from `seen`, and goes next time.
  */
@@ -86,8 +104,8 @@ export class SyncService {
     return this.running;
   }
 
-  /** A word was saved or changed. */
-  wordsChanged(): void {
+  /** A word or a setting changed. */
+  changed(): void {
     clearTimeout(this.timer);
     this.timer = this.later(WORDS_DELAY_MS);
   }
@@ -121,19 +139,22 @@ export class SyncService {
     const owner = accountOwner(account);
     const state = await this.stateFor(owner);
 
-    const wordsOn = await words.enabled();
     const historyOn = await history.enabled();
     const now = Date.now();
-    const wordsNow = await snapshot(words, wordsOn ? await words.load() : []);
-    const historyNow = await snapshot(history, historyOn ? await history.load() : []);
-    const wordChanges = wordsOn ? changesSince(words, wordsNow, state.seen.words, now) : [];
-    const historyChanges = historyOn
-      ? changesSince(history, historyNow, state.seen.history, now)
-      : [];
-    const queue = [...wordChanges, ...historyChanges];
+    const settingsNow = await snapshot(settings, await settings.load());
+    const wordsNow = await snapshot(words, await words.load());
+    const historyNow = await snapshot(history, await history.load());
+    const settingChanges = changesSince(settings, settingsNow, state.seen.settings, now);
+    const wordChanges = changesSince(words, wordsNow, state.seen.words, now);
+    // Off: what the user watched stays here, but what the user deleted is deleted everywhere.
+    const historyChanges = changesSince(history, historyNow, state.seen.history, now).filter(
+      (change) => historyOn || change.deleted,
+    );
+    const queue = [...settingChanges, ...wordChanges, ...historyChanges];
     if (options.onlyIfChanged && queue.length === 0) return;
 
-    const answer = await this.exchange(state.cursor, queue);
+    const cursor = historyOn && state.historyPaused ? 0 : state.cursor;
+    const answer = await this.exchange(cursor, queue);
     if (answer === 'reset') {
       await saveSyncState(emptySyncState(owner));
       return this.synchronise({ onlyIfChanged: false });
@@ -144,14 +165,23 @@ export class SyncService {
     if (!after || accountOwner(after) !== owner) return;
 
     const next: SyncState = { ...state, cursor: answer.cursor, lastAt: Date.now() };
-    if (wordsOn) {
-      const seen = seenAfter(wordsNow, wordChanges, state.seen.words);
-      next.seen.words = await this.apply(words, seen, answer.changes);
-    }
-    if (historyOn) {
-      const seen = seenAfter(historyNow, historyChanges, state.seen.history);
-      next.seen.history = await this.apply(history, seen, answer.changes);
-    }
+    next.seen.settings = await this.apply(
+      settings,
+      seenAfter(settingsNow, settingChanges, state.seen.settings),
+      answer.changes,
+    );
+    next.seen.words = await this.apply(
+      words,
+      seenAfter(wordsNow, wordChanges, state.seen.words),
+      answer.changes,
+    );
+    // After the settings: "keep history" may have just come from another browser.
+    const historyStays = await history.enabled();
+    const seenHistory = seenAfter(historyNow, historyChanges, state.seen.history);
+    next.seen.history = historyStays
+      ? await this.apply(history, seenHistory, answer.changes)
+      : seenHistory;
+    next.historyPaused = !(historyOn && historyStays);
     await saveSyncState(next);
   }
 

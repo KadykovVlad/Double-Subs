@@ -156,6 +156,50 @@ test('what this browser had before the sign-in goes to the server, and a new wor
   await expect.poll(told, { timeout: 10_000 }).toContain('en:after');
 });
 
+test('signing in brings the settings of the account, and a changed setting goes back', async () => {
+  const setting = (name: string, value: unknown) => ({
+    kind: 'settings',
+    key: name,
+    updatedAt: Date.now(),
+    deleted: false,
+    data: { name, value },
+  });
+  api.synced = [
+    setting('fontSize', 40),
+    setting('theme', 'dark'),
+    setting('languages', { learn: 'ko', native: 'ru' }),
+    setting('uiLanguage', 'ru'),
+  ];
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await expect(panel.locator('html')).toHaveAttribute('data-theme', 'dark');
+  // The texts of the language are read by the background from the package.
+  await expect(panel.getByRole('button', { name: 'Тема: тёмная' })).toBeVisible();
+  const stored = () =>
+    session.worker.evaluate(async () => {
+      const { settings } = await chrome.storage.local.get('settings');
+      return settings as { fontSize: number; learnLang: string; nativeLang: string };
+    });
+  await expect.poll(async () => (await stored()).fontSize).toBe(40);
+  expect((await stored()).learnLang).toBe('ko');
+  expect((await stored()).nativeLang).toBe('ru');
+
+  // The change must not ride on another synchronisation: the sign-in and the panel each ask for one,
+  // and clearing the storage before this test set the timer of a change.
+  await panel.waitForTimeout(6000);
+  await session.worker.evaluate(async () => {
+    const { settings } = await chrome.storage.local.get('settings');
+    await chrome.storage.local.set({ settings: { ...(settings as object), barWidth: 90 } });
+  });
+  const told = () =>
+    api.requests
+      .filter((r) => r.path === '/sync')
+      .flatMap((r) => (r.body as { changes: Array<{ key: string; data: unknown }> }).changes)
+      .filter((c) => c.key === 'barWidth')
+      .map((c) => (c.data as { value: number }).value);
+  await expect.poll(told, { timeout: 10_000 }).toContain(90);
+});
+
 test('a free account stays free: no words tab, the plan says so', async () => {
   api.plan = 'free';
   const panel = await openPanel();

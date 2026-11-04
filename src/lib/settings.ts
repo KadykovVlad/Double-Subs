@@ -44,7 +44,7 @@ export interface Settings {
   glassRadius: number;
   /** Colour of the glass, '#rrggbb'. */
   glassTint: string;
-  /** Keep the list of watched videos (in the browser only). */
+  /** Keep the list of watched videos (in the browser and in the account). */
   keepHistory: boolean;
 }
 

@@ -74,7 +74,7 @@
 "set_sites_empty": "Zapnite „Spúšťať samo“ na stránke s prehrávačom: nabudúce sa nájde bez kliknutia na ikonu.",
 "set_history": "História",
 "set_keep_history": "Pamätať si, čo pozerám",
-"set_keep_history_hint": "Zoznam videí sa ukladá len v tomto prehliadači",
+"set_keep_history_hint": "Zoznam videí sa ukladá v účte",
 "set_clear_history": "Vymazať históriu ($1)",
 "voices_count": "vstavané hlasy: $1",
 "voices_none": "v systéme nie sú žiadne hlasy",

@@ -74,7 +74,7 @@
 "set_sites_empty": "Slå “Start selv” til på en side med en afspiller: næste gang findes den uden at klikke på ikonet.",
 "set_history": "Historik",
 "set_keep_history": "Husk, hvad jeg har set",
-"set_keep_history_hint": "Listen over videoer gemmes kun i denne browser",
+"set_keep_history_hint": "Listen over videoer gemmes på kontoen",
 "set_clear_history": "Ryd historik ($1)",
 "voices_count": "indbyggede stemmer: $1",
 "voices_none": "ingen stemmer i systemet",

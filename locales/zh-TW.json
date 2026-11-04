@@ -74,7 +74,7 @@
 "set_sites_empty": "在有播放器的頁面開啟「自動啟動」：下次不必點擊圖示就能找到播放器。",
 "set_history": "記錄",
 "set_keep_history": "記住我看過的內容",
-"set_keep_history_hint": "影片清單只儲存在這個瀏覽器中",
+"set_keep_history_hint": "影片清單儲存在帳號中",
 "set_clear_history": "清除記錄（$1）",
 "voices_count": "內建語音：$1",
 "voices_none": "系統中沒有語音",

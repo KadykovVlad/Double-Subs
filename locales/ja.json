@@ -74,7 +74,7 @@
 "set_sites_empty": "プレーヤーのあるページで「自動で開始」をオンにすると、次回からアイコンをクリックせずに見つかります。",
 "set_history": "履歴",
 "set_keep_history": "視聴した動画を記録する",
-"set_keep_history_hint": "動画のリストはこのブラウザ内にのみ保存されます",
+"set_keep_history_hint": "動画のリストはアカウントに保存されます",
 "set_clear_history": "履歴を消去 ($1)",
 "voices_count": "内蔵の音声: $1",
 "voices_none": "システムに音声がありません",

@@ -74,7 +74,7 @@
 "set_sites_empty": "Oynatıcılı bir sayfada “Kendiliğinden başlat” seçeneğini aç: bir dahaki sefere simgeye tıklamadan bulunur.",
 "set_history": "Geçmiş",
 "set_keep_history": "İzlediklerimi hatırla",
-"set_keep_history_hint": "Video listesi yalnızca bu tarayıcıda saklanır",
+"set_keep_history_hint": "Video listesi hesapta saklanır",
 "set_clear_history": "Geçmişi temizle ($1)",
 "voices_count": "yerleşik sesler: $1",
 "voices_none": "sistemde ses yok",

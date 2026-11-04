@@ -74,7 +74,7 @@
 "set_sites_empty": "Activează „Pornește singur” pe o pagină cu player: data viitoare va fi găsit fără clic pe pictogramă.",
 "set_history": "Istoric",
 "set_keep_history": "Reține ce am vizionat",
-"set_keep_history_hint": "Lista de videoclipuri se păstrează doar în acest browser",
+"set_keep_history_hint": "Lista de videoclipuri se păstrează în cont",
 "set_clear_history": "Șterge istoricul ($1)",
 "voices_count": "voci integrate: $1",
 "voices_none": "nu există voci în sistem",

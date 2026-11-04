@@ -74,7 +74,7 @@
 "set_sites_empty": "Kapcsold be az „Automatikus indítás” funkciót egy lejátszós oldalon: legközelebb az ikonra kattintás nélkül megtalálja.",
 "set_history": "Előzmények",
 "set_keep_history": "Megjegyzem, mit néztem",
-"set_keep_history_hint": "A videók listája csak ebben a böngészőben tárolódik",
+"set_keep_history_hint": "A videók listája a fiókban tárolódik",
 "set_clear_history": "Előzmények törlése ($1)",
 "voices_count": "beépített hangok: $1",
 "voices_none": "nincs hang a rendszerben",

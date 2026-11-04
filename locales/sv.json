@@ -74,7 +74,7 @@
 "set_sites_empty": "Slå på ”Starta själv” på en sida med en spelare: nästa gång hittas den utan att du klickar på ikonen.",
 "set_history": "Historik",
 "set_keep_history": "Kom ihåg vad jag har tittat på",
-"set_keep_history_hint": "Videolistan sparas bara i den här webbläsaren",
+"set_keep_history_hint": "Videolistan sparas på kontot",
 "set_clear_history": "Rensa historik ($1)",
 "voices_count": "inbyggda röster: $1",
 "voices_none": "inga röster i systemet",

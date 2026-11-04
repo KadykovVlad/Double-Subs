@@ -74,7 +74,7 @@
 "set_sites_empty": "Uključite »Pokreni sam« na stranici s playerom: sljedeći put bit će pronađen bez klika na ikonu.",
 "set_history": "Povijest",
 "set_keep_history": "Pamti što sam gledao",
-"set_keep_history_hint": "Popis videozapisa sprema se samo u ovom pregledniku",
+"set_keep_history_hint": "Popis videozapisa sprema se na računu",
 "set_clear_history": "Očisti povijest ($1)",
 "voices_count": "ugrađeni glasovi: $1",
 "voices_none": "u sustavu nema glasova",

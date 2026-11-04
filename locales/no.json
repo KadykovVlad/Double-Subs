@@ -74,7 +74,7 @@
 "set_sites_empty": "Slå på «Start selv» på en side med spiller: neste gang blir den funnet uten å klikke på ikonet.",
 "set_history": "Historikk",
 "set_keep_history": "Husk hva jeg har sett",
-"set_keep_history_hint": "Videolisten lagres bare i denne nettleseren",
+"set_keep_history_hint": "Videolisten lagres på kontoen",
 "set_clear_history": "Tøm historikk ($1)",
 "voices_count": "innebygde stemmer: $1",
 "voices_none": "ingen stemmer i systemet",

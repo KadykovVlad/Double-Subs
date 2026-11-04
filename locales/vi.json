@@ -74,7 +74,7 @@
 "set_sites_empty": "Bật “Tự khởi động” trên trang có trình phát: lần sau sẽ tìm thấy mà không cần nhấp vào biểu tượng.",
 "set_history": "Lịch sử",
 "set_keep_history": "Ghi nhớ những gì tôi đã xem",
-"set_keep_history_hint": "Danh sách video chỉ được lưu trong trình duyệt này",
+"set_keep_history_hint": "Danh sách video được lưu trong tài khoản",
 "set_clear_history": "Xóa lịch sử ($1)",
 "voices_count": "giọng tích hợp: $1",
 "voices_none": "hệ thống không có giọng đọc",
