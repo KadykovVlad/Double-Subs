@@ -78,6 +78,11 @@ export interface SignInMessage {
   link?: boolean;
 }
 
+/** The agent in a frame → background: which page is this frame on? Answers the tab's address and title. */
+export interface PageOfFrameMessage {
+  type: 'page-of-frame';
+}
+
 /** A window of the extension → background: synchronise now; the answer comes when it is done. */
 export interface SyncMessage {
   type: 'sync';

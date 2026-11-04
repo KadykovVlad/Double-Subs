@@ -157,7 +157,7 @@ test('free plan: the tip still translates, but nothing is offered, saved or unde
   await expect(popup.getByTestId('plan-pro')).toBeInViewport();
   await expect(popup.getByTestId('toast')).toHaveCount(0);
 
-  await expect(popup.getByTestId('tab-history')).toBeVisible();
+  await expect(popup.getByTestId('tab-video')).toBeVisible();
   await expect(popup.getByTestId('tab-words')).toHaveCount(0);
 
   // Pro again (the switch of the development build): the tab and the saving come back.

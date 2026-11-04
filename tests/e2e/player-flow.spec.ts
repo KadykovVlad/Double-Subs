@@ -192,6 +192,28 @@ test('a page without video offers to search again or reload', async () => {
   ).toBeVisible();
 });
 
+test('a player in a frame goes to the history as the page it is on, not as the bare player', async () => {
+  const { page } = await openPage('/top-with-iframe.html');
+  await expect(page.frameLocator('iframe').locator('video#player')).toBeAttached();
+  const popup = await openPopupFor(session, page);
+  await expect(popup.getByTestId('status')).toHaveText('Субтитры найдены');
+
+  const history = () =>
+    session.worker.evaluate(async () => {
+      const { history } = await chrome.storage.local.get('history');
+      return ((history ?? []) as Array<{ url: string; title: string; host: string }>).map((e) => ({
+        url: e.url,
+        title: e.title,
+        host: e.host,
+      }));
+    });
+  // Earlier tests of this session left their pages in the history; all of them are on this host.
+  const { host } = new URL(page.url());
+  await expect.poll(async () => (await history())[0]?.url).toBe(page.url());
+  expect((await history())[0]).toEqual({ url: page.url(), title: await page.title(), host });
+  expect((await history()).filter((entry) => entry.host !== host)).toEqual([]);
+});
+
 test('a player from another site: both the page and the player are offered, and both are remembered', async () => {
   const { page } = await openPage('/top-with-iframe.html');
   await expect(page.frameLocator('iframe').locator('video#player')).toBeAttached();

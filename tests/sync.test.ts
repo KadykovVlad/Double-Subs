@@ -667,7 +667,15 @@ describe('settings', () => {
     expect(state?.cursor).toBe(0);
     expect(state?.seen.words).toEqual({ 'en:go': 'print' });
 
-    const seen = { words: {}, history: {}, settings: {}, sites: {} };
+    // One kind short, as every new kind leaves the browsers that synchronised before it.
+    const short = {
+      owner: 'u1',
+      cursor: 500,
+      seen: { words: {}, history: {}, settings: {}, sites: {} },
+    };
+    expect(normalizeSyncState(short)?.cursor).toBe(0);
+
+    const seen = { words: {}, history: {}, settings: {}, sites: {}, watchlist: {} };
     const known = { owner: 'u1', cursor: 500, seen };
     expect(normalizeSyncState(known)?.cursor).toBe(500);
   });
@@ -884,6 +892,87 @@ describe('sites', () => {
     expect(parseSyncedSite({ list: 'off', id: 'a b' })).toBeNull();
     expect(parseSyncedSite({ list: 'other', id: film })).toBeNull();
     expect(parseSyncedSite('nonsense')).toBeNull();
+  });
+});
+
+describe('the watchlist', () => {
+  const later = (id: string, addedAt = 1000) => ({
+    id,
+    url: id,
+    title: 'A film',
+    host: 'films.example',
+    addedAt,
+  });
+  const urls = (browser: Browser) =>
+    ((browser.store.watchlist as Array<{ url: string }> | undefined) ?? []).map((i) => i.url);
+
+  it('what was put aside in one browser comes to the other, newest first', async () => {
+    const one = new Browser('u1');
+    one.store.watchlist = [
+      later('https://films.example/new', 2000),
+      later('https://films.example/old', 1000),
+    ];
+    await one.sync();
+
+    const two = new Browser('u1');
+    two.store.watchlist = [later('https://films.example/mine', 1500)];
+    await two.sync();
+    await one.sync();
+
+    const all = [
+      'https://films.example/new',
+      'https://films.example/mine',
+      'https://films.example/old',
+    ];
+    expect(urls(two)).toEqual(all);
+    expect(urls(one)).toEqual(all);
+  });
+
+  it('a thing taken off goes everywhere and does not come back', async () => {
+    const one = new Browser('u1');
+    const two = new Browser('u1');
+    one.store.watchlist = [later('https://films.example/a')];
+    await one.sync();
+    await two.sync();
+
+    two.store.watchlist = [];
+    await two.sync();
+    await one.sync();
+    await two.sync();
+
+    expect(urls(one)).toEqual([]);
+    expect(urls(two)).toEqual([]);
+  });
+
+  it('another user does not get it, and the one before finds it again', async () => {
+    const shared = new Browser('u1');
+    shared.store.watchlist = [later('https://films.example/a')];
+    await shared.sync();
+
+    shared.store.account = account('u2');
+    await shared.sync();
+    expect(urls(shared)).toEqual([]);
+    expect(server.live('u2', 'watchlist')).toEqual([]);
+
+    shared.store.account = account('u1');
+    await shared.sync();
+    expect(urls(shared)).toEqual(['https://films.example/a']);
+  });
+
+  it('what the server has under a wrong key, or that is no address, stays out', async () => {
+    const one = new Browser('u1');
+    await one.sync();
+    const data = server.users.get('u1')!;
+    data.items.set('watchlist/x', {
+      kind: 'watchlist',
+      key: 'javascript:alert(1)',
+      data: { url: 'javascript:alert(1)' },
+      updatedAt: 1,
+      deleted: false,
+      seq: (data.seq += 1),
+    });
+    await one.sync();
+    expect(urls(one)).toEqual([]);
   });
 });
 

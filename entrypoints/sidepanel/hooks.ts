@@ -23,6 +23,7 @@ import {
   watchMirrorsMode,
   type KnownSites,
 } from '../../src/lib/known-sites';
+import { loadWatchlist, watchWatchlist, type WatchItem } from '../../src/lib/watchlist';
 import { loadSavedWords, watchSavedWords, type SavedWord } from '../../src/lib/saved-words';
 import {
   DEFAULT_SETTINGS,
@@ -96,6 +97,15 @@ export function useMirrorsMode(): boolean {
     return watchMirrorsMode(setOn);
   }, []);
   return on;
+}
+
+export function useWatchlist(): WatchItem[] {
+  const [list, setList] = useState<WatchItem[]>([]);
+  useEffect(() => {
+    void loadWatchlist().then(setList);
+    return watchWatchlist(setList);
+  }, []);
+  return list;
 }
 
 /** The sites on the list that have no access in this browser (they came from the account). */

@@ -1,5 +1,5 @@
 /** The features the plan decides: everything else (dual subtitles, history, hover translation) is free. */
-export type Feature = 'words' | 'media' | 'asr' | 'smartHistory';
+export type Feature = 'words' | 'watchlist' | 'media' | 'asr' | 'smartHistory';
 
 export type Plan = 'free' | 'pro';
 

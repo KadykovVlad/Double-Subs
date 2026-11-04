@@ -11,7 +11,7 @@ import {
   requestAccess,
   type PopupState,
 } from '../../src/panel/controller';
-import { HistoryTab } from './HistoryTab';
+import { VideoTab } from './VideoTab';
 import { NowTab, type SettingsFocus } from './NowTab';
 import { SettingsTab } from './SettingsTab';
 import { WordsTab, dueWords } from './WordsTab';
@@ -40,12 +40,12 @@ import {
   watchUiLanguage,
 } from '../../src/lib/ui-language';
 
-type TabId = 'now' | 'words' | 'history' | 'settings';
+type TabId = 'now' | 'words' | 'video' | 'settings';
 
 const TABS: Array<{ id: TabId; label: MessageKey; icon: preact.JSX.Element }> = [
   { id: 'now', label: 'tab_now', icon: Icons.now },
   { id: 'words', label: 'tab_words', icon: Icons.words },
-  { id: 'history', label: 'tab_history', icon: Icons.history },
+  { id: 'video', label: 'tab_video', icon: Icons.play },
   { id: 'settings', label: 'tab_settings', icon: Icons.settings },
 ];
 
@@ -322,7 +322,7 @@ function SignedInApp({ language }: { language: string }) {
           />
         )}
         {tab === 'words' && <WordsTab />}
-        {tab === 'history' && <HistoryTab />}
+        {tab === 'video' && <VideoTab tabId={tabId} pageUrl={state.pageUrl} />}
         {tab === 'settings' && (
           <SettingsTab tabId={tabId} diagnostics={state.diagnostics} focus={settingsFocus} />
         )}

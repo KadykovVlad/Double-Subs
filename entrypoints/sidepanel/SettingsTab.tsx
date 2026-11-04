@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { PROVIDERS, removeMethod, signOut, type Provider } from '../../src/lib/account';
+import { PROVIDERS, removeMethod, signOut, type Account } from '../../src/lib/account';
 import { requestSync } from '../../src/lib/sync';
 import { FREE_PLAN, isPro, saveEntitlements } from '../../src/lib/entitlements';
 import { clearHistory } from '../../src/lib/history';
@@ -610,19 +610,21 @@ function DiagnosticsView({ tabId, diagnostics }: { tabId: number; diagnostics: D
 }
 
 /** The ways in of the account; one can be removed while another is left. */
-function MethodsCard({ methods }: { methods: Array<{ provider: Provider; label: string }> }) {
+function Methods({ account }: { account: Account }) {
   const [error, setError] = useState<string | null>(null);
+  const { methods } = account;
   const missing = PROVIDERS.filter((provider) => !methods.some((m) => m.provider === provider));
+  // Chrome's list of addresses cannot be relied on in the side panel: the likely address is written in.
+  const knownAddress = methods.find((method) => method.label.includes('@'))?.label;
   return (
-    <Card>
-      <div class="row">
-        <span class="grow label">{t('auth_methods_title')}</span>
-      </div>
+    <>
+      <p class="hint methods-title">{t('auth_methods_title')}</p>
       {methods.map((method) => (
         <div class="row method" key={method.provider} data-testid={`method-${method.provider}`}>
           <span class="grow">
             <span class="label">{providerName(method.provider)}</span>
-            <span class="hint"> · {method.label}</span>
+            {/* The address the account is called by is written above already. */}
+            {method.label !== account.name && <span class="hint"> · {method.label}</span>}
           </span>
           {methods.length > 1 && (
             <Button
@@ -636,7 +638,7 @@ function MethodsCard({ methods }: { methods: Array<{ provider: Provider; label: 
                 );
               }}
             >
-              {t('auth_method_remove')}
+              {t('account_sign_out')}
             </Button>
           )}
         </div>
@@ -649,31 +651,33 @@ function MethodsCard({ methods }: { methods: Array<{ provider: Provider; label: 
       {missing.length > 0 && (
         <details class="add-method" data-testid="add-method">
           <summary>{t('auth_add_method')}</summary>
-          <SignInForm link providers={missing} />
+          <SignInForm link providers={missing} email={knownAddress} />
         </details>
       )}
-    </Card>
+    </>
   );
 }
 
-/** Who is signed in and on which plan; the sign-in itself is the gate before the panel (App). */
+/** Who is signed in, on which plan and by which ways; the sign-in itself is the gate before the panel (App). */
 function AccountCard() {
   const account = useAccount();
   const entitlements = useEntitlements();
   if (!account) return null;
+  const pro = isPro(entitlements);
 
   return (
     <>
       <SectionTitle>{t('account_title')}</SectionTitle>
       <Card>
-        <div class="row" data-testid="account-email">
-          <span class="grow label">{t('account_signed_in', account.name)}</span>
-        </div>
-        <div class="row" data-testid="account-plan">
-          <span class="grow hint">
-            {t(isPro(entitlements) ? 'account_plan_pro' : 'account_plan_free')}
+        <div class="row">
+          <span class="grow label account-name" data-testid="account-email">
+            {account.name}
+          </span>
+          <span class={pro ? 'pro-badge' : 'badge-free'} data-testid="account-plan">
+            {pro ? 'PRO' : 'FREE'}
           </span>
         </div>
+        {account.methods.length > 0 && <Methods account={account} />}
         <Button
           variant="secondary"
           size="sm"
@@ -683,77 +687,46 @@ function AccountCard() {
           {t('account_sign_out')}
         </Button>
       </Card>
-      {account.methods.length > 0 && <MethodsCard methods={account.methods} />}
-      <PlanCards pro={isPro(entitlements)} />
+      {!pro && <ProOffer />}
     </>
   );
 }
 
-const FREE_FEATURES: MessageKey[] = ['feat_dual', 'feat_sites', 'feat_hover', 'feat_history'];
-/** The Pro features; `soon` ones are promised, not there yet. */
+/** What Pro gives; `soon` ones are promised, not there yet. */
 const PRO_FEATURES: Array<{ key: MessageKey; soon?: boolean }> = [
-  { key: 'feat_all_free' },
   { key: 'feat_words' },
+  { key: 'saved_tab' },
   { key: 'feat_media', soon: true },
   { key: 'feat_asr', soon: true },
   { key: 'feat_smart_history', soon: true },
 ];
 
-/** What each plan gives, the current one marked. There is no payment yet: the way to Pro says "soon". */
-function PlanCards({ pro }: { pro: boolean }) {
+/** For a free account only. There is no payment yet: the way to Pro says "soon". */
+function ProOffer() {
   return (
-    <div class="plans">
-      <Card class="plan-card" testid="plan-free">
-        <div class="plan-head">
-          <h3>{t('plan_free_title')}</h3>
-          <span class="badge-free">FREE</span>
-        </div>
-        <p class="muted small">{t('plan_free_text')}</p>
-        <ul class="plan-list">
-          {FREE_FEATURES.map((key) => (
-            <li key={key}>
-              {Icons.check}
+    <Card class="plan-card pro" testid="plan-pro">
+      <div class="plan-head">
+        <span class="crown">{Icons.crown}</span>
+        <h3>Pro</h3>
+      </div>
+      <p class="muted small">{t('plan_pro_text')}</p>
+      <ul class="plan-list">
+        {PRO_FEATURES.map(({ key, soon }) => (
+          <li key={key}>
+            {Icons.check}
+            <span>
               {t(key)}
-            </li>
-          ))}
-        </ul>
-        {!pro && <PlanCurrent />}
-      </Card>
-      <Card class="plan-card pro" testid="plan-pro">
-        <div class="plan-head">
-          <span class="crown">{Icons.crown}</span>
-          <h3>Pro</h3>
-          <span class="pro-badge">PRO</span>
-        </div>
-        <p class="muted small">{t('plan_pro_text')}</p>
-        <ul class="plan-list">
-          {PRO_FEATURES.map(({ key, soon }) => (
-            <li key={key}>
-              {Icons.check}
-              <span>
-                {t(key)}
-                {soon && <span class="soon">{t('plan_soon')}</span>}
-              </span>
-            </li>
-          ))}
-        </ul>
-        {pro ? (
-          <PlanCurrent />
-        ) : (
-          <Button block disabled testid="plan-upgrade">
-            {t('plan_upgrade')} · {t('plan_soon')}
-          </Button>
-        )}
-      </Card>
-    </div>
+              {soon && <span class="soon">{t('plan_soon')}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <Button block disabled testid="plan-upgrade">
+        {t('plan_upgrade')} · {t('plan_soon')}
+      </Button>
+    </Card>
   );
 }
-
-const PlanCurrent = () => (
-  <Button variant="secondary" block disabled testid="plan-current">
-    {t('plan_current')}
-  </Button>
-);
 
 /** The sites the user switched off, each with a button to turn it on again; nothing is shown while there are none. */
 /** Sites that came from the account: Chrome gives access per browser, and asks only on a click. */

@@ -9,6 +9,7 @@ import {
   historyId,
   MAX_HISTORY,
   normalizeHistory,
+  pageOfFrame,
   resumeUrl,
   upsertEntry,
   youtubeVideoId,
@@ -138,5 +139,38 @@ describe('the history list in the panel', () => {
     expect(formatDuration(95)).toBe('1:35');
     expect(formatDuration(3725)).toBe('1:02:05');
     expect(formatDuration(0)).toBe('0:00');
+  });
+});
+
+describe('the page of a player in a frame', () => {
+  const frame = { url: 'https://cdn.example/?token_movie=abc', title: 'Player' };
+  const site = 'https://films.example';
+
+  it('is the page of the tab, with its title', () => {
+    expect(
+      pageOfFrame(frame, { url: `${site}/film/1.html?a=1`, title: 'A film' }, [site], ''),
+    ).toEqual({ url: `${site}/film/1.html?a=1`, title: 'A film' });
+  });
+
+  it('a tab without a title keeps the title of the frame', () => {
+    expect(pageOfFrame(frame, { url: `${site}/film/1.html` }, [site], '').title).toBe('Player');
+  });
+
+  it('no access to the tab: the referrer of the frame, when it is that page', () => {
+    expect(pageOfFrame(frame, null, [site], `${site}/film/1.html`).url).toBe(`${site}/film/1.html`);
+  });
+
+  it('no access and no referrer: the site, never the frame', () => {
+    expect(pageOfFrame(frame, {}, [site], '').url).toBe(`${site}/`);
+    expect(pageOfFrame(frame, null, [site], 'https://other.example/x').url).toBe(`${site}/`);
+  });
+
+  it('the outermost page counts, for a frame in a frame', () => {
+    expect(pageOfFrame(frame, null, ['https://middle.example', site], '').url).toBe(`${site}/`);
+  });
+
+  it('nothing is known of the page, or it is not a web page: the frame is all there is', () => {
+    expect(pageOfFrame(frame, null, [], '')).toEqual(frame);
+    expect(pageOfFrame(frame, { url: 'chrome://newtab/' }, ['null'], '')).toEqual(frame);
   });
 });

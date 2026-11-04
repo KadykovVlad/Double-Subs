@@ -1,7 +1,7 @@
 import type { Env } from './env';
 import { HttpError } from './http';
 
-export const KINDS = ['words', 'history', 'settings', 'sites'] as const;
+export const KINDS = ['words', 'history', 'settings', 'sites', 'watchlist'] as const;
 export type Kind = (typeof KINDS)[number];
 
 export const MAX_CHANGES = 500;

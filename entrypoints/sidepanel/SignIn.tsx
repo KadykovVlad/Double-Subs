@@ -57,8 +57,18 @@ function GoogleButton({ link, run, busy }: { link: boolean; run: Run; busy: bool
 }
 
 /** An address, then the code from the letter sent to it. */
-function EmailForm({ link, run, busy }: { link: boolean; run: Run; busy: boolean }) {
-  const [email, setEmail] = useState('');
+function EmailForm({
+  link,
+  run,
+  busy,
+  address = '',
+}: {
+  link: boolean;
+  run: Run;
+  busy: boolean;
+  address?: string;
+}) {
+  const [email, setEmail] = useState(address);
   const [code, setCode] = useState('');
   const [sentTo, setSentTo] = useState<string | null>(null);
 
@@ -240,9 +250,12 @@ function TelegramButton({
 export function SignInForm({
   link = false,
   providers = PROVIDERS,
+  email,
 }: {
   link?: boolean;
   providers?: readonly Provider[];
+  /** The address to start from, when one is known. */
+  email?: string;
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -265,7 +278,7 @@ export function SignInForm({
     provider === 'google' ? (
       <GoogleButton key="google" link={link} run={run} busy={busy} />
     ) : provider === 'email' ? (
-      <EmailForm key="email" link={link} run={run} busy={busy} />
+      <EmailForm key="email" link={link} run={run} busy={busy} address={email} />
     ) : (
       <TelegramButton key="telegram" link={link} setError={setError} />
     ),

@@ -65,11 +65,10 @@ test('signed out: only the sign-in is offered, no tabs; signing in opens the pan
   await expect(panel.getByTestId('gate')).toHaveCount(0);
   await expect(panel.getByTestId('tab-words')).toBeVisible();
   await openPanelTab(panel, 'settings');
-  await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как learner@example.com');
-  await expect(panel.getByTestId('account-plan')).toHaveText('План Pro');
-  await expect(panel.getByTestId('plan-pro').getByTestId('plan-current')).toHaveText(
-    'Текущий план',
-  );
+  await expect(panel.getByTestId('account-email')).toHaveText('learner@example.com');
+  await expect(panel.getByTestId('account-plan')).toHaveText('PRO');
+  // The plan is told once: no comparison of plans for who has the better one.
+  await expect(panel.getByTestId('plan-pro')).toHaveCount(0);
   await expect(panel.getByTestId('plan-upgrade')).toHaveCount(0);
   const asked = api.requests.filter((r) => r.path !== '/sync');
   expect(asked.map((r) => `${r.method} ${r.path}`)).toEqual([
@@ -200,8 +199,8 @@ test('signing in brings the settings of the account, and a changed setting goes 
   await expect.poll(told, { timeout: 10_000 }).toContain(90);
 });
 
-test('a change in any of the lists of sites goes to the server by itself', async () => {
-  test.setTimeout(60_000);
+test('a change in the lists of sites or in the watchlist goes to the server by itself', async () => {
+  test.setTimeout(90_000);
   const panel = await openPanel();
   await panel.getByTestId('sign-in').click();
   // No synchronisation of the sign-in or of the panel, and no timer from clearing the storage, is left.
@@ -216,11 +215,81 @@ test('a change in any of the lists of sites goes to the server by itself', async
     [{ knownSites: { [origin]: site } }, `known:${origin}`],
     [{ excludedSites: ['films.example'] }, 'off:films.example'],
     [{ rememberDismissed: [origin] }, `never:${origin}`],
+    [
+      { watchlist: [{ url: `${origin}/series`, title: 'A series', addedAt: 1 }] },
+      `${origin}/series`,
+    ],
   ];
   for (const [change, key] of changes) {
     await session.worker.evaluate((items) => chrome.storage.local.set(items), change);
     await expect.poll(told, { timeout: 10_000 }).toContain(key);
   }
+});
+
+test('the texts of the language are read again: a version with new ones does not speak English in them', async () => {
+  // Saved when the language was chosen, by a version that had no "ways in" yet.
+  await session.worker.evaluate(() =>
+    chrome.storage.local.set({
+      uiLanguage: { code: 'ru', messages: { account_title: 'Аккаунт' } },
+    }),
+  );
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await openPanelTab(panel, 'settings');
+  await expect(panel.locator('.methods-title')).toHaveText('Способы входа');
+});
+
+test('a way in by email starts from the address the account already has', async () => {
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await openPanelTab(panel, 'settings');
+  await panel.getByTestId('add-method').locator('summary').click();
+  await expect(panel.getByTestId('add-method').getByTestId('email-input')).toHaveValue(
+    'learner@example.com',
+  );
+});
+
+test('videos: put aside by a click and by a link, once, and taken off', async () => {
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await panel.getByTestId('tab-video').click();
+  // Pro starts on what was put aside.
+  await expect(panel.getByTestId('video-saved')).toHaveAttribute('aria-selected', 'true');
+  await expect(panel.getByTestId('saved-list')).toHaveCount(0);
+
+  await panel.getByTestId('saved-add-page').click();
+  await expect(panel.getByTestId('saved-item')).toHaveCount(1);
+  await expect(panel.getByTestId('saved-item')).toContainText('localhost');
+  await panel.getByTestId('saved-add-page').click();
+  await expect(panel.getByTestId('saved-notice')).toHaveText('Уже в отложенных');
+  await expect(panel.getByTestId('saved-item')).toHaveCount(1);
+
+  await panel.getByTestId('saved-add-link').locator('summary').click();
+  await panel.getByTestId('saved-url').fill('javascript:alert(1)');
+  await panel.getByTestId('saved-submit').click();
+  await expect(panel.getByTestId('saved-notice')).toContainText('http');
+  await panel.getByTestId('saved-url').fill('films.example/series');
+  await panel.getByTestId('saved-title').fill('A series');
+  await panel.getByTestId('saved-submit').click();
+  await expect(panel.getByTestId('saved-item')).toHaveCount(2);
+  await expect(panel.getByTestId('saved-item').first()).toContainText('A series');
+  await expect(panel.getByTestId('saved-url')).toHaveValue('');
+
+  await panel.getByTestId('saved-item').first().getByTestId('saved-remove').click();
+  await expect(panel.getByTestId('saved-item')).toHaveCount(1);
+});
+
+test('videos on a free account: the history comes first, putting aside is a Pro feature', async () => {
+  api.plan = 'free';
+  const panel = await openPanel();
+  await panel.getByTestId('sign-in').click();
+  await panel.getByTestId('tab-video').click();
+  await expect(panel.getByTestId('video-history')).toHaveAttribute('aria-selected', 'true');
+
+  await panel.getByTestId('video-saved').click();
+  await panel.getByTestId('saved-add-page').click();
+  await expect(panel.locator('.toast.pro')).toContainText('Отложенные');
+  await expect(panel.getByTestId('saved-item')).toHaveCount(0);
 });
 
 test('a site that came from the account without access: the panel says so and asks on a click', async () => {
@@ -286,10 +355,10 @@ test('a free account stays free: no words tab, the plan says so', async () => {
   const panel = await openPanel();
   await panel.getByTestId('sign-in').click();
   await openPanelTab(panel, 'settings');
-  await expect(panel.getByTestId('account-plan')).toHaveText('Бесплатный план');
+  await expect(panel.getByTestId('account-plan')).toHaveText('FREE');
   await expect(panel.getByTestId('tab-words')).toHaveCount(0);
-  // The plan cards: free is the current one; there is no payment yet, so the way to Pro says "soon".
-  await expect(panel.getByTestId('plan-free').getByTestId('plan-current')).toBeVisible();
+  // Only what can be had is shown; there is no payment yet, so the way to Pro says "soon".
+  await expect(panel.getByTestId('plan-free')).toHaveCount(0);
   await expect(panel.getByTestId('plan-pro')).toContainText('Сохранение слов');
   await expect(panel.getByTestId('plan-upgrade')).toBeDisabled();
   await expect(panel.getByTestId('plan-upgrade')).toContainText('скоро');
@@ -385,8 +454,8 @@ test('a code by email: the letter is asked for in the language of the panel, the
   await panel.getByTestId('email-verify').click();
   await expect(panel.getByTestId('gate')).toHaveCount(0);
   await openPanelTab(panel, 'settings');
-  await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как reader@example.com');
-  await expect(panel.getByTestId('method-email')).toContainText('reader@example.com');
+  await expect(panel.getByTestId('account-email')).toHaveText('reader@example.com');
+  await expect(panel.getByTestId('method-email')).toHaveText('Почта');
 });
 
 test('the Telegram bot: its link opens in a tab, the panel waits, and signs in once Start is pressed', async () => {
@@ -407,7 +476,7 @@ test('the Telegram bot: its link opens in a tab, the panel waits, and signs in o
   api.telegramConfirmed = true;
   await expect(panel.getByTestId('gate')).toHaveCount(0);
   await openPanelTab(panel, 'settings');
-  await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как @learner');
+  await expect(panel.getByTestId('account-email')).toHaveText('@learner');
 });
 
 test('waiting for Telegram goes on in a panel opened again (Telegram took the focus and it closed)', async () => {
@@ -442,7 +511,8 @@ test('ways in: an address and Telegram are added to a Google account, one is rem
   const panel = await openPanel();
   await panel.getByTestId('sign-in').click();
   await openPanelTab(panel, 'settings');
-  await expect(panel.getByTestId('method-google')).toContainText('learner@example.com');
+  // The address the account goes by is written once.
+  await expect(panel.getByTestId('method-google')).toHaveText('Google');
   // A single way in cannot be removed: no button for it.
   await expect(panel.getByTestId('method-remove-google')).toHaveCount(0);
 
@@ -461,10 +531,11 @@ test('ways in: an address and Telegram are added to a Google account, one is rem
   await expect(panel.getByTestId('method-telegram')).toContainText('@learner');
   await expect(panel.getByTestId('add-method')).toHaveCount(0); // all three are there
 
+  await expect(panel.getByTestId('method-remove-google')).toHaveText('Выйти');
   await panel.getByTestId('method-remove-google').click();
   await expect(panel.getByTestId('method-google')).toHaveCount(0);
   await panel.getByTestId('method-remove-email').click();
   await expect(panel.getByTestId('method-email')).toHaveCount(0);
   await expect(panel.getByTestId('method-remove-telegram')).toHaveCount(0);
-  await expect(panel.getByTestId('account-email')).toHaveText('Вы вошли как @learner');
+  await expect(panel.getByTestId('account-email')).toHaveText('@learner');
 });

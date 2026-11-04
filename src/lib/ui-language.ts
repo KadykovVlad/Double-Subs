@@ -85,12 +85,24 @@ export function detectUiLanguage(browserLanguage: string): string {
 export async function ensureUiLanguage(): Promise<void> {
   try {
     const got = await browser.storage.local.get(KEY);
-    if (got[KEY]) return;
+    if (got[KEY]) return await refreshUiLanguage();
     const code = detectUiLanguage(browser.i18n.getUILanguage());
     if (code !== DEFAULT_UI_LANGUAGE) await chooseUiLanguage(code);
   } catch {
     // no language file or no storage: the interface stays English until the user chooses
   }
+}
+
+/**
+ * The texts are saved with the choice of the language, so a version that brings new ones would speak
+ * English in them: read again from the package, and saved when they differ.
+ */
+export async function refreshUiLanguage(): Promise<void> {
+  const stored = (await browser.storage.local.get(KEY))[KEY] as Stored | undefined;
+  if (!stored || stored.code === DEFAULT_UI_LANGUAGE) return;
+  const messages = await fetchMessages(stored.code);
+  if (JSON.stringify(messages) !== JSON.stringify(stored.messages))
+    await browser.storage.local.set({ [KEY]: { code: stored.code, messages } satisfies Stored });
 }
 
 /** The language of the interface that is saved; null before the panel has opened for the first time. */

@@ -10,12 +10,14 @@ import { TranslationRelay } from '../src/background/TranslationRelay';
 import type {
   AgentRequest,
   InjectTikTokMainMessage,
+  PageOfFrameMessage,
   PickedMessage,
   SignInMessage,
   StartAgentMessage,
   SyncMessage,
 } from '../src/lib/messages';
 import type { SpeakMessage } from '../src/lib/speech';
+import { refreshUiLanguage } from '../src/lib/ui-language';
 import type { TranslationEnvelope } from '../src/lib/translation-messages';
 
 type Message =
@@ -25,6 +27,7 @@ type Message =
   | StartAgentMessage
   | SignInMessage
   | SyncMessage
+  | PageOfFrameMessage
   | InjectTikTokMainMessage
   | LookupWordMessage;
 
@@ -46,6 +49,7 @@ const SYNCED_SOON = [
   'knownSites',
   'excludedSites',
   'rememberDismissed',
+  'watchlist',
 ];
 
 export default defineBackground(() => {
@@ -88,6 +92,7 @@ export default defineBackground(() => {
   browser.runtime.onInstalled.addListener((details) => {
     void registry.sync();
     void sync.run();
+    void refreshUiLanguage().catch(() => {});
     // A new user is met by the side panel with the welcome. Chrome opens the panel only on a gesture of
     // the user, so this is a try (it works when Chrome counts the installation as one); if it is refused,
     // the mark on the icon is there and one click opens the panel.
@@ -143,6 +148,9 @@ export default defineBackground(() => {
             }),
           );
         return true; // async response
+      case 'page-of-frame':
+        sendResponse({ url: sender.tab?.url ?? null, title: sender.tab?.title ?? null });
+        return false;
       case 'sync':
         void sync.run().then(() => sendResponse({ ok: true }));
         return true; // async response

@@ -1309,15 +1309,6 @@ a.page-url:hover {
   }
 }
 
-.plans {
-  display: grid;
-  gap: 12px;
-}
-@container (min-width: 520px) {
-  .plans {
-    grid-template-columns: 1fr 1fr;
-  }
-}
 .plan-card {
   display: flex;
   flex-direction: column;
@@ -1349,6 +1340,7 @@ a.page-url:hover {
   fill: currentColor;
 }
 .badge-free {
+  flex: none;
   padding: 1px 8px;
   border-radius: 99px;
   background: var(--surface-2);
@@ -1755,7 +1747,8 @@ a.page-url:hover {
   display: flex;
   gap: 8px;
 }
-.auth-row .field {
+.auth-row .field,
+.saved-form .field {
   flex: 1;
   min-width: 0;
   padding: 8px 10px;
@@ -1767,7 +1760,8 @@ a.page-url:hover {
   outline: 0;
   transition: border-color 0.18s var(--ease);
 }
-.auth-row .field:focus {
+.auth-row .field:focus,
+.saved-form .field:focus {
   border-color: var(--accent-line);
 }
 .auth-row .btn {
@@ -1807,6 +1801,46 @@ a.page-url:hover {
 .small.error {
   margin: 0;
   color: var(--danger, #e5484d);
+}
+.account-name {
+  overflow-wrap: anywhere;
+}
+.methods-title {
+  margin: 12px 0 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.method .label,
+.method .hint {
+  display: inline;
+}
+.subtabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.subtab {
+  flex: 1;
+  min-height: 34px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.subtab[aria-selected='true'] {
+  border-color: var(--accent-line);
+  background: var(--grad-soft), var(--surface);
+  color: var(--text);
+}
+.saved-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
 }
 .add-method summary {
   cursor: pointer;

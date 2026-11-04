@@ -28,6 +28,30 @@ export function historyId(url: string): string {
   }
 }
 
+export interface WatchedPage {
+  url: string;
+  title: string;
+}
+
+/**
+ * The page a player in a frame belongs to. The frame's own address is of no use: it is a bare player
+ * ("Player") that often will not load outside its page, and it may carry a token. The tab knows the
+ * page when the extension has access to it; without that only its site can be told, and the address
+ * when the frame was given it as its referrer.
+ */
+export function pageOfFrame(
+  frame: WatchedPage,
+  tab: { url?: string | null; title?: string | null } | null,
+  ancestors: string[],
+  referrer: string,
+): WatchedPage {
+  if (tab?.url && /^https?:\/\//.test(tab.url))
+    return { url: tab.url, title: tab.title || frame.title };
+  const top = ancestors.at(-1);
+  if (!top || !/^https?:\/\//.test(top)) return frame;
+  return { url: referrer.startsWith(`${top}/`) ? referrer : `${top}/`, title: frame.title };
+}
+
 /** "Video title - YouTube" → "Video title". */
 export function cleanTitle(title: string, host: string): string {
   const trimmed = title

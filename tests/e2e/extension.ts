@@ -136,5 +136,8 @@ export async function openPanelTab(
   panel: Page,
   tab: 'now' | 'words' | 'history' | 'settings',
 ): Promise<void> {
-  await panel.getByTestId(`tab-${tab}`).click();
+  if (tab !== 'history') return panel.getByTestId(`tab-${tab}`).click();
+  // The history is a part of the tab of videos.
+  await panel.getByTestId('tab-video').click();
+  await panel.getByTestId('video-history').click();
 }
