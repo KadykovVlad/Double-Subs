@@ -352,7 +352,6 @@
 "tm_needed": "$1: modelis dar neatsisiųstas",
 "tm_busy": "$1: Chrome jau siunčiasi šį modelį…",
 "theme_label": "Tema: $1",
-"theme_system": "kaip sistemoje",
 "theme_light": "šviesi",
 "theme_dark": "tamsi"
 }

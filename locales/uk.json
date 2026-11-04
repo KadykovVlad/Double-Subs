@@ -352,7 +352,6 @@
 "tm_needed": "$1: модель ще не завантажено",
 "tm_busy": "$1: Chrome уже завантажує цю модель…",
 "theme_label": "Тема: $1",
-"theme_system": "як у системі",
 "theme_light": "світла",
 "theme_dark": "темна"
 }

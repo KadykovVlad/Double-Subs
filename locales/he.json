@@ -352,7 +352,6 @@
 "tm_needed": "$1: המודל עדיין לא הורד",
 "tm_busy": "$1: Chrome כבר מוריד את המודל הזה…",
 "theme_label": "ערכת נושא: $1",
-"theme_system": "כמו במערכת",
 "theme_light": "בהיר",
 "theme_dark": "כהה"
 }

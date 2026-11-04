@@ -352,7 +352,6 @@
 "tm_needed": "$1: modelo aún sin descargar",
 "tm_busy": "$1: Chrome ya está descargando este modelo…",
 "theme_label": "Tema: $1",
-"theme_system": "como el sistema",
 "theme_light": "claro",
 "theme_dark": "oscuro"
 }

@@ -352,7 +352,6 @@
 "tm_needed": "$1: Modell noch nicht heruntergeladen",
 "tm_busy": "$1: Chrome lädt dieses Modell bereits herunter…",
 "theme_label": "Design: $1",
-"theme_system": "wie im System",
 "theme_light": "hell",
 "theme_dark": "dunkel"
 }

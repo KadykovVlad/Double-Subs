@@ -352,7 +352,6 @@
 "tm_needed": "$1: моделът още не е свален",
 "tm_busy": "$1: Chrome вече сваля този модел…",
 "theme_label": "Тема: $1",
-"theme_system": "като в системата",
 "theme_light": "светла",
 "theme_dark": "тъмна"
 }

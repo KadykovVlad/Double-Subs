@@ -6,7 +6,7 @@ import {
   watchEntitlements,
   type Entitlements,
 } from '../../src/lib/entitlements';
-import { applyTheme, DEFAULT_THEME, loadTheme, watchTheme, type Theme } from '../../src/lib/theme';
+import { applyTheme, loadTheme, systemTheme, watchTheme, type Theme } from '../../src/lib/theme';
 import { loadHistory, watchHistory, type HistoryEntry } from '../../src/lib/history';
 import {
   loadDismissed,
@@ -178,13 +178,21 @@ export function useDismissedOffers(): string[] {
   return origins;
 }
 
-/** The theme of the panel; every change is applied to the page at once. */
+/** The theme the panel shows: the chosen one, or the system's until there is a choice. */
 export function useTheme(): Theme {
-  const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+  const [chosen, setChosen] = useState<Theme | null>(null);
+  const [system, setSystem] = useState<Theme>(systemTheme);
   useEffect(() => {
-    void loadTheme().then(setTheme);
-    return watchTheme(setTheme);
+    void loadTheme().then(setChosen);
+    const media = matchMedia('(prefers-color-scheme: dark)');
+    const follow = () => setSystem(systemTheme());
+    media.addEventListener('change', follow);
+    const stop = watchTheme(setChosen);
+    return () => {
+      media.removeEventListener('change', follow);
+      stop();
+    };
   }, []);
-  useEffect(() => applyTheme(theme), [theme]);
-  return theme;
+  useEffect(() => applyTheme(chosen), [chosen]);
+  return chosen ?? system;
 }

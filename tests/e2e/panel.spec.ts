@@ -253,24 +253,25 @@ test('the theme: system, light, dark; the choice is kept and changes the colours
       .slice(0, 3)
       .reduce((sum, n) => sum + Number(n), 0) / 3;
 
-  // As in the system (dark here): dark; the page has no theme of its own.
-  await expect(toggle).toHaveAttribute('data-theme-value', 'system');
+  // Nothing chosen yet: it starts as the system does (dark here), with no theme of its own.
+  await expect(toggle).toHaveAttribute('data-theme-value', 'dark');
   expect(luminance(await background())).toBeLessThan(60);
   await expect(panel.locator('html')).not.toHaveAttribute('data-theme', /.*/);
 
-  // Light by hand, although the system is dark.
+  // One click gives the other theme, although the system is dark.
   await toggle.click();
   await expect(toggle).toHaveAttribute('data-theme-value', 'light');
   await expect(panel.locator('html')).toHaveAttribute('data-theme', 'light');
   await expect.poll(async () => luminance(await background())).toBeGreaterThan(200);
   expect(await stored<string>('panelTheme')).toBe('light');
 
-  // Dark by hand, and back to the system.
+  // And only two: the next click is the dark one, the one after it light again.
   await toggle.click();
+  await expect(toggle).toHaveAttribute('data-theme-value', 'dark');
   await expect(panel.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect.poll(async () => luminance(await background())).toBeLessThan(60);
   await toggle.click();
-  await expect(toggle).toHaveAttribute('data-theme-value', 'system');
+  await expect(toggle).toHaveAttribute('data-theme-value', 'light');
 
   // A choice made earlier is on the page when it opens, whatever the system says.
   await session.worker.evaluate(() => chrome.storage.local.set({ panelTheme: 'light' }));
@@ -549,6 +550,25 @@ test('the history is grouped by day and can be searched and filtered by site', a
   await expect(panel.getByTestId('history-item')).toContainText('Old mentalist clip');
   await panel.getByTestId('history-search').fill('nothing like this');
   await expect(panel.getByText('Ничего не найдено')).toBeVisible();
+});
+
+test('the theme changes in a circle with the accent on its edge, which leaves nothing behind', async () => {
+  const page = await openPage('shadow-video.html');
+  const panel = await openPopupFor(session, page);
+  const accent = () =>
+    panel.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent'));
+  const ground = () => panel.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  await panel.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+  const [darkAccent, darkGround] = [await accent(), await ground()];
+
+  await panel.evaluate(() => document.documentElement.setAttribute('data-theme', 'light'));
+  expect(await accent()).toBe(darkAccent); // the one colour both themes share
+  expect(await ground()).not.toBe(darkGround);
+
+  await panel.getByTestId('theme-toggle').click();
+  await expect(panel.locator('.theme-ring')).toHaveCount(1);
+  await expect(panel.locator('.theme-ring')).toHaveCount(0, { timeout: 3000 });
+  await session.worker.evaluate(() => chrome.storage.local.remove('panelTheme'));
 });
 
 test('with the setting off nothing is remembered', async () => {

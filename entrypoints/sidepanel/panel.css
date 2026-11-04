@@ -1,7 +1,8 @@
 /*
- * Double Sub side panel: "night ink" — a deep ink background with a soft indigo and violet glow at the
- * top, glass cards with hairline borders, one indigo-to-violet gradient for what matters most. Light
- * theme by the system, same shapes. Every colour is a token below; components use the tokens only.
+ * Double Sub side panel. The palette is three colours: for each theme a ground and an ink, and one
+ * accent for both. The accent sits between the two grounds in lightness, so it reads the same on either
+ * and stays still while the theme changes round it. Every other tone is mixed from these three; the
+ * themes differ only by `light-dark()`, so a tone is written once. Components use the tokens only.
  */
 @import './fonts.css';
 
@@ -9,92 +10,50 @@
   color-scheme: light dark;
   --font: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
-  /* brand (UI kit) */
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --violet: #8b5cf6;
-  --grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  --grad-soft: linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(139, 92, 246, 0.1));
+  /* The palette: tests/palette.test.ts holds these to their contrast. */
+  --ground: light-dark(#eef0ea, #121917);
+  --ink: light-dark(#17211e, #e8eae3);
+  --accent: #d14426;
+  --on-accent: #ffffff;
 
-  /* light */
-  --bg: #f4f5fb;
-  --glow-a: rgba(99, 102, 241, 0.12);
-  --glow-b: rgba(139, 92, 246, 0.09);
-  --surface: rgba(255, 255, 255, 0.82);
-  --surface-solid: #ffffff;
-  --surface-2: #eceefa;
-  --field: #f7f8fd;
-  --text: #14162b;
-  --muted: #5b6180;
-  --border: rgba(30, 36, 90, 0.1);
-  --border-strong: rgba(30, 36, 90, 0.18);
-  --highlight: rgba(255, 255, 255, 0.9);
-  --accent: #6366f1;
-  --accent-text: #4f46e5;
-  --accent-ink: #ffffff;
-  --accent-soft: rgba(99, 102, 241, 0.1);
-  --accent-line: rgba(99, 102, 241, 0.35);
-  --ok: #15803d;
-  --ok-soft: rgba(34, 197, 94, 0.12);
-  --warn: #b45309;
-  --warn-soft: rgba(245, 158, 11, 0.14);
-  --danger: #dc2626;
+  /* Surfaces: lifted from the ground, towards white in the light theme and towards the ink in the dark. */
+  --bg: var(--ground);
+  --surface: light-dark(
+    color-mix(in oklab, #fff 60%, var(--ground)),
+    color-mix(in oklab, var(--ink) 7%, var(--ground))
+  );
+  --surface-solid: var(--surface);
+  --surface-2: light-dark(
+    color-mix(in oklab, var(--ink) 7%, var(--ground)),
+    color-mix(in oklab, var(--ink) 13%, var(--ground))
+  );
+  --field: light-dark(
+    color-mix(in oklab, #fff 80%, var(--ground)),
+    color-mix(in oklab, #000 22%, var(--ground))
+  );
+
+  /* Text and lines. */
+  --text: var(--ink);
+  --muted: color-mix(in oklab, var(--ink) 66%, var(--ground));
+  --border: color-mix(in oklab, var(--ink) 13%, transparent);
+  --border-strong: color-mix(in oklab, var(--ink) 26%, transparent);
+
+  /* The accent: small text takes it mixed with the ink, which is lighter or darker by the theme. */
+  --accent-text: color-mix(in oklab, var(--accent) 70%, var(--ink));
+  --accent-soft: color-mix(in oklab, var(--accent) 13%, transparent);
+  --accent-line: color-mix(in oklab, var(--accent) 60%, transparent);
+
+  /* States: they say something, so they are not the accent; the ink keeps them legible in both themes. */
+  --ok: color-mix(in oklab, #2f9e6b 65%, var(--ink));
+  --ok-soft: color-mix(in oklab, #2f9e6b 14%, transparent);
+  --warn: color-mix(in oklab, #c98a12 60%, var(--ink));
+  --warn-soft: color-mix(in oklab, #c98a12 15%, transparent);
+  --danger: color-mix(in oklab, #c9274f 65%, var(--ink));
+
   --radius: 14px;
   --radius-sm: 10px;
-  --shadow: 0 1px 2px rgba(20, 22, 60, 0.04), 0 8px 24px -12px rgba(40, 44, 120, 0.18);
+  --shadow: 0 1px 2px light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.3));
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg: #0a0c17;
-    --glow-a: rgba(99, 102, 241, 0.2);
-    --glow-b: rgba(139, 92, 246, 0.14);
-    --surface: rgba(23, 26, 48, 0.72);
-    --surface-solid: #151830;
-    --surface-2: #1d2142;
-    --field: #10132a;
-    --text: #eceef8;
-    --muted: #8f94b3;
-    --border: rgba(148, 156, 214, 0.13);
-    --border-strong: rgba(148, 156, 214, 0.24);
-    --highlight: rgba(255, 255, 255, 0.05);
-    --accent: #6366f1;
-    --accent-text: #a5b4fc;
-    --accent-ink: #ffffff;
-    --accent-soft: rgba(99, 102, 241, 0.18);
-    --accent-line: rgba(129, 140, 248, 0.5);
-    --ok: #4ade80;
-    --ok-soft: rgba(34, 197, 94, 0.14);
-    --warn: #fbbf24;
-    --warn-soft: rgba(245, 158, 11, 0.15);
-    --danger: #f87171;
-    --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px -18px rgba(0, 0, 0, 0.8);
-  }
-}
-:root[data-theme='dark'] {
-  --bg: #0a0c17;
-  --glow-a: rgba(99, 102, 241, 0.2);
-  --glow-b: rgba(139, 92, 246, 0.14);
-  --surface: rgba(23, 26, 48, 0.72);
-  --surface-solid: #151830;
-  --surface-2: #1d2142;
-  --field: #10132a;
-  --text: #eceef8;
-  --muted: #8f94b3;
-  --border: rgba(148, 156, 214, 0.13);
-  --border-strong: rgba(148, 156, 214, 0.24);
-  --highlight: rgba(255, 255, 255, 0.05);
-  --accent: #6366f1;
-  --accent-text: #a5b4fc;
-  --accent-ink: #ffffff;
-  --accent-soft: rgba(99, 102, 241, 0.18);
-  --accent-line: rgba(129, 140, 248, 0.5);
-  --ok: #4ade80;
-  --ok-soft: rgba(34, 197, 94, 0.14);
-  --warn: #fbbf24;
-  --warn-soft: rgba(245, 158, 11, 0.15);
-  --danger: #f87171;
-  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px -18px rgba(0, 0, 0, 0.8);
 }
 
 :root[data-theme='light'] {
@@ -102,6 +61,56 @@
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
+}
+
+/* The theme changes in a circle from its button, and the accent runs along the edge of it. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 0.6s var(--ease);
+}
+::view-transition-group(theme-ring) {
+  animation: none;
+}
+::view-transition-old(theme-ring) {
+  display: none;
+}
+::view-transition-new(theme-ring) {
+  animation: theme-ring 0.6s var(--ease) both;
+}
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--reveal-x) var(--reveal-y));
+  }
+  to {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+}
+@keyframes theme-ring {
+  from {
+    transform: scale(0);
+  }
+  70% {
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.theme-ring {
+  position: fixed;
+  left: calc(var(--reveal-x) - var(--reveal-r));
+  top: calc(var(--reveal-y) - var(--reveal-r));
+  width: calc(var(--reveal-r) * 2);
+  height: calc(var(--reveal-r) * 2);
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  view-transition-name: theme-ring;
 }
 * {
   box-sizing: border-box;
@@ -112,11 +121,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  /* The glow: two soft lights behind the top of the panel, fixed while the content scrolls. */
-  background:
-    radial-gradient(120% 60% at 0% -10%, var(--glow-a), transparent 60%),
-    radial-gradient(90% 50% at 100% -5%, var(--glow-b), transparent 55%), var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
   color: var(--text);
   font: 14px/1.5 var(--font);
   font-feature-settings: 'cv11', 'ss01';
@@ -168,7 +173,6 @@ select {
   height: 30px;
   flex: none;
   border-radius: 9px;
-  box-shadow: 0 6px 16px -6px rgba(99, 102, 241, 0.7);
 }
 .brand {
   flex: none;
@@ -181,7 +185,7 @@ select {
   flex: none;
   padding: 1px 8px;
   border-radius: 99px;
-  background: var(--grad);
+  background: var(--accent);
   color: #fff;
   font-size: 10.5px;
   font-weight: 700;
@@ -231,7 +235,6 @@ select {
   border: 1px solid var(--border);
   border-radius: 16px;
   background: color-mix(in srgb, var(--surface-solid) 94%, transparent);
-  backdrop-filter: blur(14px) saturate(1.2);
   /* The thin band above the sticky tabs covers the page scrolling under them. */
   box-shadow:
     0 -6px 0 0 var(--bg),
@@ -265,8 +268,8 @@ select {
   background: var(--surface-2);
 }
 .tab[aria-selected='true'] {
-  border-color: var(--accent-line);
-  background: var(--grad-soft);
+  border-color: transparent;
+  background: var(--surface-2);
   color: var(--accent-text);
 }
 .tab[aria-selected='true']::after {
@@ -277,7 +280,7 @@ select {
   right: 30%;
   height: 2px;
   border-radius: 2px;
-  background: var(--grad);
+  background: var(--accent);
 }
 .tab:focus-visible,
 .btn:focus-visible,
@@ -294,7 +297,7 @@ select:focus-visible {
   min-width: 17px;
   padding: 0 5px;
   border-radius: 99px;
-  background: var(--grad);
+  background: var(--accent);
   color: #fff;
   font-size: 10.5px;
   font-weight: 700;
@@ -310,16 +313,13 @@ select:focus-visible {
 }
 
 /* ---------------------------------------------------------------- building blocks */
-/* A glass card: translucent over the glow, a hairline border, a faint light along its top edge. */
+/* A card: a surface with a hairline border. */
 .card {
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow:
-    inset 0 1px 0 var(--highlight),
-    var(--shadow);
-  backdrop-filter: blur(12px) saturate(1.15);
+  box-shadow: var(--shadow);
 }
 .card > * + * {
   margin-top: 10px;
@@ -351,7 +351,7 @@ select:focus-visible {
   height: 40px;
   place-items: center;
   border-radius: 12px;
-  background: var(--grad-soft);
+  background: var(--surface-2);
   box-shadow: inset 0 0 0 1px var(--accent-line);
   color: var(--accent-text);
 }
@@ -411,10 +411,9 @@ select:focus-visible {
   padding: 8px 16px;
   border: 1px solid transparent;
   border-radius: 12px;
-  background: var(--grad);
-  color: var(--accent-ink);
+  background: var(--accent);
+  color: var(--on-accent);
   font-weight: 600;
-  box-shadow: 0 8px 20px -10px rgba(99, 102, 241, 0.75);
   cursor: pointer;
   transition:
     filter 0.18s var(--ease),
@@ -532,7 +531,7 @@ select:focus-visible {
   transition: transform 0.18s var(--ease);
 }
 .switch:checked {
-  background: var(--grad);
+  background: var(--accent);
 }
 .switch:checked::after {
   transform: translateX(16px);
@@ -664,7 +663,7 @@ details[open] > summary::after {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--grad);
+  background: var(--accent);
   transition: width 0.3s;
 }
 
@@ -754,7 +753,7 @@ details[open] > summary::after {
   font-weight: 700;
   letter-spacing: -0.025em;
   /* The word being learnt carries the brand light. */
-  background: var(--grad);
+  background: var(--accent);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -852,7 +851,7 @@ a.page-url:hover {
 
 .card.offer {
   border-color: var(--accent-line);
-  background: var(--grad-soft), var(--surface);
+  background: var(--surface-2);
 }
 .offer h2 {
   font-size: 15px;
@@ -972,7 +971,7 @@ a.page-url:hover {
 }
 .filter-chip[aria-pressed='true'] {
   border-color: var(--accent-line);
-  background: var(--grad-soft), var(--surface);
+  background: var(--surface-2);
   color: var(--accent-text);
 }
 .filter-chip[aria-pressed='true'] .n {
@@ -984,7 +983,7 @@ a.page-url:hover {
   outline-offset: 2px;
 }
 
-/* The tags of the UI kit: new is blue, on review orange, learned green, favourite violet. */
+/* The tags: new takes the accent, on review and learned their states, a favourite stays quiet. */
 .tag {
   flex: none;
   padding: 1px 8px;
@@ -1011,39 +1010,15 @@ a.page-url:hover {
   color: var(--tag-fav);
 }
 :root {
-  --tag-new: #4f46e5;
-  --tag-new-bg: rgba(99, 102, 241, 0.12);
-  --tag-review: #b45309;
-  --tag-review-bg: rgba(245, 158, 11, 0.15);
-  --tag-learned: #15803d;
-  --tag-learned-bg: rgba(34, 197, 94, 0.14);
-  --tag-fav: #7c3aed;
-  --tag-fav-bg: rgba(139, 92, 246, 0.14);
-  --star: #f59e0b;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --tag-new: #a5b4fc;
-    --tag-new-bg: rgba(99, 102, 241, 0.2);
-    --tag-review: #fbbf24;
-    --tag-review-bg: rgba(245, 158, 11, 0.16);
-    --tag-learned: #4ade80;
-    --tag-learned-bg: rgba(34, 197, 94, 0.15);
-    --tag-fav: #c4b5fd;
-    --tag-fav-bg: rgba(139, 92, 246, 0.2);
-    --star: #fbbf24;
-  }
-}
-:root[data-theme='dark'] {
-  --tag-new: #a5b4fc;
-  --tag-new-bg: rgba(99, 102, 241, 0.2);
-  --tag-review: #fbbf24;
-  --tag-review-bg: rgba(245, 158, 11, 0.16);
-  --tag-learned: #4ade80;
-  --tag-learned-bg: rgba(34, 197, 94, 0.15);
-  --tag-fav: #c4b5fd;
-  --tag-fav-bg: rgba(139, 92, 246, 0.2);
-  --star: #fbbf24;
+  --tag-new: var(--accent-text);
+  --tag-new-bg: var(--accent-soft);
+  --tag-review: var(--warn);
+  --tag-review-bg: var(--warn-soft);
+  --tag-learned: var(--ok);
+  --tag-learned-bg: var(--ok-soft);
+  --tag-fav: var(--text);
+  --tag-fav-bg: var(--surface-2);
+  --star: var(--accent);
 }
 
 /* History: days, previews, the play button. */
@@ -1069,7 +1044,6 @@ a.page-url:hover {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: inset 0 1px 0 var(--highlight);
 }
 .thumb {
   width: 76px;
@@ -1082,8 +1056,8 @@ a.page-url:hover {
 .thumb.tile {
   display: grid;
   place-items: center;
-  background: var(--grad);
-  color: #fff;
+  background: var(--surface-2);
+  color: var(--muted);
   font-size: 18px;
   font-weight: 700;
 }
@@ -1118,11 +1092,14 @@ a.page-url:hover {
   place-items: center;
   border: 0;
   border-radius: 50%;
-  background: var(--grad);
-  color: #fff;
-  box-shadow: 0 6px 16px -8px rgba(99, 102, 241, 0.8);
+  background: var(--surface-2);
+  color: var(--text);
   cursor: pointer;
   transition: transform 0.15s var(--ease);
+}
+.play-btn:hover {
+  background: var(--accent);
+  color: var(--on-accent);
 }
 .play-btn:hover {
   transform: scale(1.06);
@@ -1212,7 +1189,6 @@ a.page-url:hover {
   margin: -14px -12px 0;
   padding: 14px 12px 8px;
   background: color-mix(in srgb, var(--bg) 78%, transparent);
-  backdrop-filter: blur(12px);
 }
 /* Narrow panel: the sections share the width, icon over the name, so none of them is cut off. */
 .settings-nav button {
@@ -1242,7 +1218,7 @@ a.page-url:hover {
 }
 .settings-nav button[aria-current='true'] {
   border-color: var(--accent-line);
-  background: var(--grad-soft), var(--surface);
+  background: var(--surface-2);
   color: var(--accent-text);
 }
 .settings-nav button:focus-visible {
@@ -1287,7 +1263,6 @@ a.page-url:hover {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
-    box-shadow: inset 0 1px 0 var(--highlight);
   }
   .settings-nav button {
     width: 100%;
@@ -1315,10 +1290,7 @@ a.page-url:hover {
 }
 .plan-card.pro {
   border-color: var(--accent-line);
-  background: var(--grad-soft), var(--surface);
-  box-shadow:
-    inset 0 1px 0 var(--highlight),
-    0 12px 32px -18px rgba(99, 102, 241, 0.7);
+  background: var(--surface-2);
 }
 .plan-head {
   display: flex;
@@ -1377,7 +1349,7 @@ a.page-url:hover {
 .plan-card.pro .plan-list svg {
   padding: 2px;
   border-radius: 5px;
-  background: var(--grad);
+  background: var(--accent);
   color: #fff;
 }
 .soon {
@@ -1416,8 +1388,6 @@ a.page-url:hover {
 }
 .video-preview .thumb.big.tile {
   font-size: 44px;
-  background:
-    radial-gradient(80% 90% at 20% 10%, rgba(255, 255, 255, 0.18), transparent 60%), var(--grad);
 }
 .overlay-bar {
   position: absolute;
@@ -1428,7 +1398,7 @@ a.page-url:hover {
   align-items: center;
   gap: 8px;
   padding: 22px 12px 10px;
-  background: linear-gradient(transparent, rgba(5, 6, 14, 0.82));
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.8));
   color: #fff;
   font-size: 12.5px;
 }
@@ -1474,9 +1444,8 @@ a.page-url:hover {
   flex: none;
   place-items: center;
   border-radius: 11px;
-  background: var(--grad);
+  background: var(--accent);
   color: #fff;
-  box-shadow: 0 6px 16px -8px rgba(99, 102, 241, 0.8);
 }
 .dual-icon svg {
   width: 19px;
@@ -1497,7 +1466,6 @@ a.page-url:hover {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: inset 0 1px 0 var(--highlight);
 }
 .lang-box span {
   overflow: hidden;
@@ -1530,7 +1498,6 @@ a.page-url:hover {
   font-size: 11.5px;
   font-weight: 560;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 var(--highlight);
   transition:
     color 0.18s var(--ease),
     border-color 0.18s var(--ease),
@@ -1587,7 +1554,6 @@ a.page-url:hover {
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--surface-solid) 96%, transparent);
   box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(14px);
   pointer-events: auto;
   animation: toast-in 0.22s var(--ease);
 }
@@ -1618,19 +1584,19 @@ a.page-url:hover {
   stroke-width: 2.4;
 }
 .toast.ok .toast-icon {
-  background: #22c55e;
+  background: var(--ok);
 }
 .toast.info .toast-icon {
-  background: var(--grad);
+  background: var(--accent);
 }
 .toast.pro {
-  border-color: rgba(245, 158, 11, 0.45);
+  border-color: var(--warn);
   background:
-    linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(245, 158, 11, 0.04)),
+    linear-gradient(var(--warn-soft), var(--warn-soft)),
     color-mix(in srgb, var(--surface-solid) 96%, transparent);
 }
 .toast.pro .toast-icon {
-  background: #f59e0b;
+  background: var(--warn);
 }
 .toast.pro .toast-icon svg {
   fill: currentColor;
@@ -1655,7 +1621,7 @@ a.page-url:hover {
   50% {
     box-shadow:
       0 0 0 2px var(--accent),
-      0 0 22px 2px rgba(99, 102, 241, 0.55);
+      0 0 0 5px var(--accent-soft);
     background-color: var(--accent-soft);
   }
 }
@@ -1670,7 +1636,7 @@ a.page-url:hover {
   padding: 12px 14px;
   border: 1px solid var(--accent-line);
   border-radius: var(--radius);
-  background: var(--grad-soft), var(--surface);
+  background: var(--surface-2);
 }
 .model-line {
   display: flex;
@@ -1691,9 +1657,8 @@ a.page-url:hover {
   place-items: center;
   border: 0;
   border-radius: 12px;
-  background: var(--grad);
+  background: var(--accent);
   color: #fff;
-  box-shadow: 0 8px 20px -10px rgba(99, 102, 241, 0.75);
   cursor: pointer;
   transition:
     transform 0.12s var(--ease),
@@ -1800,7 +1765,7 @@ a.page-url:hover {
 }
 .small.error {
   margin: 0;
-  color: var(--danger, #e5484d);
+  color: var(--danger);
 }
 .account-name {
   overflow-wrap: anywhere;
@@ -1834,7 +1799,7 @@ a.page-url:hover {
 }
 .subtab[aria-selected='true'] {
   border-color: var(--accent-line);
-  background: var(--grad-soft), var(--surface);
+  background: var(--surface-2);
   color: var(--text);
 }
 .saved-form {

@@ -352,7 +352,6 @@
 "tm_needed": "$1: model belum diunduh",
 "tm_busy": "$1: Chrome sudah mengunduh model ini…",
 "theme_label": "Tema: $1",
-"theme_system": "seperti sistem",
 "theme_light": "terang",
 "theme_dark": "gelap"
 }

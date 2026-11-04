@@ -352,7 +352,6 @@
 "tm_needed": "$1: मॉडल अभी डाउनलोड नहीं हुआ",
 "tm_busy": "$1: Chrome यह मॉडल पहले से डाउनलोड कर रहा है…",
 "theme_label": "थीम: $1",
-"theme_system": "सिस्टम जैसी",
 "theme_light": "हल्की",
 "theme_dark": "गहरी"
 }

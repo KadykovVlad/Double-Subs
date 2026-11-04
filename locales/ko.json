@@ -352,7 +352,6 @@
 "tm_needed": "$1: 모델을 아직 내려받지 않음",
 "tm_busy": "$1: Chrome이 이미 이 모델을 내려받는 중…",
 "theme_label": "테마: $1",
-"theme_system": "시스템 설정 따름",
 "theme_light": "라이트",
 "theme_dark": "다크"
 }

@@ -352,7 +352,6 @@
 "tm_needed": "$1：模型尚未下载",
 "tm_busy": "$1：Chrome 已在下载此模型…",
 "theme_label": "主题：$1",
-"theme_system": "跟随系统",
 "theme_light": "浅色",
 "theme_dark": "深色"
 }

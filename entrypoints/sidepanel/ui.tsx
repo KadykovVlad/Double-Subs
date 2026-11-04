@@ -147,12 +147,6 @@ export const Icons = {
     </>,
   ),
   moon: icon(<path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" />),
-  monitor: icon(
-    <>
-      <rect x="3.5" y="5" width="17" height="11" rx="2" />
-      <path d="M9 20h6M12 16v4" />
-    </>,
-  ),
   close: icon(<path d="M7 7l10 10M17 7L7 17" />),
   tray: icon(
     <>
@@ -166,13 +160,7 @@ export const Icons = {
 export function Logo() {
   return (
     <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
-      <defs>
-        <linearGradient id="ds-logo" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#6366f1" />
-          <stop offset="1" stop-color="#8b5cf6" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="9" fill="url(#ds-logo)" />
+      <rect width="32" height="32" rx="9" fill="var(--accent)" />
       <rect x="7" y="10.5" width="18" height="3.4" rx="1.7" fill="#fff" />
       <rect x="7" y="17.5" width="11.5" height="3.4" rx="1.7" fill="#fff" opacity="0.7" />
     </svg>

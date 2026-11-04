@@ -352,7 +352,6 @@
 "tm_needed": "$1: model belum dimuat turun",
 "tm_busy": "$1: Chrome sedang memuat turun model ini…",
 "theme_label": "Tema: $1",
-"theme_system": "seperti sistem",
 "theme_light": "cerah",
 "theme_dark": "gelap"
 }

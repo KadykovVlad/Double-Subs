@@ -352,7 +352,6 @@
 "tm_needed": "$1: model nog niet gedownload",
 "tm_busy": "$1: Chrome downloadt dit model al…",
 "theme_label": "Thema: $1",
-"theme_system": "zoals het systeem",
 "theme_light": "licht",
 "theme_dark": "donker"
 }

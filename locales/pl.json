@@ -352,7 +352,6 @@
 "tm_needed": "$1: model jeszcze nie pobrany",
 "tm_busy": "$1: Chrome już pobiera ten model…",
 "theme_label": "Motyw: $1",
-"theme_system": "jak w systemie",
 "theme_light": "jasny",
 "theme_dark": "ciemny"
 }

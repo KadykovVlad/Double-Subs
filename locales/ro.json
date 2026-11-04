@@ -352,7 +352,6 @@
 "tm_needed": "$1: modelul nu este încă descărcat",
 "tm_busy": "$1: Chrome descarcă deja acest model…",
 "theme_label": "Temă: $1",
-"theme_system": "ca în sistem",
 "theme_light": "luminoasă",
 "theme_dark": "întunecată"
 }

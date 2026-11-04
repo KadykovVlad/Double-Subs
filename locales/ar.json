@@ -352,7 +352,6 @@
 "tm_needed": "$1: لم يُنزَّل النموذج بعد",
 "tm_busy": "$1: يقوم Chrome بتنزيل هذا النموذج بالفعل…",
 "theme_label": "السمة: $1",
-"theme_system": "مثل النظام",
 "theme_light": "فاتح",
 "theme_dark": "داكن"
 }

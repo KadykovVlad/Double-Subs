@@ -352,7 +352,6 @@
 "tm_needed": "$1: модел још није преузет",
 "tm_busy": "$1: Chrome већ преузима овај модел…",
 "theme_label": "Тема: $1",
-"theme_system": "као у систему",
 "theme_light": "светла",
 "theme_dark": "тамна"
 }

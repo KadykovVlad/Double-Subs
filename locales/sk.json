@@ -352,7 +352,6 @@
 "tm_needed": "$1: model ešte nie je stiahnutý",
 "tm_busy": "$1: Chrome už tento model sťahuje…",
 "theme_label": "Motív: $1",
-"theme_system": "ako v systéme",
 "theme_light": "svetlý",
 "theme_dark": "tmavý"
 }

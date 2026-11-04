@@ -584,6 +584,19 @@ describe('settings', () => {
     expect(two.store.uiLanguage).toEqual({ code: 'fr', messages: { hello: 'Bonjour' } });
   });
 
+  it('"as in the system" of an older version is no choice: nothing goes and nothing breaks', async () => {
+    const one = new Browser('u1');
+    one.store.panelTheme = 'system';
+    await one.sync();
+    expect(server.live('u1', 'settings')).not.toContain('theme');
+
+    const two = new Browser('u1');
+    two.store.panelTheme = 'dark';
+    await two.sync();
+    await one.sync();
+    expect(one.store.panelTheme).toBe('dark');
+  });
+
   it('the switch of the moment and the voices of the system stay in their browser', async () => {
     const one = new Browser('u1');
     one.set({
@@ -635,6 +648,8 @@ describe('settings', () => {
       parseSyncedSetting({ name: 'languages', value: { learn: 'ko', native: 'ko' } }),
     ).toBeNull();
     expect(parseSyncedSetting({ name: 'theme', value: 'pink' })).toBeNull();
+    expect(parseSyncedSetting({ name: 'theme', value: 'system' })).toBeNull();
+    expect(parseSyncedSetting({ name: 'theme', value: null })).toBeNull();
     expect(parseSyncedSetting({ name: 'uiLanguage', value: 'klingon' })).toBeNull();
     expect(parseSyncedSetting('nonsense')).toBeNull();
     expect(parseSyncedSetting({ name: 'fontSize', value: 24 })).toEqual({

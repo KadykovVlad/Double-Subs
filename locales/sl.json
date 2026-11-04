@@ -352,7 +352,6 @@
 "tm_needed": "$1: model še ni prenesen",
 "tm_busy": "$1: Chrome ta model že prenaša …",
 "theme_label": "Tema: $1",
-"theme_system": "kot v sistemu",
 "theme_light": "svetla",
 "theme_dark": "temna"
 }

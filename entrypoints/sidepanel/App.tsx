@@ -28,7 +28,7 @@ import {
 import { Onboarding } from './Onboarding';
 import { hasFeature, isPro } from '../../src/lib/entitlements';
 import { Icons, Logo, Toasts } from './ui';
-import { nextTheme, saveTheme } from '../../src/lib/theme';
+import { applyTheme, nextTheme, revealTheme, saveTheme } from '../../src/lib/theme';
 import { loadSavedWords, watchSavedWords } from '../../src/lib/saved-words';
 import { newKeys, showToast } from '../../src/panel/toasts';
 import { PRO_NUDGE_KEY } from '../../src/lib/entitlements';
@@ -72,12 +72,10 @@ function LanguagePicker({ code }: { code: string }) {
   );
 }
 
-/** The theme of the panel (as in the system, light, dark), one button that goes round them. */
+/** The theme of the panel: one button between light and dark. */
 function ThemeButton() {
   const theme = useTheme();
-  const name = t(
-    theme === 'system' ? 'theme_system' : theme === 'light' ? 'theme_light' : 'theme_dark',
-  );
+  const name = t(theme === 'light' ? 'theme_light' : 'theme_dark');
   return (
     <button
       type="button"
@@ -86,9 +84,13 @@ function ThemeButton() {
       data-theme-value={theme}
       title={t('theme_label', name)}
       aria-label={t('theme_label', name)}
-      onClick={() => void saveTheme(nextTheme(theme))}
+      onClick={(event) => {
+        const next = nextTheme(theme);
+        revealTheme(event.currentTarget, () => applyTheme(next));
+        void saveTheme(next);
+      }}
     >
-      {theme === 'system' ? Icons.monitor : theme === 'light' ? Icons.sun : Icons.moon}
+      {theme === 'light' ? Icons.sun : Icons.moon}
     </button>
   );
 }

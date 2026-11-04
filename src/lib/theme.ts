@@ -1,29 +1,29 @@
-/** The theme of the panel: the system's own, or one chosen by hand. The video overlay has its own glass and is not touched. */
-export type Theme = 'system' | 'light' | 'dark';
-
-export const THEMES: readonly Theme[] = ['system', 'light', 'dark'];
-export const DEFAULT_THEME: Theme = 'system';
+/** The theme of the panel. The video overlay has its own glass and is not touched. */
+export type Theme = 'light' | 'dark';
 
 const KEY = 'panelTheme';
 
-export const normalizeTheme = (value: unknown): Theme =>
-  THEMES.includes(value as Theme) ? (value as Theme) : DEFAULT_THEME;
+/** The theme chosen by hand; anything else, like the "as in the system" of older versions, is no choice. */
+export const normalizeTheme = (value: unknown): Theme | null =>
+  value === 'light' || value === 'dark' ? value : null;
 
-/** The next one in the row system → light → dark → system (what the button in the header does). */
-export const nextTheme = (theme: Theme): Theme =>
-  THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length]!;
+export const nextTheme = (theme: Theme): Theme => (theme === 'light' ? 'dark' : 'light');
 
-export async function loadTheme(): Promise<Theme> {
+/** What a user who has not chosen sees. */
+export const systemTheme = (): Theme =>
+  matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+export async function loadTheme(): Promise<Theme | null> {
   try {
     return normalizeTheme((await browser.storage.local.get(KEY))[KEY]);
   } catch {
-    return DEFAULT_THEME;
+    return null;
   }
 }
 
 export const saveTheme = (theme: Theme) => browser.storage.local.set({ [KEY]: theme });
 
-export function watchTheme(listener: (theme: Theme) => void): () => void {
+export function watchTheme(listener: (theme: Theme | null) => void): () => void {
   const onChanged = (changes: Record<string, { newValue?: unknown }>, area: string) => {
     if (area === 'local' && KEY in changes) listener(normalizeTheme(changes[KEY]!.newValue));
   };
@@ -31,8 +31,33 @@ export function watchTheme(listener: (theme: Theme) => void): () => void {
   return () => browser.storage.onChanged.removeListener(onChanged);
 }
 
-/** Tells the page (CSS reads `data-theme`; "system" leaves the decision to the browser). */
-export function applyTheme(theme: Theme): void {
-  if (theme === 'system') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', theme);
+/** Tells the page (CSS reads `data-theme`; with no choice the browser decides). */
+export function applyTheme(theme: Theme | null): void {
+  if (theme) document.documentElement.setAttribute('data-theme', theme);
+  else document.documentElement.removeAttribute('data-theme');
+}
+
+/**
+ * Changes the theme in a circle that grows from `origin`, the accent running along its edge. Without
+ * the browser's support, or for a user who asked for less motion, the theme just changes.
+ */
+export function revealTheme(origin: HTMLElement, change: () => void): void {
+  if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    change();
+    return;
+  }
+  const box = origin.getBoundingClientRect();
+  const x = box.left + box.width / 2;
+  const y = box.top + box.height / 2;
+  const root = document.documentElement;
+  root.style.setProperty('--reveal-x', `${x}px`);
+  root.style.setProperty('--reveal-y', `${y}px`);
+  root.style.setProperty(
+    '--reveal-r',
+    `${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px`,
+  );
+  const ring = document.createElement('div');
+  ring.className = 'theme-ring';
+  document.body.append(ring);
+  void document.startViewTransition(change).finished.finally(() => ring.remove());
 }

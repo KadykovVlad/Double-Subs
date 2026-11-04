@@ -352,7 +352,6 @@
 "tm_needed": "$1: ยังไม่ได้ดาวน์โหลดโมเดล",
 "tm_busy": "$1: Chrome กำลังดาวน์โหลดโมเดลนี้อยู่…",
 "theme_label": "ธีม: $1",
-"theme_system": "ตามระบบ",
 "theme_light": "สว่าง",
 "theme_dark": "มืด"
 }

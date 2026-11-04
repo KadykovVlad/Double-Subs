@@ -352,7 +352,6 @@
 "tm_needed": "$1: modellen är inte nedladdad än",
 "tm_busy": "$1: Chrome laddar redan ner den här modellen…",
 "theme_label": "Tema: $1",
-"theme_system": "som i systemet",
 "theme_light": "ljust",
 "theme_dark": "mörkt"
 }

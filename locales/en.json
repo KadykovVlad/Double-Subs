@@ -352,7 +352,6 @@
 "tm_needed": "$1: the model is not downloaded yet",
 "tm_busy": "$1: Chrome is already downloading this model…",
 "theme_label": "Theme: $1",
-"theme_system": "as in the system",
 "theme_light": "light",
 "theme_dark": "dark"
 }

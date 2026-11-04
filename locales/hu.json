@@ -352,7 +352,6 @@
 "tm_needed": "$1: a modell még nincs letöltve",
 "tm_busy": "$1: a Chrome már tölti le ezt a modellt…",
 "theme_label": "Téma: $1",
-"theme_system": "mint a rendszerben",
 "theme_light": "világos",
 "theme_dark": "sötét"
 }

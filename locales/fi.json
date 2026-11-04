@@ -352,7 +352,6 @@
 "tm_needed": "$1: mallia ei ole vielä ladattu",
 "tm_busy": "$1: Chrome lataa jo tätä mallia…",
 "theme_label": "Teema: $1",
-"theme_system": "kuten järjestelmässä",
 "theme_light": "vaalea",
 "theme_dark": "tumma"
 }

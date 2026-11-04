@@ -352,7 +352,6 @@
 "tm_needed": "$1: মডেল এখনও ডাউনলোড হয়নি",
 "tm_busy": "$1: Chrome ইতিমধ্যে এই মডেল ডাউনলোড করছে…",
 "theme_label": "থিম: $1",
-"theme_system": "সিস্টেমের মতো",
 "theme_light": "হালকা",
 "theme_dark": "গাঢ়"
 }

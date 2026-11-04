@@ -352,7 +352,6 @@
 "tm_needed": "$1: model henüz indirilmedi",
 "tm_busy": "$1: Chrome bu modeli zaten indiriyor…",
 "theme_label": "Tema: $1",
-"theme_system": "sistemdeki gibi",
 "theme_light": "açık",
 "theme_dark": "koyu"
 }
