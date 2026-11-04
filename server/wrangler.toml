@@ -16,9 +16,9 @@ migrations_dir = "migrations"
 EXTENSION_ORIGINS = "chrome-extension://kbipbdkmdaghooihkcmdjhfmeoimgnbm"
 
 # The sender of the letters with sign-in codes: an address of the domain verified in Resend.
-# MAIL_FROM = "Double Sub <login@example.com>"
+MAIL_FROM = "Double Sub <login@mail.doublesub.site>"
 # The bot's username without "@" (from @BotFather): the extension opens t.me/<it>.
-# TELEGRAM_BOT_NAME = "DoubleSubBot"
+TELEGRAM_BOT_NAME = "DoubleSubBot"
 
 # Secrets (wrangler secret put): GOOGLE_CLIENT_ID, SESSION_SECRET, RESEND_API_KEY,
 # TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET; PROXY_SECRET only with a proxy in front (README).
