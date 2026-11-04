@@ -155,6 +155,22 @@ test('when the user has turned subtitles on, their request is used: CC is not pr
   expect(await ccPressed(page)).toBe('true');
 });
 
+test('a player that asks for no subtitles is a wait, not an error: nothing for the extension error page', async () => {
+  const { page } = await openVideo('BOTH&dead=1');
+  // Chrome puts every warning and error of a content script on the extension's page of errors.
+  const complaints: string[] = [];
+  page.on('console', (msg) => {
+    if (['warning', 'error'].includes(msg.type()) && msg.text().includes('Double Sub'))
+      complaints.push(msg.text());
+  });
+  page.on('pageerror', (error) => complaints.push(error.message));
+  const popup = await openPopupFor(session, page);
+
+  await expect(popup.getByTestId('status')).toBeVisible();
+  await page.waitForTimeout(2500); // past the wait for the player's request
+  expect(complaints).toEqual([]);
+});
+
 test("another extension's subtitle request without the token is not taken for the player's", async () => {
   const { page, reports } = await openVideo('BOTH&foreign=1');
   const warnings: string[] = [];

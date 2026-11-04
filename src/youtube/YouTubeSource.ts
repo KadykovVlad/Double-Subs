@@ -421,7 +421,9 @@ export class YouTubeSource implements YouTubeBridge {
       if (gotNothing(loaded)) this.templates.drop(videoId);
       else this.askForMissing(videoId, template, loaded);
     } else {
-      console.warn('[Double Sub] YouTube: плеер пока не запросил субтитры, жду его запроса');
+      // A wait, not a fault: a warning would land on the extension's page of errors. When every try is
+      // spent the user is told on the video and in the panel.
+      logTiming('no-request-yet', { videoId });
     }
     return { plan, loaded, tokenMs, ms: Math.round(performance.now() - started) };
   }
